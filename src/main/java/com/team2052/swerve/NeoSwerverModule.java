@@ -76,7 +76,7 @@ public class NeoSwerverModule extends SwerveModule {
         /*
          * Steer Motor Initialization
          */
-        steerMotor = new CANSparkMax(driveMotorChannel, CANSparkMaxLowLevel.MotorType.kBrushless);
+        steerMotor = new CANSparkMax(steerMotorChannel, CANSparkMaxLowLevel.MotorType.kBrushless);
 
         // Reduce CAN status frame rates
         checkError(
@@ -159,13 +159,13 @@ public class NeoSwerverModule extends SwerveModule {
 
         // Set the motor to the desired voltage using a
         // percentage of the max velocity multiplied by the nominal voltage
-        driveMotor.setVoltage(
-            desiredState.speedMetersPerSecond / maxVelocityMetersPerSecond * SwerveConstants.MAX_VOLTAGE_VOLTS
-        );
+        // driveMotor.setVoltage(
+        //     desiredState.speedMetersPerSecond / maxVelocityMetersPerSecond * SwerveConstants.MAX_VOLTAGE_VOLTS
+        // );
 
-        steerMotor.getPIDController().setReference(
-            desiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition
-        );
+        // steerMotor.getPIDController().setReference(
+        //     desiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition
+        // );
     }
 
     @Override

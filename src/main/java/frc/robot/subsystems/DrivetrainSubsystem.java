@@ -88,6 +88,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
     }
 
+    @Override
+    public void periodic() {
+        frontLeftModule.print();
+        frontRightModule.print();
+        backLeftModule.print();
+        backRightModule.print();
+    }
+
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
         setModuleStates(swerveModuleStates);

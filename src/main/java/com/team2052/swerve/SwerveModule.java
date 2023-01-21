@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Shared elements of swerve modules regardless of motor type
@@ -89,6 +90,10 @@ public abstract class SwerveModule {
         );
     }
 
+    public void print() {
+        SmartDashboard.putNumber(debugName, canCoder.getAbsolutePosition());
+    }
+
     public abstract SwerveModuleState getState();
 
     public abstract void setState(double velocityMetersPerSecond, Rotation2d steerAngle);
@@ -104,7 +109,7 @@ public abstract class SwerveModule {
     @SuppressWarnings("unchecked")
     protected <E> void checkError(String message, E... errors) {
         for (E error : errors) {
-            if (error != REVLibError.kOk || error != ErrorCode.OK) {
+            if (error != REVLibError.kOk) {
                 DriverStation.reportError(
                     message + " on [" + debugName + "] module: " + error.toString(),
                     false
