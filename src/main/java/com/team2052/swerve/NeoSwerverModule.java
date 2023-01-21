@@ -22,13 +22,13 @@ public class NeoSwerverModule extends SwerveModule {
     
     public NeoSwerverModule(
         String debugName, 
-        ModuleConfiguration moduleGearConfiguration,
+        ModuleConfiguration moduleConfiguration,
         int driveMotorChannel,
         int steerMotorChannel,
         int canCoderChannel,
         Rotation2d steerOffset
     ) {
-        super(debugName, moduleGearConfiguration, canCoderChannel, steerOffset);
+        super(debugName, moduleConfiguration, canCoderChannel, steerOffset);
 
         /*
          * Drive Motor Initialization
@@ -47,7 +47,7 @@ public class NeoSwerverModule extends SwerveModule {
             "Failed to set drive motor idle mode",
             driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake)
         );
-        driveMotor.setInverted(moduleGearConfiguration.isDriveInverted());
+        driveMotor.setInverted(moduleConfiguration.isDriveInverted());
 
         checkError(
             "Failed to enable drive motor voltage compensation",
@@ -62,8 +62,8 @@ public class NeoSwerverModule extends SwerveModule {
         RelativeEncoder encoder = driveMotor.getEncoder();
 
         // Conversion factor for switching between ticks and meters in terms of meters per tick
-        double drivePositionConversionFactor = Math.PI * moduleGearConfiguration.getWheelDiameter() * 
-            moduleGearConfiguration.getDriveReduction();
+        double drivePositionConversionFactor = Math.PI * moduleConfiguration.getWheelDiameter() * 
+            moduleConfiguration.getDriveReduction();
         
         checkError(
             "Failed to set drive motor encoder conversion factors",
@@ -90,7 +90,7 @@ public class NeoSwerverModule extends SwerveModule {
             "Failed to set steer motor idle mode",
             steerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake)
         );
-        steerMotor.setInverted(!moduleGearConfiguration.isSteerInverted());
+        steerMotor.setInverted(!moduleConfiguration.isSteerInverted());
 
         checkError(
             "Failed to enable steer motor voltage compensation",
@@ -106,7 +106,7 @@ public class NeoSwerverModule extends SwerveModule {
         RelativeEncoder integratedEncoder = steerMotor.getEncoder();
 
         // Conversion factor for switching between ticks and radians in terms of radians per tick
-        double steerPositionConversionFactor = 2.0 * Math.PI * moduleGearConfiguration.getDriveReduction();
+        double steerPositionConversionFactor = 2.0 * Math.PI * moduleConfiguration.getDriveReduction();
 
         checkError(
             "Failed to set drive motor encoder conversion factors",

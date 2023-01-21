@@ -30,20 +30,20 @@ public class Falcon500SwerveModule extends SwerveModule {
 
     public Falcon500SwerveModule(
         String debugName,
-        ModuleConfiguration moduleGearConfiguration,
+        ModuleConfiguration moduleConfiguration,
         int driveMotorChannel,
         int steerMotorChannel,
         int canCoderChannel, 
         Rotation2d steerOffset
     ) {
-        super(debugName, moduleGearConfiguration, canCoderChannel, steerOffset);
+        super(debugName, moduleConfiguration, canCoderChannel, steerOffset);
 
         /*
          * Drive Motor Initialization
          */
         // Conversion factor for switching between ticks and meters in terms of meters per tick
-        drivePositionConversionFactor = (Math.PI * moduleGearConfiguration.getWheelDiameter() /
-            TICKS_PER_ROTATION) * moduleGearConfiguration.getDriveReduction();
+        drivePositionConversionFactor = (Math.PI * moduleConfiguration.getWheelDiameter() /
+            TICKS_PER_ROTATION) * moduleConfiguration.getDriveReduction();
         // Conversion factor for switching between ticks and meters per second in terms of meters per second per tick
         driveVelocityConversionFactor = drivePositionConversionFactor / 60.0;
 
@@ -59,7 +59,7 @@ public class Falcon500SwerveModule extends SwerveModule {
         );
         driveMotor.enableVoltageCompensation(true);
         driveMotor.setSensorPhase(true);
-        driveMotor.setInverted(moduleGearConfiguration.isDriveInverted());
+        driveMotor.setInverted(moduleConfiguration.isDriveInverted());
         driveMotor.setNeutralMode(NeutralMode.Brake);
 
         // Reduce CAN status frame rates
@@ -77,7 +77,7 @@ public class Falcon500SwerveModule extends SwerveModule {
          */
         // Conversion factor for switching between ticks and radians in terms of radians per tick
         steerPositionConversionFactor = (2.0 * Math.PI /
-            TICKS_PER_ROTATION) * moduleGearConfiguration.getDriveReduction();
+            TICKS_PER_ROTATION) * moduleConfiguration.getDriveReduction();
 
         TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration();
         steerMotorConfiguration.slot0.kP = SwerveConstants.STEER_P;
@@ -106,7 +106,7 @@ public class Falcon500SwerveModule extends SwerveModule {
             )
         );
         steerMotor.setSensorPhase(true);
-        steerMotor.setInverted(moduleGearConfiguration.isSteerInverted());
+        steerMotor.setInverted(moduleConfiguration.isSteerInverted());
         steerMotor.setNeutralMode(NeutralMode.Brake);
 
         // Sets the steer motor encoder to the absolute position of the CANCoder for startup orientation
