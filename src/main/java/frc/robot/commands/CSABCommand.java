@@ -1,9 +1,8 @@
 //Charge Station Auto-Balance Command
-
-
     
 package frc.robot.commands;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -34,7 +33,7 @@ private double speed;
         this.deadzone = deadzone;
         this.speed = speed;
 
-        addRequirements(drivetrain);
+        addRequirements(this.drivetrain);
     }
 
     //Initialize
@@ -42,18 +41,24 @@ private double speed;
     public void initialize() {
         minSpeed = -1;
         maxSpeed = 1;
-        angle = -3;
-    
+        deadzone = 3;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        //low2 + (value - low1) * (high2 - low2) / (high1 - low1)
-        //calcjulator
-        speed = minSpeed + (angle - -15) * (maxSpeed - minSpeed) / (15 - -15);
-        //speed = -15 + (angle - minSpeed) * (15 - -15) / (maxSpeed - minSpeed);
-    
+        //If the given angle is larger than deadzone, calculate speed
+        if (drivetrain.getNavx().getPitch() > deadzone){
+            //Calculates speed needed from angle
+            //low2 + (value - low1) * (high2 - low2) / (high1 - low1)
+            speed = minSpeed + (angle - -15) * (maxSpeed - minSpeed) / (15 - -15); 
+        }
+        else{
+            speed = 0;
+        }
+  
+        drivetrain.drive(new ChassisSpeeds(speed, 0, 0));
+        
     }
 
     // Called once the command ends or is interrupted.

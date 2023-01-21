@@ -11,8 +11,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import frc.robot.commands.CSABCommand;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -67,6 +68,10 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
+
+        JoystickButton autoBalance = new JoystickButton(driveJoystick, 2);
+
+        autoBalance.whileTrue(new CSABCommand(drivetrain, 0, 1, -1, 0, 0, 0));
 
     }
 

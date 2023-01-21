@@ -103,6 +103,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return navx.getRotation2d();
     }
 
+    public AHRS getNavx(){
+        return navx;
+    }
+
     private void setModuleStates(SwerveModuleState[] swerveModuleStates) {
         boolean hasVelocity = swerveModuleStates[0].speedMetersPerSecond != 0
             && swerveModuleStates[1].speedMetersPerSecond != 0 

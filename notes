@@ -50,4 +50,13 @@ substem has soem commands
         get gyro angle (math) = speed
     
     
+
+What to do with CSABcommand:
+    Assign to any button for now
+    When button in being held then comman runs
+    When button is relased, command stops
+    Triggger
+    Best to use while = true Thing
+    Try going to WPI website to see how to do it
+
     */
