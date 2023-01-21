@@ -135,4 +135,21 @@ public class DrivetrainSubsystem extends SubsystemBase {
             backRightModule.getPosition()
         };
     }
+
+    public void drive(double d, double e) {
+    }
+
+    public void arcadeDrive(double m_speed, double m_speed2) {
+    }
+
+    public void resetEncoders() {
+    }
+
+    public int getAverageDistanceMeter() {
+        return 0;
+    }
+
+    public int getLeftDistanceInch() {
+        return 0;
+    }
 }
