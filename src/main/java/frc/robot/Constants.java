@@ -18,10 +18,10 @@ public final class Constants {
     public static class Drivetrain {
         // The left-to-right distance between the drivetrain wheels
         // Should be measured from center to center.
-        public static final double DRIVETRAIN_TRACKWIDTH_METERS = Units.inchesToMeters(22.5);
+        public static final double DRIVETRAIN_TRACKWIDTH_METERS = Units.inchesToMeters(20.1875);
         // The front-to-back distance between the drivetrain wheels.
         // Should be measured from center to center.
-        public static final double DRIVETRAIN_WHEELBASE_METERS = Units.inchesToMeters(23.25);
+        public static final double DRIVETRAIN_WHEELBASE_METERS = Units.inchesToMeters(22.5);
 
         public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 4;
         public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 6;
