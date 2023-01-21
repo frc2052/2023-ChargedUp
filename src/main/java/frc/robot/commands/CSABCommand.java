@@ -5,11 +5,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.Drivetrain;
+import frc.robot.subsystems.DrivetrainSubsystem;
 
 
 public class CSABCommand extends CommandBase {
-private Drivetrain drivetrain;
+private DrivetrainSubsystem drivetrain;
 private double angle;
 private double maxSpeed;
 private double minSpeed;
@@ -18,7 +18,7 @@ private double deadzone;
 private double speed;
 
     public CSABCommand(
-        Drivetrain drivetrain,
+        DrivetrainSubsystem drivetrain,
         double angle,
         double maxSpeed,
         double minSpeed,
@@ -26,13 +26,14 @@ private double speed;
         double deadzone,
         double speed)
         {
-        this.drivetrain = drivetrain;
         this.angle = angle;
         this.maxSpeed = maxSpeed;
         this.minSpeed = minSpeed;
         this.delay = delay;
         this.deadzone = deadzone;
         this.speed = speed;
+
+        addRequirements(drivevtrain);
     }
 
     //Initialize
@@ -48,8 +49,8 @@ private double speed;
     @Override
     public void execute() {
         //low2 + (value - low1) * (high2 - low2) / (high1 - low1)
-        speed = -15 + (angle - minSpeed) * (15 - -15) / (maxSpeed - minSpeed);
-        System.out.println(speed);
+        speed = minSpeed + (angle - -15) * (maxSpeed - minSpeed) / (15 - -15);
+        //speed = -15 + (angle - minSpeed) * (15 - -15) / (maxSpeed - minSpeed);
     
     }
 
