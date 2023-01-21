@@ -6,7 +6,8 @@ package frc.robot;
 
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.io.ControlPanel;
-import frc.robot.subsystems.drive.DrivetrainSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -39,7 +40,13 @@ public class RobotContainer {
 
         drivetrain = new DrivetrainSubsystem();
 
-        drivetrain.setDefaultCommand(new DefaultDriveCommand());
+        drivetrain.setDefaultCommand(new DefaultDriveCommand(
+            driveJoystick::getX,
+            driveJoystick::getY,
+            // Range of -1pi to 1pi so that the highest x value corresponds to a half rotation
+            () -> new Rotation2d(turnJoystick.getX() * Math.PI),
+            drivetrain
+        ));
 
         // Configure the trigger bindings
         configureBindings();
