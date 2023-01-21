@@ -26,6 +26,7 @@ private double speed;
         double deadzone,
         double speed)
         {
+        this.drivetrain = drivetrain;
         this.angle = angle;
         this.maxSpeed = maxSpeed;
         this.minSpeed = minSpeed;
@@ -33,7 +34,7 @@ private double speed;
         this.deadzone = deadzone;
         this.speed = speed;
 
-        addRequirements(drivevtrain);
+        addRequirements(drivetrain);
     }
 
     //Initialize
@@ -49,6 +50,7 @@ private double speed;
     @Override
     public void execute() {
         //low2 + (value - low1) * (high2 - low2) / (high1 - low1)
+        //calcjulator
         speed = minSpeed + (angle - -15) * (maxSpeed - minSpeed) / (15 - -15);
         //speed = -15 + (angle - minSpeed) * (15 - -15) / (maxSpeed - minSpeed);
     
