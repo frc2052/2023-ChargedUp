@@ -88,14 +88,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
     }
 
-    @Override
-    public void periodic() {
-        frontLeftModule.print();
-        frontRightModule.print();
-        backLeftModule.print();
-        backRightModule.print();
-    }
-
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
         setModuleStates(swerveModuleStates);
@@ -142,5 +134,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
             backLeftModule.getPosition(),
             backRightModule.getPosition()
         };
+    }
+
+    /**
+     * Used for initial setup for new swerve modules
+     */
+    public void debug() {
+        frontLeftModule.debug();
+        frontRightModule.debug();
+        backLeftModule.debug();
+        backRightModule.debug();
     }
 }

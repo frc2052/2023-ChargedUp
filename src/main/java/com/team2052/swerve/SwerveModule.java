@@ -90,7 +90,7 @@ public abstract class SwerveModule {
         );
     }
 
-    public void print() {
+    public void debug() {
         SmartDashboard.putNumber(debugName, canCoder.getAbsolutePosition());
     }
 
@@ -109,7 +109,7 @@ public abstract class SwerveModule {
     @SuppressWarnings("unchecked")
     protected <E> void checkError(String message, E... errors) {
         for (E error : errors) {
-            if (error != REVLibError.kOk) {
+            if (error != REVLibError.kOk && error != ErrorCode.OK) {
                 DriverStation.reportError(
                     message + " on [" + debugName + "] module: " + error.toString(),
                     false
