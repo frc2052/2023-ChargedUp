@@ -16,20 +16,28 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public class DefaultDriveCommand extends CommandBase {
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
-    private final Supplier<Rotation2d> rotationSupplier;
+    private final DoubleSupplier rotationSupplier;
     
+    private final SlewRateLimiter xLimiter;
+    private final SlewRateLimiter yLimiter;
+    private final SlewRateLimiter rotationLimiter;
+
     private final DrivetrainSubsystem drivetrain;
 
     /** Creates a new defaultDriveCommand. */
     public DefaultDriveCommand(
         DoubleSupplier xSupplier, 
         DoubleSupplier ySupplier, 
-        Supplier<Rotation2d> rotationSupplier,
+        DoubleSupplier rotationSupplier,
         DrivetrainSubsystem drivetrain
     ) {
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
         this.rotationSupplier = rotationSupplier;
+
+        xLimiter = new SlewRateLimiter(2);
+        yLimiter = new SlewRateLimiter(2);
+        rotationLimiter = new SlewRateLimiter(2);
 
         this.drivetrain = drivetrain;
 
@@ -44,17 +52,17 @@ public class DefaultDriveCommand extends CommandBase {
         if (fieldCentric) {
             // Field centric driving
             drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-                slewAxis(deadBand(xSupplier.getAsDouble())), 
-                slewAxis(deadBand(ySupplier.getAsDouble())), 
-                slewAxis(deadBand(rotationSupplier.get().getRadians())), 
+                slewAxis(yLimiter, deadBand(ySupplier.getAsDouble())), 
+                slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())), 
+                slewAxis(rotationLimiter, deadBand(rotationSupplier.getAsDouble())), 
                 drivetrain.getRotation()
             ));
         } else {
             // Driver centric driving
             drivetrain.drive(new ChassisSpeeds(
-                slewAxis(deadBand(xSupplier.getAsDouble())), 
-                slewAxis(deadBand(ySupplier.getAsDouble())), 
-                slewAxis(deadBand(rotationSupplier.get().getRadians())) 
+                slewAxis(yLimiter, deadBand(ySupplier.getAsDouble())), 
+                slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())), 
+                slewAxis(rotationLimiter, deadBand(rotationSupplier.get().getRadians())) 
             ));
         }
     }
@@ -65,8 +73,8 @@ public class DefaultDriveCommand extends CommandBase {
         drivetrain.stop();
     }
 
-    private double slewAxis(double value) {
-        return new SlewRateLimiter(0.2).calculate(Math.copySign(Math.pow(value, 2), value));
+    private double slewAxis(SlewRateLimiter limiter, double value) {
+        return limiter.calculate(Math.copySign(Math.pow(value, 2), value));
     }
 
     private double deadBand(double value) {

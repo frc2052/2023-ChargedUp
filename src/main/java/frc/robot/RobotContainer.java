@@ -43,8 +43,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(new DefaultDriveCommand(
             driveJoystick::getX,
             driveJoystick::getY,
-            // Range of -1pi to 1pi so that the highest x value corresponds to a half rotation
-            () -> new Rotation2d(turnJoystick.getX() * Math.PI),
+            turnJoystick::getX,
             drivetrain
         ));
 

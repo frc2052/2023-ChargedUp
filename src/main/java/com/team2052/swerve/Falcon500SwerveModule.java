@@ -28,6 +28,12 @@ public class Falcon500SwerveModule extends SwerveModule {
     private final double driveVelocityConversionFactor;
     private final double steerPositionConversionFactor;
 
+    private final double maxVelocityMetersPerSecond;
+
+    private static final double STEER_P = 0.2;
+    private static final double STEER_I = 0.0;
+    private static final double STEER_D = 0.1;
+
     public Falcon500SwerveModule(
         String debugName,
         ModuleConfiguration moduleConfiguration,
@@ -37,6 +43,16 @@ public class Falcon500SwerveModule extends SwerveModule {
         Rotation2d steerOffset
     ) {
         super(debugName, moduleConfiguration, canCoderChannel, steerOffset);
+
+        /*
+         * The formula for calculating the theoretical maximum velocity is:
+         * [Motor free speed (RPM)] / 60 * [Drive reduction] * [Wheel diameter (m)] * pi
+         * By default this value is setup for a Mk3 standard module using Falcon500s to drive.
+         * An example of this constant for a Mk4 L2 module with NEOs to drive is:
+         * 5880.0 (RPM) / 60.0 * SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
+         * This is a measure of how fast the robot should be able to drive in a straight line.
+         */
+        maxVelocityMetersPerSecond = 6380 / 60 * moduleConfiguration.getDriveReduction() * moduleConfiguration.getWheelDiameter() * Math.PI;
 
         /*
          * Drive Motor Initialization
@@ -77,12 +93,12 @@ public class Falcon500SwerveModule extends SwerveModule {
          */
         // Conversion factor for switching between ticks and radians in terms of radians per tick
         steerPositionConversionFactor = (2.0 * Math.PI /
-            TICKS_PER_ROTATION) * moduleConfiguration.getDriveReduction();
+            TICKS_PER_ROTATION) * moduleConfiguration.getSteerReduction();
 
         TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration();
-        steerMotorConfiguration.slot0.kP = SwerveConstants.STEER_P;
-        steerMotorConfiguration.slot0.kI = SwerveConstants.STEER_I;
-        steerMotorConfiguration.slot0.kD = SwerveConstants.STEER_D;
+        steerMotorConfiguration.slot0.kP = STEER_P;
+        steerMotorConfiguration.slot0.kI = STEER_I;
+        steerMotorConfiguration.slot0.kD = STEER_D;
 
         steerMotorConfiguration.voltageCompSaturation = SwerveConstants.MAX_VOLTAGE_VOLTS;
 
