@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package com.team2052.swerve;
+package com.team2052.swervemodule;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -12,9 +12,7 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
 
 /**
  * Swerve module implementation for swerve module with Neos
@@ -22,13 +20,6 @@ import frc.robot.Constants;
 public class NeoSwerverModule extends SwerveModule {
     private final CANSparkMax driveMotor;
     private final CANSparkMax steerMotor;
-    
-    private final double maxVelocityMetersPerSecond;
-    private final double maxAngularVelocityRadiansPerSecond;
-
-    private static final double STEER_P = 1.0;
-    private static final double STEER_I = 0.0;
-    private static final double STEER_D = 0.1;
 
     public NeoSwerverModule(
         String debugName, 
@@ -39,31 +30,6 @@ public class NeoSwerverModule extends SwerveModule {
         Rotation2d steerOffset
     ) {
         super(debugName, moduleConfiguration, canCoderChannel, steerOffset);
-
-        /*
-         * The formula for calculating the theoretical maximum velocity is:
-         * [Motor free speed (RPM)] / 60 * [Drive reduction] * [Wheel diameter (m)] * pi
-         * By default this value is setup for a Mk3 standard module using Falcon500s to drive.
-         * An example of this constant for a Mk4 L2 module with NEOs to drive is:
-         * 5880.0 (RPM) / 60.0 * SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
-         * This is a measure of how fast the robot should be able to drive in a straight line.
-         */
-        maxVelocityMetersPerSecond = 5676 / 60 * moduleConfiguration.getDriveReduction() * moduleConfiguration.getWheelDiameter() * Math.PI;
-        /*
-         * This would be the theoretical maximum angular velocity of the robot in radians per second.
-         * 
-         *  maxAngularVelocityRadiansPerSecond = maxVelocityMetersPerSecond / Math.hypot(
-         *      Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, 
-         *      Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0
-         *  );
-         *
-         * This would be a measure of how fast the robot can rotate in place.
-         */
-
-        maxAngularVelocityRadiansPerSecond = maxVelocityMetersPerSecond / Math.hypot(
-            Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, 
-            Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0
-        );
 
         /*
          * Drive Motor Initialization
@@ -160,9 +126,9 @@ public class NeoSwerverModule extends SwerveModule {
         SparkMaxPIDController controller = steerMotor.getPIDController();
         checkError(
             "Failed to set steer motor PID proportional constant",
-            controller.setP(STEER_P),
-            controller.setI(STEER_I),
-            controller.setD(STEER_D)
+            controller.setP(SwerveConstants.NeoSwerveModule.STEER_P),
+            controller.setI(SwerveConstants.NeoSwerveModule.STEER_I),
+            controller.setD(SwerveConstants.NeoSwerveModule.STEER_D)
         );
 
         checkError(
@@ -192,10 +158,9 @@ public class NeoSwerverModule extends SwerveModule {
             getState().angle
         );
 
-        // Set the motor to the desired voltage using a
-        // percentage of the max velocity multiplied by the nominal voltage
-        driveMotor.setVoltage(
-            desiredState.speedMetersPerSecond / maxVelocityMetersPerSecond * SwerveConstants.MAX_VOLTAGE_VOLTS
+        // Set the motor to our desired velocity as a percentage of our max velocity
+        driveMotor.set(
+            desiredState.speedMetersPerSecond / getMaxVelocityMetersPerSecond(moduleConfiguration)
         );
 
         SmartDashboard.putNumber(debugName + ": Speed", desiredState.speedMetersPerSecond);
@@ -215,5 +180,15 @@ public class NeoSwerverModule extends SwerveModule {
                 steerMotor.getEncoder().getPosition()
             )
         );
+    }
+
+    public static double getMaxVelocityMetersPerSecond(ModuleConfiguration moduleConfiguration) {
+        /*
+         * The formula for calculating the theoretical maximum velocity is:
+         * [Motor free speed (RPM)] / 60 * [Drive reduction] * [Wheel diameter (m)] * pi
+         * This is a measure of how fast the robot should be able to drive in a straight line.
+         */
+        return SwerveConstants.NeoSwerveModule.NEO_ROUNDS_PER_MINUTE / 60 * moduleConfiguration.getDriveReduction() * 
+            moduleConfiguration.getWheelDiameter() * Math.PI;
     }
 }

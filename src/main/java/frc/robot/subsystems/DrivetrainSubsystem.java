@@ -5,8 +5,8 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.team2052.swerve.ModuleConfiguration;
-import com.team2052.swerve.NeoSwerverModule;
+import com.team2052.swervemodule.ModuleConfiguration;
+import com.team2052.swervemodule.NeoSwerverModule;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,7 +16,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -26,7 +25,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final NeoSwerverModule backLeftModule;
     private final NeoSwerverModule backRightModule;
 
-    // Representation of our robots swerve module posititions relative to the center of the wheels.
+    // Representation of our robots swerve module positions relative to the center of the wheels.
     private final SwerveDriveKinematics kinematics;
 
     private final AHRS navx;
@@ -89,7 +88,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
     }
 
-    public void drive(ChassisSpeeds chassisSpeeds) {
+    /**
+     * All parameters are taken in normalized terms of [-1.0 to 1.0].
+     */
+    public void drive(
+        double normalizedXVelocityMetersPerSecond, 
+        double normalizedYVelocityMetersPerSecond, 
+        double normalizedRotationVelocityRadiansPerSecond, 
+        boolean fieldCentric
+    ) {
+        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
+            normalizedXVelocityMetersPerSecond * getMaxVelocityMetersPerSecond(), 
+            normalizedYVelocityMetersPerSecond * getMaxVelocityMetersPerSecond(), 
+            normalizedRotationVelocityRadiansPerSecond * getMaxAngularVelocityRadiansPerSecond()
+        );
+
+        if (fieldCentric) {
+            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getRotation());
+        }
+
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
         setModuleStates(swerveModuleStates);
 
@@ -102,7 +119,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        drive(new ChassisSpeeds());
+        drive(0, 0, 0, false);
     }
     
     public Rotation2d getRotation() {
@@ -110,6 +127,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     private void setModuleStates(SwerveModuleState[] swerveModuleStates) {
+        // Check if the wheels don't have a drive velocity to maintain the current wheel orientation.
         boolean hasVelocity = swerveModuleStates[0].speedMetersPerSecond != 0
             && swerveModuleStates[1].speedMetersPerSecond != 0 
             && swerveModuleStates[2].speedMetersPerSecond != 0
@@ -142,8 +160,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
         };
     }
 
+    private double getMaxVelocityMetersPerSecond() {
+        return NeoSwerverModule.getMaxVelocityMetersPerSecond(ModuleConfiguration.MK4I_L2);
+    }
+
+    private double getMaxAngularVelocityRadiansPerSecond() {
+        /*
+         * Find the theoretical maximum angular velocity of the robot in radians per second 
+         * (a measure of how fast the robot can rotate in place).
+         */
+        return NeoSwerverModule.getMaxVelocityMetersPerSecond(ModuleConfiguration.MK4I_L2) / Math.hypot(
+            Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, 
+            Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0
+        );
+    }
+
     /**
-     * Used for initial setup for new swerve modules
+     * For initial set up of swerve modules call this method from the periodic method, adjust the wheels
+     * to be at 90 angles, and record the encoder values put in SmartDashboard. These encoder values will
+     * be the offsets for each SwerveModule respectively.
      */
     public void debug() {
         frontLeftModule.debug();

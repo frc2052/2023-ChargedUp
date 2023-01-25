@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package com.team2052.swerve;
+package com.team2052.swervemodule;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
@@ -80,7 +80,7 @@ public abstract class SwerveModule {
     }
 
     public void debug() {
-        SmartDashboard.putNumber(debugName + " CANCoder", Math.toRadians(canCoder.getAbsolutePosition()));
+        SmartDashboard.putNumber(debugName + " Offset Radians", Math.toRadians(canCoder.getAbsolutePosition()));
     }
 
     public abstract SwerveModuleState getState();
