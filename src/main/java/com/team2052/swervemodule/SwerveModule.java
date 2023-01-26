@@ -45,7 +45,7 @@ public abstract class SwerveModule {
          */
         CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
         canCoderConfiguration.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        canCoderConfiguration.magnetOffsetDegrees = steerOffset.getDegrees();
+        canCoderConfiguration.magnetOffsetDegrees = -steerOffset.getDegrees();
         canCoderConfiguration.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
 
         canCoder = new CANCoder(canCoderChannel);
@@ -69,7 +69,7 @@ public abstract class SwerveModule {
     }
 
     public void debug() {
-        SmartDashboard.putNumber(debugName + " Offset Radians", Math.toRadians(canCoder.getAbsolutePosition()));
+        SmartDashboard.putNumber(debugName + " Offset Radians", canCoder.getAbsolutePosition());
     }
 
     public abstract SwerveModuleState getState();
