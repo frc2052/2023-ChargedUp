@@ -41,17 +41,6 @@ public abstract class SwerveModule {
         this.moduleConfiguration = moduleConfiguration;
 
         /*
-         * This would be the theoretical maximum angular velocity of the robot in radians per second.
-         * 
-         *  maxAngularVelocityRadiansPerSecond = maxVelocityMetersPerSecond / Math.hypot(
-         *      Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, 
-         *      Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0
-         *  );
-         *
-         * This would be a measure of how fast the robot can rotate in place.
-         */
-
-        /*
          * CANCoder Initialization
          */
         CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();

@@ -73,9 +73,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
             // Front right
             new Translation2d(Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
             // Back left
-            new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
             // Back right
-            new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0)
+            new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0)
         );
 
         navx = new AHRS(SPI.Port.kMXP, (byte) 200);
@@ -107,7 +107,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getRotation());
         }
 
-        
+        drive(chassisSpeeds);
     }
 
     /**
@@ -136,9 +136,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private void setModuleStates(SwerveModuleState[] swerveModuleStates) {
         // Check if the wheels don't have a drive velocity to maintain the current wheel orientation.
         boolean hasVelocity = swerveModuleStates[0].speedMetersPerSecond != 0
-            && swerveModuleStates[1].speedMetersPerSecond != 0 
-            && swerveModuleStates[2].speedMetersPerSecond != 0
-            && swerveModuleStates[3].speedMetersPerSecond != 0;
+            || swerveModuleStates[1].speedMetersPerSecond != 0 
+            || swerveModuleStates[2].speedMetersPerSecond != 0
+            || swerveModuleStates[3].speedMetersPerSecond != 0;
 
         frontLeftModule.setState(
             swerveModuleStates[0].speedMetersPerSecond, 
@@ -184,7 +184,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     /**
      * For initial set up of swerve modules call this method from the periodic method, adjust the wheels
-     * to be at 90 angles, and record the encoder values put in SmartDashboard. These encoder values will
+     * to be at 90 angles, set all offsets to 0, and record the encoder values put in SmartDashboard. These encoder values will
      * be the offsets for each SwerveModule respectively.
      */
     public void debug() {

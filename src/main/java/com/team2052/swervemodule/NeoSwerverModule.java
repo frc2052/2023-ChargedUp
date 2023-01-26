@@ -120,7 +120,7 @@ public class NeoSwerverModule extends SwerveModule {
         // Sets the steer motor encoder to the absolute position of the CANCoder for startup orientation
         checkError(
             "Failed to set steer motor encoder position",
-            integratedEncoder.setPosition(canCoder.getAbsolutePosition())
+            integratedEncoder.setPosition(Math.toRadians(canCoder.getAbsolutePosition()))
         );
 
         SparkMaxPIDController controller = steerMotor.getPIDController();
@@ -169,7 +169,7 @@ public class NeoSwerverModule extends SwerveModule {
             desiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition
         );
         
-        SmartDashboard.putNumber(debugName + ": Rotation", desiredState.angle.getDegrees());
+        SmartDashboard.putNumber(debugName + ": Rotation", Math.toDegrees(steerMotor.getEncoder().getPosition()));
     }
 
     @Override

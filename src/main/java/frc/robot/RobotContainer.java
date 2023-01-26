@@ -38,13 +38,15 @@ public class RobotContainer {
 
         drivetrain = new DrivetrainSubsystem();
 
-        drivetrain.setDefaultCommand(new DefaultDriveCommand(
-            driveJoystick::getY,
-            driveJoystick::getX,
-            turnJoystick::getX,
-            () -> false,
-            drivetrain
-        ));
+        drivetrain.setDefaultCommand(
+            new DefaultDriveCommand(
+                driveJoystick::getY,
+                driveJoystick::getX,
+                turnJoystick::getX,
+                () -> false,
+                drivetrain
+            )
+        );
 
         // Configure the trigger bindings
         configureBindings();
