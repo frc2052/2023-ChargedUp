@@ -107,6 +107,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
             chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getRotation());
         }
 
+        
+    }
+
+    /**
+     * Autonomous commands still require a drive method controlled via a ChassisSpeeds object
+     */
+    public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
         setModuleStates(swerveModuleStates);
 
