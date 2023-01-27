@@ -8,6 +8,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.team2052.swerve.ModuleConfiguration;
 import com.team2052.swerve.NeoSwerverModule;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -103,7 +104,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return navx.getRotation2d();
     }
 
-    private void setModuleStates(SwerveModuleState[] swerveModuleStates) {
+    public void setModuleStates(SwerveModuleState[] swerveModuleStates) {
         boolean hasVelocity = swerveModuleStates[0].speedMetersPerSecond != 0
             && swerveModuleStates[1].speedMetersPerSecond != 0 
             && swerveModuleStates[2].speedMetersPerSecond != 0
@@ -136,20 +137,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
         };
     }
 
-    public void drive(double d, double e) {
+    public SwerveDriveKinematics getKinematics() {
+        return kinematics;
     }
 
-    public void arcadeDrive(double m_speed, double m_speed2) {
+    public Pose2d getPosition() {
+        return odometry.getPoseMeters();
     }
 
-    public void resetEncoders() {
-    }
-
-    public int getAverageDistanceMeter() {
-        return 0;
-    }
-
-    public int getLeftDistanceInch() {
-        return 0;
+    public Object drive(double d, double e) {
+        return null;
     }
 }

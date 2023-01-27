@@ -4,6 +4,8 @@
 
 package frc.robot.auto;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -17,15 +19,12 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class aroundChargedauto extends SequentialCommandGroup {
   private DrivetrainSubsystem drivetrian;
+
   /** Creates a new aroundChargedauto. */
   public aroundChargedauto(Drivetrain drivetrain) {
+      
       addCommands(
-        new DriveDistance(0.5, 4.8768, drivetrain),
-        new TurnDegrees(0.5, 90, drivetrain),
-        new DriveDistance(0.5, 2.7432, drivetrain),
-        new TurnDegrees(0.5, 90, drivetrain),
-        new DriveDistance(0.5, 0.9144, drivetrain)
-
+ 
       );
   }
     
