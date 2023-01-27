@@ -8,6 +8,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.team2052.swervemodule.ModuleConfiguration;
 import com.team2052.swervemodule.NeoSwerverModule;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -88,6 +89,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
     }
 
+    @Override
+    public void periodic() {
+        debug();
+    }
+
     /**
      * All parameters are taken in normalized terms of [-1.0 to 1.0].
      */
@@ -120,20 +126,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         odometry.update(navx.getRotation2d(), getModulePositions());
     }
 
-    @Override
-    public void periodic() {
-        debug();
-    }
-
     public void stop() {
         drive(0, 0, 0, false);
     }
-    
-    public Rotation2d getRotation() {
-        return navx.getRotation2d();
-    }
 
-    private void setModuleStates(SwerveModuleState[] swerveModuleStates) {
+    public void setModuleStates(SwerveModuleState[] swerveModuleStates) {
         // Check if the wheels don't have a drive velocity to maintain the current wheel orientation.
         boolean hasVelocity = swerveModuleStates[0].speedMetersPerSecond != 0
             || swerveModuleStates[1].speedMetersPerSecond != 0 
@@ -165,6 +162,18 @@ public class DrivetrainSubsystem extends SubsystemBase {
             backLeftModule.getPosition(),
             backRightModule.getPosition()
         };
+    }
+
+    public SwerveDriveKinematics getKinematics() {
+        return kinematics;
+    }
+
+    public Pose2d getPosition() {
+        return odometry.getPoseMeters();
+    }
+
+    public Rotation2d getRotation() {
+        return navx.getRotation2d();
     }
 
     private double getMaxVelocityMetersPerSecond() {
