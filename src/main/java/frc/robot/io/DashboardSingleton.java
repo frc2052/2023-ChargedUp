@@ -13,55 +13,50 @@ import frc.robot.Constants;
 // Trying something different this year, instead of a normal class
 // the dashboard this year is using a singleton class, so only one instance will run at once
 public class DashboardSingleton {
-    private static DashboardSingleton single_instance = null;
+    private static DashboardSingleton INSTANCE;
     private final SendableChooser<Autos> autoChooser;
     
     public static DashboardSingleton getInstance(){
+    
+        if (INSTANCE == null)
+           INSTANCE = new DashboardSingleton();
         
-            if (single_instance == null)
-                single_instance = new DashboardSingleton();
-            
-            return single_instance;
-        }
-
-        private DashboardSingleton() {
-            SmartDashboard.putBoolean(
-                Constants.Dashboard.FIELD_RELATIVE_KEY,
-                Constants.Dashboard.FIELD_RELATIVE_DEFAULT
-            );
-    
-            autoChooser = new SendableChooser<Autos>();
-            for (Autos auto : Autos.values()) {
-                autoChooser.addOption(auto.name, auto);
-            }
-            autoChooser.setDefaultOption(Autos.values()[0].name, Autos.values()[0]);
-            SmartDashboard.putData("Auto", autoChooser);
-        }
-    
-
-        public static enum Autos {
-            EXAMPLE_AUTO("Example", "Description");
-            //ForwardAuto("MoveForward", "Moves forward");
-
-            private final String name;
-            private final String description;
-    
-            private Autos(String name, String description) {
-                this.name = name;
-                this.description = description;
-            }
-    
-            public String getName() {
-                return name;
-            }
-    
-            public String getDescription() {
-                return description;
-            }
-        }
+        return INSTANCE;
     }
 
-    
+    private DashboardSingleton() {
+        SmartDashboard.putBoolean(
+            Constants.Dashboard.FIELD_RELATIVE_KEY,
+            Constants.Dashboard.FIELD_RELATIVE_DEFAULT
+        );
+
+        autoChooser = new SendableChooser<Autos>();
+        for (Autos auto : Autos.values()) {
+            autoChooser.addOption(auto.name, auto);
+        }
+        autoChooser.setDefaultOption(Autos.values()[0].name, Autos.values()[0]);
+        SmartDashboard.putData("Auto", autoChooser);
+    }
 
 
+    public static enum Autos {
+        EXAMPLE_AUTO("Example", "Description");
+        //ForwardAuto("MoveForward", "Moves forward");
 
+        private final String name;
+        private final String description;
+
+        private Autos(String name, String description) {
+            this.name = name;
+            this.description = description;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+    }
+}
