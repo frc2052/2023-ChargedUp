@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.TestAuto;
 import frc.robot.io.ControlPanel;
+import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -52,7 +53,7 @@ public class RobotContainer {
                 () -> driveJoystick.getX(),
                 // Rotation velocity supplier
                 () -> turnJoystick.getX(),
-                () -> false, //SmartDashboard.getBoolean("Field Centric", true),
+                () -> Dashboard.getInstance().isFieldRelative(), //SmartDashboard.getBoolean("Field Centric", true),
                 drivetrain
             )
         );
