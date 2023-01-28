@@ -36,37 +36,56 @@ public class AutoFactory {
     }
 
     public SequentialCommandGroup getAuto(Grid grid, Node node, Channel channel) {
-        double xMeters = Units.inchesToMeters((3.5 + 16.5) + (3 * grid.ordinal() + node.ordinal()) * (18.5 + 13.5));
-        double yMeters = (Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS + (2 * Constants.Auto.BUPPER_DEPTH_METERS)) / 2;
-        Pose2d startingPose = new Pose2d(
-            xMeters, 
-            yMeters,
+        double startingXMeters = Units.inchesToMeters((3.5 + 16.5) + (3 * grid.ordinal() + node.ordinal()) * (18.5 + 13.5));
+        double startingYMeters = (Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS + (2 * Constants.Auto.BUPPER_DEPTH_METERS)) / 2;
+        
+        Pose2d initialStartingPose = new Pose2d(
+            startingXMeters, 
+            startingYMeters,
             Rotation2d.fromDegrees(0)
         );
         
+        Translation2d initialMidPoint = null;
+        Pose2d initialEndPose = null;
+
         switch (channel) {
             case LEFT_CHANNEL:
-                double leftChannelX = Constants.Auto.COMMUNITY_WIDTH - (Constants.Auto.CHANNEL_WIDTH / 2);
+                double leftChannelXMeters = Constants.Auto.COMMUNITY_WIDTH_METERS - (Constants.Auto.CHANNEL_WIDTH / 2);
 
-                Translation2d leftMidPoint = new Translation2d(
-                    leftChannelX,
+                initialMidPoint = new Translation2d(
+                    leftChannelXMeters,
                     Constants.Auto.DISTANCE_CHARGE_STATION_GRID_METETERS / 2
                 );
 
-                Pose2d leftEndPose = new Pose2d(
-                    leftChannelX,
+                initialEndPose = new Pose2d(
+                    leftChannelXMeters,
                     0,
                     Rotation2d.fromDegrees(0)
                 );
                 break;
         
             case RIGHT_CHANNEL:
-                Translation2d rightMidPoint = new Translation2d(
-                    Constants.Auto.CHANNEL_WIDTH / 2,
+                double rightChannelXMeters = Constants.Auto.CHANNEL_WIDTH / 2;
+
+                initialMidPoint = new Translation2d(
+                    rightChannelXMeters,
                     Constants.Auto.DISTANCE_CHARGE_STATION_GRID_METETERS / 2
+                );
+
+                initialEndPose = new Pose2d(
+                    rightChannelXMeters,
+                    0,
+                    Rotation2d.fromDegrees(0)
                 );
                 break;
         }
+
+        SwerveControllerCommand initialSwerveCommand = createSwerveCommand(
+            initialStartingPose,
+            List.of(initialMidPoint),
+            initialEndPose,
+            new Rotation2d(180)
+        );
 
         return null;
     }
@@ -75,7 +94,7 @@ public class AutoFactory {
         Pose2d startPose, 
         List<Translation2d> midpoints,
         Pose2d endPose,
-        Supplier<Rotation2d> rotation
+        Rotation2d rotation
     ) {
         TrajectoryConfig config = new TrajectoryConfig(
             2.5,
@@ -103,7 +122,7 @@ public class AutoFactory {
             xyController,
             xyController,
             thetaController,
-            rotation,
+            () -> rotation,
             drivetrain::setModuleStates,
             drivetrain
         );
@@ -112,7 +131,7 @@ public class AutoFactory {
     public static enum Grid {
         LEFT_GRID,
         CO_OP,
-        RIGHT_GRID, 
+        RIGHT_GRID;
     }
 
     public static enum Node {
