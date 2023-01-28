@@ -36,21 +36,24 @@ public class AutoFactory {
     }
 
     public SequentialCommandGroup getAuto(Grid grid, Node node, Channel channel) {
+        double robotLength = (Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS + (2 * Constants.Auto.BUPPER_DEPTH_METERS));
+
         double startingXMeters = Units.inchesToMeters((3.5 + 16.5) + (3 * grid.ordinal() + node.ordinal()) * (18.5 + 13.5));
-        double startingYMeters = (Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS + (2 * Constants.Auto.BUPPER_DEPTH_METERS)) / 2;
         
         Pose2d initialStartingPose = new Pose2d(
             startingXMeters, 
-            startingYMeters,
+            robotLength / 2,
             Rotation2d.fromDegrees(0)
         );
         
         Translation2d initialMidPoint = null;
         Pose2d initialEndPose = null;
 
+        double endingYMeters = Constants.Auto.COMMUNITY_HEIGHT_METERS + (robotLength / 2);
+
         switch (channel) {
             case LEFT_CHANNEL:
-                double leftChannelXMeters = Constants.Auto.COMMUNITY_WIDTH_METERS - (Constants.Auto.CHANNEL_WIDTH / 2);
+                double leftChannelXMeters = Constants.Auto.COMMUNITY_WIDTH_METERS - (Constants.Auto.CHANNEL_WIDTH_METERS / 2);
 
                 initialMidPoint = new Translation2d(
                     leftChannelXMeters,
@@ -65,7 +68,7 @@ public class AutoFactory {
                 break;
         
             case RIGHT_CHANNEL:
-                double rightChannelXMeters = Constants.Auto.CHANNEL_WIDTH / 2;
+                double rightChannelXMeters = Constants.Auto.CHANNEL_WIDTH_METERS / 2;
 
                 initialMidPoint = new Translation2d(
                     rightChannelXMeters,
