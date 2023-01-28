@@ -9,7 +9,10 @@ import frc.robot.commands.TestAuto;
 import frc.robot.io.ControlPanel;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -39,16 +42,21 @@ public class RobotContainer {
 
         drivetrain = new DrivetrainSubsystem();
 
+        SmartDashboard.putBoolean("Field Centric", true);
+        
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
-                driveJoystick::getY,
-                driveJoystick::getX,
-                turnJoystick::getX,
-                () -> false,
+                // Forward velocity supplier
+                () -> driveJoystick.getY(),
+                // Sideways velocity supplier
+                () -> driveJoystick.getX(),
+                // Rotation velocity supplier
+                () -> turnJoystick.getX(),
+                () -> false, //SmartDashboard.getBoolean("Field Centric", true),
                 drivetrain
             )
         );
-
+        
         // Configure the trigger bindings
         configureBindings();
     }
@@ -60,7 +68,14 @@ public class RobotContainer {
      * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joystick}.
      */
     private void configureBindings() {
+        JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
 
+        zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
+    }
+
+    public void zeroOdometry() {
+        drivetrain.zeroGyro();
+        drivetrain.zeroOdometry();
     }
 
     /**

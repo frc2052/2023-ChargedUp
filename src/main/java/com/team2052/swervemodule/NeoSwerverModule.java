@@ -175,7 +175,7 @@ public class NeoSwerverModule extends SwerveModule {
     @Override
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
-            driveMotor.getEncoder().getVelocity(),
+            driveMotor.getEncoder().getPosition(),
             new Rotation2d(
                 steerMotor.getEncoder().getPosition()
             )

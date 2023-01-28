@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -84,7 +85,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         odometry = new SwerveDriveOdometry(
             kinematics, 
-            navx.getRotation2d(),
+            getRotation(),
             getModulePositions()
         );
     }
@@ -122,8 +123,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
         setModuleStates(swerveModuleStates);
-
-        odometry.update(navx.getRotation2d(), getModulePositions());
     }
 
     public void stop() {
@@ -153,6 +152,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
             swerveModuleStates[3].speedMetersPerSecond, 
             hasVelocity ? swerveModuleStates[3].angle : backRightModule.getState().angle
         );
+        
+        odometry.update(getRotation(), getModulePositions());
     }
 
     private SwerveModulePosition[] getModulePositions() {
@@ -164,6 +165,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
         };
     }
 
+    public void zeroOdometry() {
+        odometry.resetPosition(getRotation(), getModulePositions(), new Pose2d());
+    }
+
+    public void zeroGyro() {
+        navx.reset();
+    }
+
     public SwerveDriveKinematics getKinematics() {
         return kinematics;
     }
@@ -173,14 +182,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
+        // Ensure proper magnetometer calibration in order to get valid fused headings.
+        // if (navx.isMagnetometerCalibrated()) {
+        //     return Rotation2d.fromDegrees(navx.getFusedHeading());
+        // }
+
         return navx.getRotation2d();
     }
 
-    private double getMaxVelocityMetersPerSecond() {
+    public double getMaxVelocityMetersPerSecond() {
         return NeoSwerverModule.getMaxVelocityMetersPerSecond(ModuleConfiguration.MK4I_L2);
     }
 
-    private double getMaxAngularVelocityRadiansPerSecond() {
+    public double getMaxAngularVelocityRadiansPerSecond() {
         /*
          * Find the theoretical maximum angular velocity of the robot in radians per second 
          * (a measure of how fast the robot can rotate in place).
@@ -197,6 +211,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * be the offsets for each SwerveModule respectively.
      */
     public void debug() {
+        SmartDashboard.putNumber("Drivetrain Rotation Degrees", getRotation().getDegrees());
+
         frontLeftModule.debug();
         frontRightModule.debug();
         backLeftModule.debug();

@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -25,10 +26,22 @@ public class TestAuto extends SequentialCommandGroup {
 
         addCommands(
             createSwerveCommand(
-                new Pose2d(0, 0, new Rotation2d(0)), 
-                List.of(),
-                new Pose2d(0, 1, new Rotation2d(0)), 
-                () -> new Rotation2d(0)
+                new Pose2d(0, 0, new Rotation2d()), 
+                new ArrayList<Translation2d>(),
+                new Pose2d(2, 0, new Rotation2d()), 
+                () -> Rotation2d.fromDegrees(180)
+            ),
+            createSwerveCommand(
+                new Pose2d(2, 0, new Rotation2d()), 
+                new ArrayList<Translation2d>(),
+                new Pose2d(2, 1, new Rotation2d()), 
+                () -> Rotation2d.fromDegrees(0)
+            ),
+            createSwerveCommand(
+                new Pose2d(2, 1, new Rotation2d()), 
+                new ArrayList<Translation2d>(),
+                new Pose2d(0, 0, new Rotation2d()), 
+                () -> Rotation2d.fromDegrees(-90)
             )
         );
     }
@@ -47,7 +60,7 @@ public class TestAuto extends SequentialCommandGroup {
         PIDController xyController = new PIDController(1, 0, 0);
 
         ProfiledPIDController thetaController = new ProfiledPIDController(
-            2,
+            10,
             0,
             0,
             new TrapezoidProfile.Constraints(Math.PI, Math.PI)

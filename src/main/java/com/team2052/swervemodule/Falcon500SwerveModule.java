@@ -164,7 +164,7 @@ public class Falcon500SwerveModule extends SwerveModule {
     @Override
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
-            driveMotor.getSelectedSensorPosition() * driveVelocityConversionFactor,
+            driveMotor.getSelectedSensorPosition() * drivePositionConversionFactor,
             new Rotation2d(
                 steerMotor.getSelectedSensorPosition() * steerPositionConversionFactor
             )

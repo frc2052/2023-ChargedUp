@@ -8,6 +8,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -55,9 +56,9 @@ public class DefaultDriveCommand extends CommandBase {
     @Override
     public void execute() {
         drivetrain.drive(
-            -slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())), 
-            -slewAxis(yLimiter, deadBand(ySupplier.getAsDouble())),
-            -slewAxis(rotationLimiter, deadBand(rotationSupplier.getAsDouble())),
+            slewAxis(xLimiter, deadBand(-xSupplier.getAsDouble())), 
+            slewAxis(yLimiter, deadBand(-ySupplier.getAsDouble())),
+            slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble())),
             fieldCentricSupplier.getAsBoolean()
         );
     }
@@ -69,11 +70,13 @@ public class DefaultDriveCommand extends CommandBase {
     }
 
     private double slewAxis(SlewRateLimiter limiter, double value) {
-        return limiter.calculate(Math.copySign(Math.pow(value, 2), value));
+        double val = limiter.calculate(Math.copySign(Math.pow(value, 2), value));
+
+        return val;
     }
 
     private double deadBand(double value) {
-        if (Math.abs(value) <= 0.05) {
+        if (Math.abs(value) <= 0.075) {
             return 0;
         }
         // Limit the value to always be in the range of [-1.0, 1.0]
