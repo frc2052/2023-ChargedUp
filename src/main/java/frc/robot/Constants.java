@@ -43,4 +43,9 @@ public final class Constants {
         public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 4;
         public static final double BACK_RIGHT_MODULE_STEER_OFFSET_RADIANS = 1.179;
     }
+
+    public static class Dashboard {
+        public static final String FIELD_RELATIVE_KEY = "Placeholder";
+        public static final boolean FIELD_RELATIVE_DEFAULT = true;
+    }
 }
