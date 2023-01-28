@@ -4,13 +4,16 @@
 
 package frc.robot;
 
-import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.io.ControlPanel;
-import frc.robot.subsystems.drive.DrivetrainSubsystem;
+import org.photonvision.PhotonCamera;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.io.ControlPanel;
+import frc.robot.subsystems.drive.DrivetrainSubsystem;
+import frc.robot.subsystems.drive.VisionPhoton;
+import frc.robot.subsystems.drive.VisionWPI;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -25,6 +28,8 @@ public class RobotContainer {
     private final Joystick driveJoystick;
     private final Joystick turnJoystick;
     private final ControlPanel controlPanel;
+    private final VisionPhoton vision;
+    //private final VisionWPI vision;
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
@@ -36,10 +41,11 @@ public class RobotContainer {
         driveJoystick = new Joystick(0);
         turnJoystick = new Joystick(1);
         controlPanel = new ControlPanel(2);
-
+        //vision = new VisionWPI();
+        vision = new VisionPhoton();
         drivetrain = new DrivetrainSubsystem();
 
-        drivetrain.setDefaultCommand(new DefaultDriveCommand());
+        //drivetrain.setDefaultCommand(new DefaultDriveCommand());
 
         // Configure the trigger bindings
         configureBindings();
