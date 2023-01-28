@@ -23,12 +23,12 @@ import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /** Add your docs here. */
-public class AutoFactory {
+public class DynamicAutoFactory {
     private final DrivetrainSubsystem drivetrain;
 
     private Pose2d lastPose;
 
-    public AutoFactory(DrivetrainSubsystem drivetrain) {
+    public DynamicAutoFactory(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
     }
 
@@ -42,7 +42,6 @@ public class AutoFactory {
         Node scoreNode,
         Channel enterChannel,
         boolean endChargeStation
-
     ) {
         SequentialCommandGroup command = new SequentialCommandGroup();
 
@@ -54,8 +53,8 @@ public class AutoFactory {
             Rotation2d.fromDegrees(0)
         );
         
-        Translation2d initialMidPoint = null;
-        Pose2d initialEndPose = null;
+        Translation2d interpolationPoint = null;
+        Pose2d launchPose = null;
 
         double endingYMeters = Constants.Auto.COMMUNITY_HEIGHT_METERS + (robotLength / 2);
 
@@ -63,12 +62,12 @@ public class AutoFactory {
             case LEFT_CHANNEL:
                 double leftChannelXMeters = Constants.Auto.COMMUNITY_WIDTH_METERS - (Constants.Auto.CHANNEL_WIDTH_METERS / 2);
 
-                initialMidPoint = new Translation2d(
+                interpolationPoint = new Translation2d(
                     leftChannelXMeters,
                     Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_METERS / 2
                 );
 
-                initialEndPose = new Pose2d(
+                launchPose = new Pose2d(
                     leftChannelXMeters,
                     endingYMeters,
                     Rotation2d.fromDegrees(0)
@@ -78,12 +77,12 @@ public class AutoFactory {
             case RIGHT_CHANNEL:
                 double rightChannelXMeters = Constants.Auto.CHANNEL_WIDTH_METERS / 2;
 
-                initialMidPoint = new Translation2d(
+                interpolationPoint = new Translation2d(
                     rightChannelXMeters,
                     Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_METERS / 2
                 );
 
-                initialEndPose = new Pose2d(
+                launchPose = new Pose2d(
                     rightChannelXMeters,
                     endingYMeters,
                     Rotation2d.fromDegrees(0)
@@ -93,8 +92,8 @@ public class AutoFactory {
 
         SwerveControllerCommand initialSwerveCommand = createSwerveCommand(
             initialStartingPose,
-            List.of(initialMidPoint),
-            initialEndPose,
+            List.of(interpolationPoint),
+            launchPose,
             new Rotation2d(180)
         );
         command.addCommands(initialSwerveCommand);
@@ -121,6 +120,17 @@ public class AutoFactory {
                     robotLength / 2,
                     Rotation2d.fromDegrees(0)
                 );
+
+                SwerveControllerCommand scoreSwerveCommand = createSwerveCommand(
+                    lastPose, 
+                    List.of(
+                        new Translation2d(launchPose.getX(), launchPose.getY()),
+                        interpolationPoint
+                    ),
+                    scorePose, 
+                    new Rotation2d()
+                );
+                command.addCommands(scoreSwerveCommand);
             }
         }
 

@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.util.Units;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -20,19 +18,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class autoBase<AutoTrajectoryConfig> extends SequentialCommandGroup {
+public class AutoBase extends SequentialCommandGroup {
   protected final DrivetrainSubsystem drivetrain;
 
   private Pose2d lastCreatedEndingPose;
 
   /** Creates a new autoBase. */
-  public autoBase(DrivetrainSubsystem drivetrain) {
+  public AutoBase(DrivetrainSubsystem drivetrain) {
     this.drivetrain = drivetrain;
 
     addRequirements(this.drivetrain);
@@ -45,6 +41,8 @@ public class autoBase<AutoTrajectoryConfig> extends SequentialCommandGroup {
     Pose2d endPose,
     Supplier<Rotation2d> rotationSupplier
   ) {
+    lastCreatedEndingPose = endPose;
+
     return new SwerveControllerCommand(
       TrajectoryGenerator.generateTrajectory(
         startPose,
