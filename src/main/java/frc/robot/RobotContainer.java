@@ -5,11 +5,15 @@
 package frc.robot;
 
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.ElvDownElevatorCommand;
+import frc.robot.commands.ElvUpElevatorCommand;
 import frc.robot.io.ControlPanel;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.drive.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj.Joystick; 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -28,7 +32,7 @@ public class RobotContainer {
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
-
+    private final ElevatorSubsystem elevator;
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -38,7 +42,7 @@ public class RobotContainer {
         controlPanel = new ControlPanel(2);
 
         drivetrain = new DrivetrainSubsystem();
-
+        elevator = new ElevatorSubsystem();
         drivetrain.setDefaultCommand(new DefaultDriveCommand());
 
         // Configure the trigger bindings
@@ -60,7 +64,11 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
-
+        JoystickButton elvUp = new JoystickButton(controlPanel, 13);
+        elvUp.whileTrue(new ElvUpElevatorCommand(elevator));
+        
+        JoystickButton elvDown = new JoystickButton(controlPanel, 8);
+        elvDown.whileTrue(new ElvDownElevatorCommand(elevator));
     }
 
     /**

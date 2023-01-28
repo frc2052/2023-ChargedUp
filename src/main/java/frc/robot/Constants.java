@@ -99,4 +99,8 @@ public final class Constants {
     public static final class Intake {
         public static final int INTAKE_MOTOR_PWM_PORT = 0;
     }
+
+    public static final class Elevator {
+        public static final int CAN_ID = 1;
+    }
 }
