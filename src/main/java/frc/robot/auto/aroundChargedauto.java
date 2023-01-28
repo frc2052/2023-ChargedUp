@@ -5,10 +5,14 @@
 package frc.robot.auto;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.Drivetrain;
 import frc.robot.commands.DriveDistance;
 import frc.robot.commands.TurnDegrees;
@@ -22,7 +26,15 @@ public class aroundChargedauto extends SequentialCommandGroup {
 
   /** Creates a new aroundChargedauto. */
   public aroundChargedauto(Drivetrain drivetrain) {
-      
+   
+
+    Pose2d startPos = new Pose2d(0,0, Rotation2d.fromDegrees(0));
+    Pose2d firstCubePos = new Pose2d(Units.inchesToMeters(122), Units.inchesToMeters(0), Rotation2d.fromDegrees(0));
+    
+    
+    
+
+
       addCommands(
  
       );
