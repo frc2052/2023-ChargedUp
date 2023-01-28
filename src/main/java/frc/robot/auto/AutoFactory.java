@@ -33,20 +33,23 @@ public class AutoFactory {
     }
 
     public SequentialCommandGroup getAuto(
-        Grid grid, 
-        Node node, 
-        Channel channel, 
+        Grid startingGrid, 
+        Node startingNode, 
+        Channel exitChannel, 
         GamePiece gamePiece,
+        boolean scoreGamePiece,
+        Grid scoreGrid,
+        Node scoreNode,
+        Channel enterChannel,
         boolean endChargeStation
+
     ) {
         SequentialCommandGroup command = new SequentialCommandGroup();
 
         double robotLength = (Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS + (2 * Constants.Auto.BUPPER_DEPTH_METERS));
-
-        double startingXMeters = Units.inchesToMeters((3.5 + 16.5) + (3 * grid.ordinal() + node.ordinal()) * (18.5 + 13.5));
         
         Pose2d initialStartingPose = new Pose2d(
-            startingXMeters, 
+            getBaseLineXMeters(startingGrid, startingNode), 
             robotLength / 2,
             Rotation2d.fromDegrees(0)
         );
@@ -56,7 +59,7 @@ public class AutoFactory {
 
         double endingYMeters = Constants.Auto.COMMUNITY_HEIGHT_METERS + (robotLength / 2);
 
-        switch (channel) {
+        switch (exitChannel) {
             case LEFT_CHANNEL:
                 double leftChannelXMeters = Constants.Auto.COMMUNITY_WIDTH_METERS - (Constants.Auto.CHANNEL_WIDTH_METERS / 2);
 
@@ -109,7 +112,16 @@ public class AutoFactory {
                 gamePieceEndPose, 
                 new Rotation2d()
             );
+            // TODO: Make parallel command to run lower and run intake
             command.addCommands(gamePieceSwerveCommand);
+
+            if (scoreGamePiece) {
+                Pose2d scorePose = new Pose2d(
+                    getBaseLineXMeters(scoreGrid, scoreNode), 
+                    robotLength / 2,
+                    Rotation2d.fromDegrees(0)
+                );
+            }
         }
 
         if (endChargeStation){
@@ -146,6 +158,10 @@ public class AutoFactory {
         } 
 
         return command;
+    }
+
+    private double getBaseLineXMeters(Grid grid, Node node) {
+        return Units.inchesToMeters((3.5 + 16.5) + (3 * grid.ordinal() + node.ordinal()) * (18.5 + 13.5));
     }
 
     private SwerveControllerCommand createSwerveCommand(
