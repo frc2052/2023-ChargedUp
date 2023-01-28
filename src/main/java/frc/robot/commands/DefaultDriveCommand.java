@@ -4,32 +4,48 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class DefaultDriveCommand extends CommandBase {
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
-    private final Supplier<Rotation2d> rotationSupplier;
+    private final DoubleSupplier rotationSupplier;
+    private final BooleanSupplier fieldCentricSupplier;
     
+    private final SlewRateLimiter xLimiter;
+    private final SlewRateLimiter yLimiter;
+    private final SlewRateLimiter rotationLimiter;
+
     private final DrivetrainSubsystem drivetrain;
 
-    /** Creates a new defaultDriveCommand. */
+    /**
+     * Creates a new defaultDriveCommand.
+     * 
+     * @param xSupplier supplier for forward velocity.
+     * @param ySupplier supplier for sideways velocity.
+     * @param rotationSupplier supplier for angular velocity.
+     */
     public DefaultDriveCommand(
         DoubleSupplier xSupplier, 
         DoubleSupplier ySupplier, 
-        Supplier<Rotation2d> rotationSupplier,
+        DoubleSupplier rotationSupplier,
+        BooleanSupplier fieldCentricSupplier,
         DrivetrainSubsystem drivetrain
     ) {
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
         this.rotationSupplier = rotationSupplier;
+        this.fieldCentricSupplier = fieldCentricSupplier;
+
+        xLimiter = new SlewRateLimiter(2);
+        yLimiter = new SlewRateLimiter(2);
+        rotationLimiter = new SlewRateLimiter(2);
 
         this.drivetrain = drivetrain;
 
@@ -39,24 +55,12 @@ public class DefaultDriveCommand extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        boolean fieldCentric = false;
-        
-        if (fieldCentric) {
-            // Field centric driving
-            drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-                slewAxis(deadBand(xSupplier.getAsDouble())), 
-                slewAxis(deadBand(ySupplier.getAsDouble())), 
-                slewAxis(deadBand(rotationSupplier.get().getRadians())), 
-                drivetrain.getRotation()
-            ));
-        } else {
-            // Driver centric driving
-            drivetrain.drive(new ChassisSpeeds(
-                slewAxis(deadBand(xSupplier.getAsDouble())), 
-                slewAxis(deadBand(ySupplier.getAsDouble())), 
-                slewAxis(deadBand(rotationSupplier.get().getRadians())) 
-            ));
-        }
+        drivetrain.drive(
+            slewAxis(xLimiter, deadBand(-xSupplier.getAsDouble())), 
+            slewAxis(yLimiter, deadBand(-ySupplier.getAsDouble())),
+            slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble())),
+            fieldCentricSupplier.getAsBoolean()
+        );
     }
 
     // Called once the command ends or is interrupted.
@@ -65,14 +69,17 @@ public class DefaultDriveCommand extends CommandBase {
         drivetrain.stop();
     }
 
-    private double slewAxis(double value) {
-        return new SlewRateLimiter(0.2).calculate(Math.copySign(Math.pow(value, 2), value));
+    private double slewAxis(SlewRateLimiter limiter, double value) {
+        double val = limiter.calculate(Math.copySign(Math.pow(value, 2), value));
+
+        return val;
     }
 
     private double deadBand(double value) {
-        if (Math.abs(value) <= 0.05) {
+        if (Math.abs(value) <= 0.075) {
             return 0;
         }
-        return value;
+        // Limit the value to always be in the range of [-1.0, 1.0]
+        return Math.copySign(Math.min(1.0, Math.abs(value)), value);
     }
 }

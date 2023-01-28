@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package com.team2052.swerve;
+package com.team2052.swervemodule;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -12,6 +12,7 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Swerve module implementation for swerve module with Neos
@@ -19,7 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 public class NeoSwerverModule extends SwerveModule {
     private final CANSparkMax driveMotor;
     private final CANSparkMax steerMotor;
-    
+
     public NeoSwerverModule(
         String debugName, 
         ModuleConfiguration moduleConfiguration,
@@ -76,7 +77,7 @@ public class NeoSwerverModule extends SwerveModule {
         /*
          * Steer Motor Initialization
          */
-        steerMotor = new CANSparkMax(driveMotorChannel, CANSparkMaxLowLevel.MotorType.kBrushless);
+        steerMotor = new CANSparkMax(steerMotorChannel, CANSparkMaxLowLevel.MotorType.kBrushless);
 
         // Reduce CAN status frame rates
         checkError(
@@ -99,14 +100,14 @@ public class NeoSwerverModule extends SwerveModule {
 
         checkError(
             "Failed to set steer motor current limit",
-            steerMotor.setSmartCurrentLimit((int) SwerveConstants.DRIVE_CURRENT_LIMIT_AMPS)
+            steerMotor.setSmartCurrentLimit((int) SwerveConstants.STEER_CURRENT_LIMIT_AMPS)
         );
 
         // Steer Motor encoder initialization
         RelativeEncoder integratedEncoder = steerMotor.getEncoder();
 
         // Conversion factor for switching between ticks and radians in terms of radians per tick
-        double steerPositionConversionFactor = 2.0 * Math.PI * moduleConfiguration.getDriveReduction();
+        double steerPositionConversionFactor = 2.0 * Math.PI * moduleConfiguration.getSteerReduction();
 
         checkError(
             "Failed to set drive motor encoder conversion factors",
@@ -119,15 +120,15 @@ public class NeoSwerverModule extends SwerveModule {
         // Sets the steer motor encoder to the absolute position of the CANCoder for startup orientation
         checkError(
             "Failed to set steer motor encoder position",
-            integratedEncoder.setPosition(canCoder.getAbsolutePosition())
+            integratedEncoder.setPosition(Math.toRadians(canCoder.getAbsolutePosition()))
         );
 
         SparkMaxPIDController controller = steerMotor.getPIDController();
         checkError(
             "Failed to set steer motor PID proportional constant",
-            controller.setP(SwerveConstants.STEER_P),
-            controller.setI(SwerveConstants.STEER_I),
-            controller.setD(SwerveConstants.STEER_D)
+            controller.setP(SwerveConstants.NeoSwerveModule.STEER_P),
+            controller.setI(SwerveConstants.NeoSwerveModule.STEER_I),
+            controller.setD(SwerveConstants.NeoSwerveModule.STEER_D)
         );
 
         checkError(
@@ -143,7 +144,7 @@ public class NeoSwerverModule extends SwerveModule {
         return new SwerveModuleState(
             driveMotor.getEncoder().getVelocity(),
             new Rotation2d(
-                steerMotor.getEncoder().getPosition()
+                steerMotor.getEncoder().getPosition() % (2.0 * Math.PI)
             )
         );
     }
@@ -157,24 +158,37 @@ public class NeoSwerverModule extends SwerveModule {
             getState().angle
         );
 
-        // Set the motor to the desired voltage using a
-        // percentage of the max velocity multiplied by the nominal voltage
-        driveMotor.setVoltage(
-            desiredState.speedMetersPerSecond / maxVelocityMetersPerSecond * SwerveConstants.MAX_VOLTAGE_VOLTS
+        // Set the motor to our desired velocity as a percentage of our max velocity
+        driveMotor.set(
+            desiredState.speedMetersPerSecond / getMaxVelocityMetersPerSecond(moduleConfiguration)
         );
+
+        SmartDashboard.putNumber(debugName + ": Speed", desiredState.speedMetersPerSecond);
 
         steerMotor.getPIDController().setReference(
             desiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition
         );
+        
+        SmartDashboard.putNumber(debugName + ": Rotation", Math.toDegrees(steerMotor.getEncoder().getPosition()));
     }
 
     @Override
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
-            driveMotor.getEncoder().getVelocity(),
+            driveMotor.getEncoder().getPosition(),
             new Rotation2d(
                 steerMotor.getEncoder().getPosition()
             )
         );
+    }
+
+    public static double getMaxVelocityMetersPerSecond(ModuleConfiguration moduleConfiguration) {
+        /*
+         * The formula for calculating the theoretical maximum velocity is:
+         * [Motor free speed (RPM)] / 60 * [Drive reduction] * [Wheel diameter (m)] * pi
+         * This is a measure of how fast the robot should be able to drive in a straight line.
+         */
+        return SwerveConstants.NeoSwerveModule.NEO_ROUNDS_PER_MINUTE / 60 * moduleConfiguration.getDriveReduction() * 
+            moduleConfiguration.getWheelDiameter() * Math.PI;
     }
 }

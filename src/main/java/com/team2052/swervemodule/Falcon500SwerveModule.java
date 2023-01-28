@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package com.team2052.swerve;
+package com.team2052.swervemodule;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
@@ -19,8 +19,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
  * Swerve module implementation for swerve module with Falcon500s
  */
 public class Falcon500SwerveModule extends SwerveModule {
-    private static final double TICKS_PER_ROTATION = 2048.0;
-    
     private final TalonFX driveMotor;
     private final TalonFX steerMotor;
     
@@ -43,7 +41,7 @@ public class Falcon500SwerveModule extends SwerveModule {
          */
         // Conversion factor for switching between ticks and meters in terms of meters per tick
         drivePositionConversionFactor = (Math.PI * moduleConfiguration.getWheelDiameter() /
-            TICKS_PER_ROTATION) * moduleConfiguration.getDriveReduction();
+            SwerveConstants.Falcon500SwerveModule.TICKS_PER_ROTATION) * moduleConfiguration.getDriveReduction();
         // Conversion factor for switching between ticks and meters per second in terms of meters per second per tick
         driveVelocityConversionFactor = drivePositionConversionFactor / 60.0;
 
@@ -76,13 +74,13 @@ public class Falcon500SwerveModule extends SwerveModule {
          * Steer Motor Initialization
          */
         // Conversion factor for switching between ticks and radians in terms of radians per tick
-        steerPositionConversionFactor = (2.0 * Math.PI /
-            TICKS_PER_ROTATION) * moduleConfiguration.getDriveReduction();
+        steerPositionConversionFactor = (2.0 * Math.PI / SwerveConstants.Falcon500SwerveModule.TICKS_PER_ROTATION) * 
+            moduleConfiguration.getSteerReduction();
 
         TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration();
-        steerMotorConfiguration.slot0.kP = SwerveConstants.STEER_P;
-        steerMotorConfiguration.slot0.kI = SwerveConstants.STEER_I;
-        steerMotorConfiguration.slot0.kD = SwerveConstants.STEER_D;
+        steerMotorConfiguration.slot0.kP = SwerveConstants.Falcon500SwerveModule.STEER_P;
+        steerMotorConfiguration.slot0.kI = SwerveConstants.Falcon500SwerveModule.STEER_I;
+        steerMotorConfiguration.slot0.kD = SwerveConstants.Falcon500SwerveModule.STEER_D;
 
         steerMotorConfiguration.voltageCompSaturation = SwerveConstants.MAX_VOLTAGE_VOLTS;
 
@@ -154,7 +152,7 @@ public class Falcon500SwerveModule extends SwerveModule {
         // Set the motor to our desired velocity as a percentage of our max velocity
         driveMotor.set(
             TalonFXControlMode.PercentOutput,
-            desiredState.speedMetersPerSecond / maxVelocityMetersPerSecond
+            desiredState.speedMetersPerSecond / getMaxVelocityMetersPerSecond(moduleConfiguration)
         );
 
         steerMotor.set(
@@ -166,10 +164,20 @@ public class Falcon500SwerveModule extends SwerveModule {
     @Override
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
-            driveMotor.getSelectedSensorPosition() * driveVelocityConversionFactor,
+            driveMotor.getSelectedSensorPosition() * drivePositionConversionFactor,
             new Rotation2d(
                 steerMotor.getSelectedSensorPosition() * steerPositionConversionFactor
             )
         );
+    }
+
+    public static double getMaxVelocityMetersPerSecond(ModuleConfiguration moduleConfiguration) {
+        /*
+         * The formula for calculating the theoretical maximum velocity is:
+         * [Motor free speed (RPM)] / 60 * [Drive reduction] * [Wheel diameter (m)] * pi
+         * This is a measure of how fast the robot should be able to drive in a straight line.
+         */
+        return SwerveConstants.Falcon500SwerveModule.FALCON500_ROUNDS_PER_MINUTE / 60 * moduleConfiguration.getDriveReduction() * 
+            moduleConfiguration.getWheelDiameter() * Math.PI;
     }
 }
