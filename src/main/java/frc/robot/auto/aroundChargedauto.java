@@ -29,7 +29,7 @@ public class aroundChargedauto extends SequentialCommandGroup {
    
 
     Pose2d startPos = new Pose2d(0,0, Rotation2d.fromDegrees(0));
-    Pose2d firstCubePos = new Pose2d(Units.inchesToMeters(122), Units.inchesToMeters(0), Rotation2d.fromDegrees(0));
+    Pose2d firstCubePos = new Pose2d(Units.inchesToMeters(122), Units.inchesToMeters(0), Rotation2d.fromDegrees(90));
     
     
     

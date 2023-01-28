@@ -42,10 +42,10 @@ public final class Constants {
         public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 10;
         public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
         public static final double BACK_RIGHT_MODULE_STEER_OFFSET_RADIANS = 5.217;
-        public void arcadeDrive(int i, int j) {
-        }
-        public int getLeftDistanceInch() {
-            return 0;
-        }
+    }
+
+    public static final class Auto {
+        public static final double BUPPER_DEPTH_METERS = 0;
+
     }
 }
