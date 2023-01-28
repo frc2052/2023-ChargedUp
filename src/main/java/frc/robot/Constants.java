@@ -51,9 +51,13 @@ public final class Constants {
 
     public static final class Auto {
         public static final double BUPPER_DEPTH_METERS = 0;
-        public static final double DISTANCE_CHARGE_STATION_GRID_METETERS = Units.inchesToMeters(60.5625);
+        public static final double DISTANCE_GRID_TO_CHARGE_STATION_METERS = Units.inchesToMeters(60.5625);
+        public static final double CHARGE_STATION_DEPTH = Units.inchesToMeters(76.125);
         public static final double CHANNEL_WIDTH_METERS = Units.inchesToMeters(59.375);
         public static final double COMMUNITY_WIDTH_METERS = Units.feetToMeters(18);
         public static final double COMMUNITY_HEIGHT_METERS = Units.inchesToMeters(193.25);
+        public static final double DISTANCE_GRID_TO_GAME_PIECES_METERS = Units.inchesToMeters(224);
+        public static final double DISTANCE_BETWEEN_GAME_PIECES_METERS = Units.feetToMeters(4);
+        public static final double DISTANCE_WALL_TO_GAME_PIECE_METERS = Units.inchesToMeters(36.25);
     }
 }
