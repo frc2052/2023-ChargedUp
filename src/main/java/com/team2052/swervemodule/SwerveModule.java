@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.drive;
+package com.team2052.swervemodule;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
@@ -13,34 +13,39 @@ import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.revrobotics.REVLibError;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/** Add your docs here. */
+/**
+ * Shared elements of swerve modules regardless of motor type
+ */
 public abstract class SwerveModule {
+    protected static final int CAN_TIMEOUT_MS = 250;
+
     protected final String debugName;
 
-    protected final ModuleGearConfiguration moduleGearConfiguration;
+    protected final ModuleConfiguration moduleConfiguration;
 
     protected final CANCoder canCoder;
 
     public SwerveModule(
         String debugName,
-        ModuleGearConfiguration moduleGearConfiguration,
+        ModuleConfiguration moduleConfiguration,
         int canCoderChannel,
         Rotation2d steerOffset
     ) {
         this.debugName = debugName;
 
-        this.moduleGearConfiguration = moduleGearConfiguration;
+        this.moduleConfiguration = moduleConfiguration;
 
         /*
          * CANCoder Initialization
          */
         CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
         canCoderConfiguration.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        canCoderConfiguration.magnetOffsetDegrees = steerOffset.getDegrees();
+        canCoderConfiguration.magnetOffsetDegrees = -steerOffset.getDegrees();
         canCoderConfiguration.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
 
         canCoder = new CANCoder(canCoderChannel);
@@ -48,7 +53,7 @@ public abstract class SwerveModule {
             "Failed to configure CANCoder",
             canCoder.configAllSettings(
                 canCoderConfiguration,
-                Constants.SwerveModule.CAN_TIMEOUT_MS
+                CAN_TIMEOUT_MS
             )
         );
 
@@ -58,30 +63,31 @@ public abstract class SwerveModule {
             canCoder.setStatusFramePeriod(
                 CANCoderStatusFrame.SensorData,
                 10,
-                Constants.SwerveModule.CAN_TIMEOUT_MS
+                CAN_TIMEOUT_MS
             )
         );
     }
 
-    // TODO: Switch TICKS_PER_ROTATION constant
-    public double getDriveMetersPerTick() {
-        return (Math.PI * moduleGearConfiguration.getWheelDiameter() /
-            Constants.Falcon500SwerveModule.TICKS_PER_ROTATION) * moduleGearConfiguration.getDriveReduction();
+    public void debug() {
+        SmartDashboard.putNumber(debugName + " Offset Radians", canCoder.getAbsolutePosition());
     }
 
-    public double getSteerRadiansPerTick() {
-        return (2.0 * Math.PI / Constants.Falcon500SwerveModule.TICKS_PER_ROTATION) *
-            moduleGearConfiguration.getSteerReduction();
-    }
+    public abstract SwerveModuleState getState();
 
-    abstract SwerveModuleState getState();
+    public abstract void setState(double velocityMetersPerSecond, Rotation2d steerAngle);
 
-    abstract void setState(double velocityMetersPerSecond, Rotation2d steerAngle);
+    /**
+     * Similar to the {@link #getState()} method, but returns a position and rotation
+     * rather than a velocity and rotation
+     * 
+     * @return Swerve module position in (meters, Rotation2D)
+     */
+    public abstract SwerveModulePosition getPosition();
 
     @SuppressWarnings("unchecked")
     protected <E> void checkError(String message, E... errors) {
         for (E error : errors) {
-            if (error != REVLibError.kOk || error != ErrorCode.OK) {
+            if (error != REVLibError.kOk && error != ErrorCode.OK) {
                 DriverStation.reportError(
                     message + " on [" + debugName + "] module: " + error.toString(),
                     false

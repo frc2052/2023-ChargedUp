@@ -12,19 +12,12 @@ import frc.robot.Constants;
 /** Add your docs here. */
 // Trying something different this year, instead of a normal class
 // the dashboard this year is using a singleton class, so only one instance will run at once
-public class DashboardSingleton {
-    private static DashboardSingleton INSTANCE;
-    private final SendableChooser<Autos> autoChooser;
-    
-    public static DashboardSingleton getInstance(){
-    
-        if (INSTANCE == null)
-           INSTANCE = new DashboardSingleton();
-        
-        return INSTANCE;
-    }
+public class Dashboard {
+    private static Dashboard INSTANCE;
 
-    private DashboardSingleton() {
+    private final SendableChooser<Autos> autoChooser;
+
+    private Dashboard() {
         SmartDashboard.putBoolean(
             Constants.Dashboard.FIELD_RELATIVE_KEY,
             Constants.Dashboard.FIELD_RELATIVE_DEFAULT
@@ -38,6 +31,28 @@ public class DashboardSingleton {
         SmartDashboard.putData("Auto", autoChooser);
     }
 
+    public void updateDashboard() {
+        SmartDashboard.putString("Auto Description", getAuto().description);
+    }
+
+    public boolean isFieldRelative() {
+        return SmartDashboard.getBoolean(
+            Constants.Dashboard.FIELD_RELATIVE_KEY,
+            Constants.Dashboard.FIELD_RELATIVE_DEFAULT
+        );
+    }
+
+    public Autos getAuto() {
+        return autoChooser.getSelected();
+    }
+
+    public static Dashboard getInstance(){
+        if (INSTANCE == null) {
+           INSTANCE = new Dashboard();
+        }
+
+        return INSTANCE;
+    }
 
     public static enum Autos {
         EXAMPLE_AUTO("Example", "Description");
