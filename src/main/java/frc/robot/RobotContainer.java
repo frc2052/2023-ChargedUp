@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.Constants.Dashboard;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.subsystems.drive.DrivetrainSubsystem;
@@ -29,6 +30,8 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
 
+    private final Dashboard dashboard;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -39,7 +42,9 @@ public class RobotContainer {
 
         drivetrain = new DrivetrainSubsystem();
 
-        drivetrain.setDefaultCommand(new DefaultDriveCommand());
+        dashboard = new Dashboard();
+
+        // drivetrain.setDefaultCommand(new DefaultDriveCommand());
 
         // Configure the trigger bindings
         configureBindings();
