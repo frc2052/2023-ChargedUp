@@ -7,12 +7,14 @@ package frc.robot;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ElvDownElevatorCommand;
 import frc.robot.commands.ElvUpElevatorCommand;
+import frc.robot.commands.TestAuto;
 import frc.robot.io.ControlPanel;
+import frc.robot.io.Dashboard;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.drive.DrivetrainSubsystem;
-import edu.wpi.first.wpilibj.Joystick; 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -43,8 +45,20 @@ public class RobotContainer {
 
         drivetrain = new DrivetrainSubsystem();
         elevator = new ElevatorSubsystem();
-        drivetrain.setDefaultCommand(new DefaultDriveCommand());
-
+        
+        drivetrain.setDefaultCommand(
+            new DefaultDriveCommand(
+                // Forward velocity supplier
+                () -> driveJoystick.getY(),
+                // Sideways velocity supplier
+                () -> driveJoystick.getX(),
+                // Rotation velocity supplier
+                () -> turnJoystick.getX(),
+                () -> Dashboard.getInstance().isFieldRelative(), //SmartDashboard.getBoolean("Field Centric", true),
+                drivetrain
+            )
+        );
+        
         // Configure the trigger bindings
         configureBindings();
     }
@@ -52,16 +66,8 @@ public class RobotContainer {
     /**
      * Use this method to define your trigger->command mappings. Triggers can be
      * created via the
-     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-     * an arbitrary
-     * predicate, or via the named factories in {@link
-     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-     * {@link
-     * CommandXboxController
-     * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-     * PS4} controllers or
-     * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-     * joysticks}.
+     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with a
+     * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joystick}.
      */
     private void configureBindings() {
         JoystickButton elvUp = new JoystickButton(controlPanel, 13);
@@ -69,6 +75,15 @@ public class RobotContainer {
         
         JoystickButton elvDown = new JoystickButton(controlPanel, 8);
         elvDown.whileTrue(new ElvDownElevatorCommand(elevator));
+        
+        JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
+
+        zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
+    }
+
+    public void zeroOdometry() {
+        drivetrain.zeroGyro();
+        drivetrain.zeroOdometry();
     }
 
     /**
@@ -78,6 +93,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An example command will be run in autonomous
-        return null;
+        return new TestAuto(drivetrain);
     }
 }
