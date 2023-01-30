@@ -7,6 +7,7 @@ package frc.robot.auto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
@@ -26,7 +27,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public class DynamicAutoFactory {
     private final DrivetrainSubsystem drivetrain;
 
-    private Pose2d lastPose;
+    private Pose2d lastEndingPose;
 
     public DynamicAutoFactory(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
@@ -43,94 +44,96 @@ public class DynamicAutoFactory {
         Channel enterChannel,
         boolean endChargeStation
     ) {
-        SequentialCommandGroup command = new SequentialCommandGroup();
+        SequentialCommandGroup autoCommand = new SequentialCommandGroup();
 
-        double robotLength = (Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS + (2 * Constants.Auto.BUPPER_DEPTH_METERS));
-        
         Pose2d initialStartingPose = new Pose2d(
             getBaseLineXMeters(startingGrid, startingNode), 
-            robotLength / 2,
-            Rotation2d.fromDegrees(0)
+            Constants.Auto.ROBOT_LENGTH_METERS / 2,
+            Rotation2d.fromDegrees(180)
         );
-        
-        Translation2d interpolationPoint = null;
+        Translation2d interpolationMidPoint = null;
         Pose2d launchPose = null;
 
-        double endingYMeters = Constants.Auto.COMMUNITY_HEIGHT_METERS + (robotLength / 2);
+        double launchYMeters = Constants.Auto.COMMUNITY_DEPTH_METERS + Constants.Auto.ROBOT_LENGTH_METERS;
 
         switch (exitChannel) {
             case LEFT_CHANNEL:
                 double leftChannelXMeters = Constants.Auto.COMMUNITY_WIDTH_METERS - (Constants.Auto.CHANNEL_WIDTH_METERS / 2);
 
-                interpolationPoint = new Translation2d(
+                interpolationMidPoint = new Translation2d(
                     leftChannelXMeters,
                     Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_METERS / 2
                 );
 
                 launchPose = new Pose2d(
                     leftChannelXMeters,
-                    endingYMeters,
-                    Rotation2d.fromDegrees(0)
+                    launchYMeters,
+                    new Rotation2d()
                 );
                 break;
         
             case RIGHT_CHANNEL:
                 double rightChannelXMeters = Constants.Auto.CHANNEL_WIDTH_METERS / 2;
 
-                interpolationPoint = new Translation2d(
+                interpolationMidPoint = new Translation2d(
                     rightChannelXMeters,
                     Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_METERS / 2
                 );
 
                 launchPose = new Pose2d(
                     rightChannelXMeters,
-                    endingYMeters,
-                    Rotation2d.fromDegrees(0)
+                    launchYMeters,
+                    new Rotation2d()
                 );
                 break;
         }
 
         SwerveControllerCommand initialSwerveCommand = createSwerveCommand(
             initialStartingPose,
-            List.of(interpolationPoint),
+            List.of(interpolationMidPoint),
             launchPose,
-            new Rotation2d(180)
+            Rotation2d.fromDegrees(180)
         );
-        command.addCommands(initialSwerveCommand);
+
+        autoCommand.addCommands(initialSwerveCommand);
 
         if (gamePiece != GamePiece.NO_GAME_PIECE) {
             Pose2d gamePieceEndPose = new Pose2d(
-                (gamePiece.ordinal() * Constants.Auto.DISTANCE_BETWEEN_GAME_PIECES_METERS) + Constants.Auto.DISTANCE_WALL_TO_GAME_PIECE_METERS,
+                (gamePiece.ordinal() * Constants.Auto.DISTANCE_BETWEEN_GAME_PIECES_METERS) + 
+                    Constants.Auto.DISTANCE_WALL_TO_GAME_PIECE_METERS,
                 Constants.Auto.DISTANCE_GRID_TO_GAME_PIECES_METERS,
                 new Rotation2d()
             );
 
             SwerveControllerCommand gamePieceSwerveCommand = createSwerveCommand(
-                lastPose, 
+                lastEndingPose, 
                 new ArrayList<Translation2d>(),
                 gamePieceEndPose, 
                 new Rotation2d()
             );
-            // TODO: Make parallel command to run lower and run intake
-            command.addCommands(gamePieceSwerveCommand);
+
+            autoCommand.addCommands(
+                // TODO: Replace null with intake command
+                new ParallelDeadlineGroup(gamePieceSwerveCommand, null)
+            );
 
             if (scoreGamePiece) {
                 Pose2d scorePose = new Pose2d(
                     getBaseLineXMeters(scoreGrid, scoreNode), 
-                    robotLength / 2,
+                    Constants.Auto.ROBOT_LENGTH_METERS / 2,
                     Rotation2d.fromDegrees(0)
                 );
 
                 SwerveControllerCommand scoreSwerveCommand = createSwerveCommand(
-                    lastPose, 
+                    lastEndingPose,
                     List.of(
                         new Translation2d(launchPose.getX(), launchPose.getY()),
-                        interpolationPoint
+                        interpolationMidPoint
                     ),
                     scorePose, 
                     new Rotation2d()
                 );
-                command.addCommands(scoreSwerveCommand);
+                autoCommand.addCommands(scoreSwerveCommand);
             }
         }
 
@@ -147,7 +150,7 @@ public class DynamicAutoFactory {
 
             Translation2d entryPoint = null;
 
-            Translation2d lastTranslation = new Translation2d(lastPose.getX(), lastPose.getY());
+            Translation2d lastTranslation = new Translation2d(lastEndingPose.getX(), lastEndingPose.getY());
             if (lastTranslation.getDistance(farEntryPoint) > lastTranslation.getDistance(nearEntryPoint)) {
                 entryPoint = nearEntryPoint;
             } else {
@@ -155,7 +158,7 @@ public class DynamicAutoFactory {
             }
 
             SwerveControllerCommand endChargeStationSwerveCommand = createSwerveCommand(
-                lastPose,
+                lastEndingPose,
                 List.of(entryPoint),
                 new Pose2d(
                     Constants.Auto.COMMUNITY_WIDTH_METERS / 2,
@@ -164,10 +167,10 @@ public class DynamicAutoFactory {
                 ),
                 new Rotation2d()
             );
-            command.addCommands(endChargeStationSwerveCommand);
+            autoCommand.addCommands(endChargeStationSwerveCommand);
         } 
 
-        return command;
+        return autoCommand;
     }
 
     private double getBaseLineXMeters(Grid grid, Node node) {
@@ -191,10 +194,13 @@ public class DynamicAutoFactory {
             10,
             0,
             0,
-            new TrapezoidProfile.Constraints(Math.PI, Math.PI)
+            new TrapezoidProfile.Constraints(
+                drivetrain.getMaxAngularVelocityRadiansPerSecond(), 
+                Math.PI
+            )
         );
 
-        lastPose = endPose;
+        lastEndingPose = endPose;
 
         return new SwerveControllerCommand(
             TrajectoryGenerator.generateTrajectory(
