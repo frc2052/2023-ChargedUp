@@ -49,6 +49,7 @@ private double speed;
     public void execute() {
         //If the given angle is larger than deadzone, calculate speed
         if (drivetrain.getNavx().getPitch() > deadzone){
+            angle = drivetrain.getNavx().getPitch();
             //Calculates speed needed from angle
             //low2 + (value - low1) * (high2 - low2) / (high1 - low1)
             speed = minSpeed + (angle - -15) * (maxSpeed - minSpeed) / (15 - -15); 
