@@ -70,7 +70,7 @@ public class RobotContainer {
         JoystickButton elvDown = new JoystickButton(controlPanel, 8);
         elvDown.whileTrue(new ElvDownElevatorCommand(elevator));
 
-        JoystickButton elevatorstopButton = new JoystickButton(driveJoystick, 0)
+        JoystickButton elevatorstopButton = new JoystickButton(driveJoystick, 0);
     }
 
     /**
