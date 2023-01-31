@@ -99,4 +99,24 @@ public final class Constants {
     public static final class Intake {
         public static final int INTAKE_MOTOR_PWM_PORT = 0;
     }
+    
+    public static class Dashboard {
+        public static final String FIELD_RELATIVE_KEY = "Field Relative";
+        public static final boolean FIELD_RELATIVE_DEFAULT = true;
+
+        public static final String ELEVATOR_POSITION_KEY = "Elevator position";
+    }
+
+    public static final class Elevator {
+        public static final int CAN_ID = 1;
+        public static final int BELT_MOTOR = 1;
+
+        public static final int TICKS_PER_ROTATION = 2048;
+
+        public static final int MAX_POSITION_TICKS = 0;
+
+        public static final double BELT_MOTOR_P = 0.2;
+        public static final double BELT_MOTOR_I = 0;
+        public static final double BELT_MOTOR_D = 0;
+    }
 }
