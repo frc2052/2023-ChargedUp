@@ -13,6 +13,8 @@ public class ElvUpElevatorCommand extends CommandBase {
   /** Creates a new StopElevatorCommand. */
   public ElvUpElevatorCommand(ElevatorSubsystem elevator) {
     this.elevator = elevator;
+
+    addRequirements(this.elevator);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -25,12 +27,6 @@ public class ElvUpElevatorCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     elevator.stop();
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
   }
 }
 
