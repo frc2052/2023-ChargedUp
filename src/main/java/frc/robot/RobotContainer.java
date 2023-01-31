@@ -8,6 +8,7 @@ import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.subsystems.drive.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -25,7 +26,7 @@ public class RobotContainer {
     private final Joystick driveJoystick;
     private final Joystick turnJoystick;
     private final ControlPanel controlPanel;
-
+    private final Button
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
 
