@@ -53,7 +53,7 @@ public class TestAuto extends SequentialCommandGroup {
         Supplier<Rotation2d> rotation
     ) {
         TrajectoryConfig config = new TrajectoryConfig(
-            2.5,
+            drivetrain.getMaxVelocityMetersPerSecond(),
             1.5
         ).setKinematics(drivetrain.getKinematics());
 
@@ -63,7 +63,10 @@ public class TestAuto extends SequentialCommandGroup {
             10,
             0,
             0,
-            new TrapezoidProfile.Constraints(Math.PI, Math.PI)
+            new TrapezoidProfile.Constraints(
+                drivetrain.getMaxAngularVelocityRadiansPerSecond(),
+                Math.PI
+            )
         );
 
         return new SwerveControllerCommand(

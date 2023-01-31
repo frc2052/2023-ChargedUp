@@ -5,13 +5,15 @@
 package frc.robot;
 
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.ElvDownElevatorCommand;
-import frc.robot.commands.ElvUpElevatorCommand;
+import frc.robot.commands.ElevatorPositionCommand;
+import frc.robot.commands.ManualElevatorDownCommand;
+import frc.robot.commands.ManualElevatorUpCommand;
 import frc.robot.commands.TestAuto;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -35,6 +37,7 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
     private final ElevatorSubsystem elevator;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -70,14 +73,21 @@ public class RobotContainer {
      * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joystick}.
      */
     private void configureBindings() {
-        JoystickButton elvUp = new JoystickButton(controlPanel, 13);
-        elvUp.whileTrue(new ElvUpElevatorCommand(elevator));
-        
-        JoystickButton elvDown = new JoystickButton(controlPanel, 8);
-        elvDown.whileTrue(new ElvDownElevatorCommand(elevator));
+        JoystickButton elevatorGroundPickUpButton = new JoystickButton(controlPanel, 0);
+        JoystickButton elevatorBottomRowButton = new JoystickButton(controlPanel, 0);
+        JoystickButton elevatorMiddleRowButton = new JoystickButton(controlPanel, 0);
+        JoystickButton elevatorTopRowButton = new JoystickButton(controlPanel, 0);
+        elevatorGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.GROUND_PICK_UP, elevator));
+        elevatorBottomRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BOTTOM_ROW, elevator));
+        elevatorMiddleRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MIDDLE_ROW, elevator));
+        elevatorTopRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_ROW, elevator));
+
+        JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 13);
+        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 8);
+        manualElevatorUpButton.whileTrue(new ManualElevatorUpCommand(elevator));
+        manualElevatorDownButton.whileTrue(new ManualElevatorDownCommand(elevator));
         
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
-
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
     }
 

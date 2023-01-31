@@ -35,6 +35,16 @@ public class Dashboard {
         SmartDashboard.putString("Auto Description", getAuto().description);
     }
 
+    public <V> void putData(String key, V value) {
+        if (value instanceof Number) {
+            SmartDashboard.putNumber(key, (Double) value);
+        } else if (value instanceof String) {
+            SmartDashboard.putString(key, (String) value);
+        } else if (value instanceof Boolean) {
+            SmartDashboard.putBoolean(key, (Boolean) value);
+        }
+    }
+
     public boolean isFieldRelative() {
         return SmartDashboard.getBoolean(
             Constants.Dashboard.FIELD_RELATIVE_KEY,

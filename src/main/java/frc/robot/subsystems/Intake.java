@@ -11,11 +11,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
-  /** Creates a new Intake. */
-  public Intake() {}
-  
-  private VictorSPX intakeMotor = new VictorSPX(Constants.Intake.INTAKE_MOTOR_PWM_PORT);
+  private final VictorSPX intakeMotor;
 
+  /** Creates a new Intake. */
+  public Intake() {
+    intakeMotor = new VictorSPX(Constants.Intake.INTAKE_MOTOR_PWM);
+  }
+  
   public void intake() {
     intakeMotor.set(VictorSPXControlMode.PercentOutput, 0.1);
   }  
