@@ -10,12 +10,12 @@ import frc.robot.commands.ElvUpElevatorCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.drive.DrivetrainSubsystem;
-import edu.wpi.first.wpilibj.Joystick; 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import frc.robot.commands.ElevatorStop;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -29,7 +29,7 @@ public class RobotContainer {
     private final Joystick driveJoystick;
     private final Joystick turnJoystick;
     private final ControlPanel controlPanel;
-
+    private final Button elevatorStopbutton;
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
     private final ElevatorSubsystem elevator;
@@ -40,7 +40,7 @@ public class RobotContainer {
         driveJoystick = new Joystick(0);
         turnJoystick = new Joystick(1);
         controlPanel = new ControlPanel(2);
-
+        elevatorStopbutton = new Joystick(port:3);
         drivetrain = new DrivetrainSubsystem();
         elevator = new ElevatorSubsystem();
         drivetrain.setDefaultCommand(new DefaultDriveCommand());
@@ -69,6 +69,8 @@ public class RobotContainer {
         
         JoystickButton elvDown = new JoystickButton(controlPanel, 8);
         elvDown.whileTrue(new ElvDownElevatorCommand(elevator));
+
+        JoystickButton elevatorstopButton = new JoystickButton(driveJoystick, 0);
     }
 
     /**

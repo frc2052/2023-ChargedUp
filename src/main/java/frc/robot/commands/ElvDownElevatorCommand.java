@@ -10,14 +10,17 @@ import frc.robot.subsystems.ElevatorSubsystem;
 public class ElvDownElevatorCommand extends CommandBase {
   private ElevatorSubsystem elevator;
 
-  /** Creates a new StopElevatorCommand. */
+  /** Creates a new ElvDownElevatorCommand. */
   public ElvDownElevatorCommand(ElevatorSubsystem elevator) {
     this.elevator = elevator;
+
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(elevator);
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
+  // Called when the command is initially scheduled.
   @Override
-  public void execute() {
+  public void initialize() {
     elevator.elvDown();
   }
 
@@ -25,11 +28,5 @@ public class ElvDownElevatorCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     elevator.stop();
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
   }
 }
