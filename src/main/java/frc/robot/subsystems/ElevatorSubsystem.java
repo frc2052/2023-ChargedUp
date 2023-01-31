@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -33,6 +34,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         if ((error = beltMotor.configAllSettings(steerMotorConfiguration)) != ErrorCode.OK) {
             DriverStation.reportError("Failed to configure belt motor: " + error.toString(), false);
         }
+        beltMotor.setNeutralMode(NeutralMode.Brake);
 
         // Assume the elevator will start at the lowest possible position.
         if ((error = beltMotor.setSelectedSensorPosition(0.0)) != ErrorCode.OK) {
@@ -81,7 +83,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        beltMotor.set(TalonFXControlMode.PercentOutput, 0);
+        beltMotor.set(TalonFXControlMode.PercentOutput, 0.0);
     }
 
     public static enum ElevatorPosition {

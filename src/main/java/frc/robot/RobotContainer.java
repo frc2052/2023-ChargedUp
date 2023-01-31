@@ -6,17 +6,17 @@ package frc.robot;
 
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ElevatorPositionCommand;
-import frc.robot.commands.ManualElevatorDownCommand;
-import frc.robot.commands.ManualElevatorUpCommand;
 import frc.robot.commands.TestAuto;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -37,6 +37,7 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
     private final ElevatorSubsystem elevator;
+    private final IntakeSubsystem intake;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -48,7 +49,8 @@ public class RobotContainer {
 
         drivetrain = new DrivetrainSubsystem();
         elevator = new ElevatorSubsystem();
-        
+        intake = new IntakeSubsystem();
+
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
                 // Forward velocity supplier
@@ -57,11 +59,13 @@ public class RobotContainer {
                 () -> driveJoystick.getX(),
                 // Rotation velocity supplier
                 () -> turnJoystick.getX(),
-                () -> Dashboard.getInstance().isFieldRelative(), //SmartDashboard.getBoolean("Field Centric", true),
+                () -> Dashboard.getInstance().isFieldRelative(),
                 drivetrain
             )
         );
-        
+        elevator.setDefaultCommand(new RunCommand(() -> elevator.stop(), elevator));
+        intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
+
         // Configure the trigger bindings
         configureBindings();
     }
@@ -73,6 +77,15 @@ public class RobotContainer {
      * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joystick}.
      */
     private void configureBindings() {
+        /*
+         * Drivetrain button bindings
+         */
+        JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
+        zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
+
+        /*
+         * Elevator button bindings
+         */
         JoystickButton elevatorGroundPickUpButton = new JoystickButton(controlPanel, 0);
         JoystickButton elevatorBottomRowButton = new JoystickButton(controlPanel, 0);
         JoystickButton elevatorMiddleRowButton = new JoystickButton(controlPanel, 0);
@@ -84,11 +97,16 @@ public class RobotContainer {
 
         JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 13);
         JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 8);
-        manualElevatorUpButton.whileTrue(new ManualElevatorUpCommand(elevator));
-        manualElevatorDownButton.whileTrue(new ManualElevatorDownCommand(elevator));
-        
-        JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
-        zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
+        manualElevatorUpButton.whileTrue(new RunCommand(() -> elevator.manualUp(), elevator));
+        manualElevatorDownButton.whileTrue(new RunCommand(() -> elevator.manualDown(), elevator));
+
+        /*
+         * Intake button bindings
+         */
+        JoystickButton intakeButton = new JoystickButton(driveJoystick, 3);
+        JoystickButton reverseIntakeButton = new JoystickButton(driveJoystick, 2);
+        intakeButton.whileTrue(new RunCommand(() -> intake.intake(), intake));
+        reverseIntakeButton.whileTrue(new RunCommand(() -> intake.reverseIntake(), intake));
     }
 
     public void zeroOdometry() {
