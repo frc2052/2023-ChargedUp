@@ -7,6 +7,8 @@ package frc.robot.auto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -43,14 +45,23 @@ public class DynamicAutoFactory {
         Node scoreNode,
         Channel enterChannel,
         boolean endChargeStation
+
     ) {
         SequentialCommandGroup autoCommand = new SequentialCommandGroup();
 
+        boolean onBlueAlliance = DriverStation.getAlliance() == Alliance.Blue;
+
+        double invert = onBlueAlliance ? Constants.Auto.COMMUNITY_WIDTH_METERS - 5.48 : 0.0;
+        
+
         Pose2d initialStartingPose = new Pose2d(
-            getBaseLineXMeters(startingGrid, startingNode), 
+            getXAdjusted(getBaseLineXMeters(startingGrid, startingNode), onBlueAlliance), 
             Constants.Auto.ROBOT_LENGTH_METERS / 2,
             Rotation2d.fromDegrees(180)
+            
         );
+        
+        
         Translation2d interpolationMidPoint = null;
         Pose2d launchPose = null;
 
@@ -58,7 +69,7 @@ public class DynamicAutoFactory {
 
         switch (exitChannel) {
             case LEFT_CHANNEL:
-                double leftChannelXMeters = Constants.Auto.COMMUNITY_WIDTH_METERS - (Constants.Auto.CHANNEL_WIDTH_METERS / 2);
+                double leftChannelXMeters = getXAdjusted(Constants.Auto.COMMUNITY_WIDTH_METERS, onBlueAlliance) - (Constants.Auto.CHANNEL_WIDTH_METERS / 2);
 
                 interpolationMidPoint = new Translation2d(
                     leftChannelXMeters,
@@ -73,21 +84,21 @@ public class DynamicAutoFactory {
                 break;
         
             case RIGHT_CHANNEL:
-                double rightChannelXMeters = Constants.Auto.CHANNEL_WIDTH_METERS / 2;
+            double rightChannelXMeters = Constants.Auto.CHANNEL_WIDTH_METERS / 2;
 
                 interpolationMidPoint = new Translation2d(
-                    rightChannelXMeters,
+                    getXAdjusted(rightChannelXMeters, onBlueAlliance),
                     Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_METERS / 2
                 );
 
                 launchPose = new Pose2d(
-                    rightChannelXMeters,
+                    getXAdjusted(rightChannelXMeters, onBlueAlliance),
                     launchYMeters,
                     new Rotation2d()
                 );
                 break;
         }
-
+        
         SwerveControllerCommand initialSwerveCommand = createSwerveCommand(
             initialStartingPose,
             List.of(interpolationMidPoint),
@@ -171,6 +182,14 @@ public class DynamicAutoFactory {
         } 
 
         return autoCommand;
+    }
+
+    private double getXAdjusted(double originalX, boolean onBlueAlliance){
+        if (!onBlueAlliance) {
+            return originalX;  
+        } else {
+            return Constants.Auto.FIELD_WIDTH - originalX;
+        }
     }
 
     private double getBaseLineXMeters(Grid grid, Node node) {

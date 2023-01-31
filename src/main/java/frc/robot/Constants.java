@@ -64,5 +64,7 @@ public final class Constants {
         
         public static final double DISTANCE_BETWEEN_GAME_PIECES_METERS = Units.feetToMeters(4);
         public static final double DISTANCE_WALL_TO_GAME_PIECE_METERS = Units.inchesToMeters(36.25);
+        public static final double FIELD_WIDTH = Units.feetToMeters(26.291667);
+        
     }
 }
