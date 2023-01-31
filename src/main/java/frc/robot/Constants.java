@@ -99,6 +99,7 @@ public final class Constants {
     public static final class Intake {
         public static final int INTAKE_MOTOR_PWM_PORT = 0;
     }
+<<<<<<< HEAD
     
     public static class Dashboard {
         public static final String FIELD_RELATIVE_KEY = "Field Relative";
@@ -118,5 +119,10 @@ public final class Constants {
         public static final double BELT_MOTOR_P = 0.2;
         public static final double BELT_MOTOR_I = 0;
         public static final double BELT_MOTOR_D = 0;
+=======
+
+    public static final class Elevator {
+        public static final int CAN_ID = 1;
+>>>>>>> 7017bcf4dce0021f74d5a384a98e7eab7224314b
     }
 }
