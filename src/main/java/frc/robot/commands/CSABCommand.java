@@ -12,7 +12,6 @@ private DrivetrainSubsystem drivetrain;
 private double angle;
 private double maxSpeed;
 private double minSpeed;
-private double delay;
 private double deadzone;
 private double speed;
 
@@ -29,7 +28,6 @@ private double speed;
         this.angle = angle;
         this.maxSpeed = maxSpeed;
         this.minSpeed = minSpeed;
-        this.delay = delay;
         this.deadzone = deadzone;
         this.speed = speed;
 
