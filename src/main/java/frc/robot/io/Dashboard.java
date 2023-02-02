@@ -5,9 +5,14 @@
 
 package frc.robot.io;
 
+//import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.io.Dashboard.Autos.Channel;
+import frc.robot.io.Dashboard.Autos.GamePiece;
+import frc.robot.io.Dashboard.Autos.Grid;
+import frc.robot.io.Dashboard.Autos.Node;
 
 /** Add your docs here. */
 // Trying something different this year, instead of a normal class
@@ -15,13 +20,21 @@ import frc.robot.Constants;
 public class Dashboard {
     private static Dashboard INSTANCE;
 
+    // Creates sendable choosers
+    // private final SendableChooser<Type> exampleChooser;
     private final SendableChooser<Autos> autoChooser;
+    private final SendableChooser<Node> nodeChooser;
+    private final SendableChooser<Grid> gridChooser;
+    private final SendableChooser<Channel> channelChooser;
+    private final SendableChooser<GamePiece> gamePieceSelectable;
+    
 
     private Dashboard() {
         SmartDashboard.putBoolean(
             Constants.Dashboard.FIELD_RELATIVE_KEY,
             Constants.Dashboard.FIELD_RELATIVE_DEFAULT
         );
+        // Not sure what this does right now
 
         autoChooser = new SendableChooser<Autos>();
         for (Autos auto : Autos.values()) {
@@ -29,12 +42,47 @@ public class Dashboard {
         }
         autoChooser.setDefaultOption(Autos.values()[0].name, Autos.values()[0]);
         SmartDashboard.putData("Auto", autoChooser);
-    }
 
+        nodeChooser = new SendableChooser<Node>();
+        for (Node node : Node.values()) {
+            nodeChooser.addOption(node.name(), node);
+        }
+        nodeChooser.setDefaultOption(Node.values()[0].name(), Node.values()[0]);
+        SmartDashboard.putData("Node", nodeChooser);
+
+        gridChooser = new SendableChooser<Grid>();
+        for (Grid grid : Grid.values()) {
+            gridChooser.addOption(grid.name(), grid);
+        }
+        gridChooser.setDefaultOption(Grid.values()[0].name(), Grid.values()[0]);
+        SmartDashboard.putData("Grid", gridChooser);
+
+        channelChooser = new SendableChooser<Channel>();
+        for (Channel channel : Channel.values()) {
+            channelChooser.addOption(channel.name(), channel);
+        }
+        channelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
+        SmartDashboard.putData("Channel", channelChooser);
+        // for some reason there are two different "putData"s, which is only slightly confusing
+
+        gamePieceSelectable = new SendableChooser<GamePiece>();
+        for (GamePiece gamePiece : GamePiece.values()){
+            gamePieceSelectable.addOption(gamePiece.name(), gamePiece);
+        }
+        gamePieceSelectable.setDefaultOption(GamePiece.values()[0].name(), GamePiece.values()[0]);
+        SmartDashboard.putData("Game Piece", gamePieceSelectable);
+    }
+// updates dashboard with needed information
     public void updateDashboard() {
         SmartDashboard.putString("Auto Description", getAuto().description);
-        SmartDashboard.putString("Node Description", getNode().description);
+        SmartDashboard.putString("Node Name", getNode().name());
+        SmartDashboard.putString("Grid Name", getGrid().name());
+        SmartDashboard.putString("Channel", getChannel().name());
+        SmartDashboard.putString("Game Piece", getGamePiece().name());
+        /* Im honestly not sure if the above will work, I havent really been able to test it and I chose the
+        quick fixes, all I know is that theres no problems being reported so its fineeeeeeeeeeeeeee*/
     }
+
  /*UwU, senpai, wait for me kitty >//.//< */
     public boolean isFieldRelative() {
         return SmartDashboard.getBoolean(
@@ -46,8 +94,17 @@ public class Dashboard {
     public Autos getAuto() {
         return autoChooser.getSelected();
     }
-    public Autos getNode() {
-        return autoChooser.getSelected();
+    public Node getNode() {
+        return nodeChooser.getSelected();
+    }
+    public Grid getGrid(){
+        return gridChooser.getSelected();
+    }
+    public Channel getChannel(){
+        return channelChooser.getSelected();
+    }
+    public GamePiece getGamePiece(){
+        return gamePieceSelectable.getSelected();
     }
 
     public static Dashboard getInstance(){
