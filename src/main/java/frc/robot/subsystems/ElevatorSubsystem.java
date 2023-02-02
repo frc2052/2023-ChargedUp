@@ -27,22 +27,18 @@ public class ElevatorSubsystem extends SubsystemBase {
         steerMotorConfiguration.slot0.kD = Constants.Elevator.BELT_MOTOR_D;
         
         // TODO: test and change values accordingly.
-        steerMotorConfiguration.motionCruiseVelocity = Constants.Elevator.TICKS_PER_ROTATION;
-        steerMotorConfiguration.motionAcceleration = Constants.Elevator.TICKS_PER_ROTATION / 2;
+        steerMotorConfiguration.motionCruiseVelocity = 8.0 * Constants.Elevator.TICKS_PER_ROTATION;
+        steerMotorConfiguration.motionAcceleration = 8.0 * Constants.Elevator.TICKS_PER_ROTATION;
 
         beltMotor = new TalonFX(Constants.Elevator.BELT_MOTOR);
         if ((error = beltMotor.configAllSettings(steerMotorConfiguration)) != ErrorCode.OK) {
             DriverStation.reportError("Failed to configure belt motor: " + error.toString(), false);
         }
         beltMotor.setNeutralMode(NeutralMode.Brake);
+        beltMotor.setInverted(true);
 
         // Assume the elevator will start at the lowest possible position.
-        if ((error = beltMotor.setSelectedSensorPosition(0.0)) != ErrorCode.OK) {
-            DriverStation.reportError(
-                "Failed to set belt motor encoder position: " + error.toString(), 
-                false
-            );
-        }
+        zeroEncoder();
     }
 
     @Override
@@ -71,7 +67,22 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean atPosition() {
-        return beltMotor.getSelectedSensorPosition() == currentDesiredPosition.getPositionTicks();
+        return Math.abs(currentDesiredPosition.getPositionTicks() - beltMotor.getSelectedSensorPosition()) <= Constants.Elevator.ENCODER_DEAD_ZONE;
+    }
+
+    public void zeroEncoder() {
+        ErrorCode error;
+
+        if ((error = beltMotor.setSelectedSensorPosition(0.0)) != ErrorCode.OK) {
+            DriverStation.reportError(
+                "Failed to set belt motor encoder position: " + error.toString(), 
+                false
+            );
+        }
+    }
+
+    public void coast() {
+        //beltMotor.setNeutralMode(NeutralMode.Coast);
     }
 
     public void manualUp() {
@@ -87,10 +98,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public static enum ElevatorPosition {
-        GROUND_PICK_UP(0),
-        BOTTOM_ROW(0),
-        MIDDLE_ROW(500),
-        TOP_ROW(1000);
+        BOTTOM(10000),
+        TOP(65000);
+        // GROUND_PICK_UP(0),
+        // BOTTOM_ROW(0),
+        // MIDDLE_ROW(500),
+        // TOP_ROW(1000);
 
         private final int positionTicks;
 

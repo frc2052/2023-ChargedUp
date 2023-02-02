@@ -37,7 +37,7 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
     private final ElevatorSubsystem elevator;
-    private final IntakeSubsystem intake;
+    //private final IntakeSubsystem intake;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -49,7 +49,7 @@ public class RobotContainer {
 
         drivetrain = new DrivetrainSubsystem();
         elevator = new ElevatorSubsystem();
-        intake = new IntakeSubsystem();
+        //intake = new IntakeSubsystem();
 
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
@@ -64,7 +64,7 @@ public class RobotContainer {
             )
         );
         elevator.setDefaultCommand(new RunCommand(() -> elevator.stop(), elevator));
-        intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
+        //intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
 
         // Configure the trigger bindings
         configureBindings();
@@ -86,32 +86,41 @@ public class RobotContainer {
         /*
          * Elevator button bindings
          */
-        JoystickButton elevatorGroundPickUpButton = new JoystickButton(controlPanel, 0);
-        JoystickButton elevatorBottomRowButton = new JoystickButton(controlPanel, 0);
-        JoystickButton elevatorMiddleRowButton = new JoystickButton(controlPanel, 0);
-        JoystickButton elevatorTopRowButton = new JoystickButton(controlPanel, 0);
-        elevatorGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.GROUND_PICK_UP, elevator));
-        elevatorBottomRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BOTTOM_ROW, elevator));
-        elevatorMiddleRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MIDDLE_ROW, elevator));
-        elevatorTopRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_ROW, elevator));
+        // JoystickButton elevatorGroundPickUpButton = new JoystickButton(controlPanel, 1);
+        // JoystickButton elevatorBottomRowButton = new JoystickButton(controlPanel, 1);
+        // JoystickButton elevatorMiddleRowButton = new JoystickButton(controlPanel, 1);
+        // JoystickButton elevatorTopRowButton = new JoystickButton(controlPanel, 1);
+        // elevatorGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.GROUND_PICK_UP, elevator));
+        // elevatorBottomRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BOTTOM_ROW, elevator));
+        // elevatorMiddleRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MIDDLE_ROW, elevator));
+        // elevatorTopRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_ROW, elevator));
 
-        JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 13);
-        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 8);
-        manualElevatorUpButton.whileTrue(new RunCommand(() -> elevator.manualUp(), elevator));
-        manualElevatorDownButton.whileTrue(new RunCommand(() -> elevator.manualDown(), elevator));
+        JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 5);
+        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 3);
+        // manualElevatorUpButton.whileTrue(new RunCommand(() -> elevator.manualUp(), elevator));
+        // manualElevatorDownButton.whileTrue(new RunCommand(() -> elevator.manualDown(), elevator));
+        manualElevatorUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP, elevator));
+        manualElevatorDownButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BOTTOM, elevator));
+        
+        JoystickButton resetElevatorEncoderButton = new JoystickButton(controlPanel, 4);
+        resetElevatorEncoderButton.onTrue(new InstantCommand(() -> elevator.zeroEncoder(), elevator));
 
         /*
          * Intake button bindings
          */
-        JoystickButton intakeButton = new JoystickButton(driveJoystick, 3);
-        JoystickButton reverseIntakeButton = new JoystickButton(driveJoystick, 2);
-        intakeButton.whileTrue(new RunCommand(() -> intake.intake(), intake));
-        reverseIntakeButton.whileTrue(new RunCommand(() -> intake.reverseIntake(), intake));
+        // JoystickButton intakeButton = new JoystickButton(driveJoystick, 3);
+        // JoystickButton reverseIntakeButton = new JoystickButton(driveJoystick, 2);
+        // intakeButton.whileTrue(new RunCommand(() -> intake.intake(), intake));
+        // reverseIntakeButton.whileTrue(new RunCommand(() -> intake.reverseIntake(), intake));
     }
 
     public void zeroOdometry() {
         drivetrain.zeroGyro();
         drivetrain.zeroOdometry();
+    }
+
+    public void coastElevator() {
+        elevator.coast();
     }
 
     /**
