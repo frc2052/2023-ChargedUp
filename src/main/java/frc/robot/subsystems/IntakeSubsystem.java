@@ -7,26 +7,27 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
+import edu.wpi.first.wpilibj.motorcontrol.Jaguar;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private final VictorSPX intakeMotor;
+    private final Jaguar intakeMotor;
 
     /** Creates a new Intake. */
     public IntakeSubsystem() {
-        intakeMotor = new VictorSPX(Constants.Intake.INTAKE_MOTOR_PWM);
+        intakeMotor = new Jaguar(Constants.Intake.INTAKE_MOTOR_PWM);
     }
     
     public void intake() {
-        intakeMotor.set(VictorSPXControlMode.PercentOutput, 1.0);
+        intakeMotor.set(1.0);
     } 
     
     public void reverseIntake() {
-        intakeMotor.set(VictorSPXControlMode.PercentOutput, -1.0);
+        intakeMotor.set(-1.0);
     }
 
     public void stop() {
-        intakeMotor.set(VictorSPXControlMode.PercentOutput, 0.0);
+        intakeMotor.set(0.0);
     }
 }

@@ -34,7 +34,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         if ((error = beltMotor.configAllSettings(steerMotorConfiguration)) != ErrorCode.OK) {
             DriverStation.reportError("Failed to configure belt motor: " + error.toString(), false);
         }
-        beltMotor.setNeutralMode(NeutralMode.Brake);
+        beltMotor.setNeutralMode(NeutralMode.Coast);
         beltMotor.setInverted(true);
 
         // Assume the elevator will start at the lowest possible position.

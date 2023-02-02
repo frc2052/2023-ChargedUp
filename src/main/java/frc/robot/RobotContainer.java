@@ -37,7 +37,7 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
     private final ElevatorSubsystem elevator;
-    //private final IntakeSubsystem intake;
+    private final IntakeSubsystem intake;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -49,7 +49,7 @@ public class RobotContainer {
 
         drivetrain = new DrivetrainSubsystem();
         elevator = new ElevatorSubsystem();
-        //intake = new IntakeSubsystem();
+        intake = new IntakeSubsystem();
 
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
@@ -64,7 +64,7 @@ public class RobotContainer {
             )
         );
         elevator.setDefaultCommand(new RunCommand(() -> elevator.stop(), elevator));
-        //intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
+        intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
 
         // Configure the trigger bindings
         configureBindings();
@@ -108,10 +108,10 @@ public class RobotContainer {
         /*
          * Intake button bindings
          */
-        // JoystickButton intakeButton = new JoystickButton(driveJoystick, 3);
-        // JoystickButton reverseIntakeButton = new JoystickButton(driveJoystick, 2);
-        // intakeButton.whileTrue(new RunCommand(() -> intake.intake(), intake));
-        // reverseIntakeButton.whileTrue(new RunCommand(() -> intake.reverseIntake(), intake));
+        JoystickButton intakeButton = new JoystickButton(driveJoystick, 3);
+        JoystickButton reverseIntakeButton = new JoystickButton(driveJoystick, 2);
+        intakeButton.whileTrue(new RunCommand(() -> intake.intake(), intake));
+        reverseIntakeButton.whileTrue(new RunCommand(() -> intake.reverseIntake(), intake));
     }
 
     public void zeroOdometry() {
