@@ -26,9 +26,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         steerMotorConfiguration.slot0.kI = Constants.Elevator.BELT_MOTOR_I;
         steerMotorConfiguration.slot0.kD = Constants.Elevator.BELT_MOTOR_D;
         
-        // TODO: test and change values accordingly.
-        steerMotorConfiguration.motionCruiseVelocity = 8.0 * Constants.Elevator.TICKS_PER_ROTATION;
-        steerMotorConfiguration.motionAcceleration = 8.0 * Constants.Elevator.TICKS_PER_ROTATION;
+        steerMotorConfiguration.motionCruiseVelocity = 8.0 * Constants.Elevator.BELT_MOTOR_CRUISE_VELOCITY;
+        steerMotorConfiguration.motionAcceleration = 8.0 * Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION;
 
         beltMotor = new TalonFX(Constants.Elevator.BELT_MOTOR);
         if ((error = beltMotor.configAllSettings(steerMotorConfiguration)) != ErrorCode.OK) {
@@ -43,13 +42,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // If the elevator ever tried to extend past a maximum limit immediately cancel the command
-        // trying to push it past that limit and stop the elevator.
-        if (Math.abs(beltMotor.getSelectedSensorPosition()) > Constants.Elevator.MAX_POSITION_TICKS) {
-            stop();
-            this.getCurrentCommand().cancel();
-        }
-
         Dashboard.getInstance().putData(
             Constants.Dashboard.ELEVATOR_POSITION_KEY, 
             beltMotor.getSelectedSensorPosition()
@@ -67,7 +59,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean atPosition() {
-        return Math.abs(currentDesiredPosition.getPositionTicks() - beltMotor.getSelectedSensorPosition()) <= Constants.Elevator.ENCODER_DEAD_ZONE;
+        return Math.abs(
+            currentDesiredPosition.getPositionTicks() - beltMotor.getSelectedSensorPosition()
+        ) <= Constants.Elevator.BELT_MOTOR_DEAD_ZONE_TICKS;
     }
 
     public void zeroEncoder() {
@@ -79,10 +73,6 @@ public class ElevatorSubsystem extends SubsystemBase {
                 false
             );
         }
-    }
-
-    public void coast() {
-        //beltMotor.setNeutralMode(NeutralMode.Coast);
     }
 
     public void manualUp() {

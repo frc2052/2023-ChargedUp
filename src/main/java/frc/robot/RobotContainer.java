@@ -86,21 +86,20 @@ public class RobotContainer {
         /*
          * Elevator button bindings
          */
-        // JoystickButton elevatorGroundPickUpButton = new JoystickButton(controlPanel, 1);
-        // JoystickButton elevatorBottomRowButton = new JoystickButton(controlPanel, 1);
+        JoystickButton elevatorGroundPickUpButton = new JoystickButton(controlPanel, 5);
+        JoystickButton elevatorBottomRowButton = new JoystickButton(controlPanel, 3);
         // JoystickButton elevatorMiddleRowButton = new JoystickButton(controlPanel, 1);
         // JoystickButton elevatorTopRowButton = new JoystickButton(controlPanel, 1);
-        // elevatorGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.GROUND_PICK_UP, elevator));
-        // elevatorBottomRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BOTTOM_ROW, elevator));
+        elevatorGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP, elevator));
+        elevatorBottomRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BOTTOM, elevator));
         // elevatorMiddleRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MIDDLE_ROW, elevator));
         // elevatorTopRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_ROW, elevator));
 
-        JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 5);
-        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 3);
-        // manualElevatorUpButton.whileTrue(new RunCommand(() -> elevator.manualUp(), elevator));
-        // manualElevatorDownButton.whileTrue(new RunCommand(() -> elevator.manualDown(), elevator));
-        manualElevatorUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP, elevator));
-        manualElevatorDownButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BOTTOM, elevator));
+        // TODO: Update values
+        JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 1);
+        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 1);
+        manualElevatorUpButton.whileTrue(new RunCommand(() -> elevator.manualUp(), elevator));
+        manualElevatorDownButton.whileTrue(new RunCommand(() -> elevator.manualDown(), elevator));
         
         JoystickButton resetElevatorEncoderButton = new JoystickButton(controlPanel, 4);
         resetElevatorEncoderButton.onTrue(new InstantCommand(() -> elevator.zeroEncoder(), elevator));
@@ -117,10 +116,6 @@ public class RobotContainer {
     public void zeroOdometry() {
         drivetrain.zeroGyro();
         drivetrain.zeroOdometry();
-    }
-
-    public void coastElevator() {
-        elevator.coast();
     }
 
     /**
