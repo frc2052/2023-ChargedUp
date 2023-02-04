@@ -48,4 +48,8 @@ public final class Constants {
         public static final String FIELD_RELATIVE_KEY = "Field Relative";
         public static final boolean FIELD_RELATIVE_DEFAULT = true;
     }
+
+    public static final class Intake {
+        public static final int INTAKE_MOTOR_PWM_PORT = 0;
+    }
 }
