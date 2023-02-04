@@ -56,6 +56,7 @@ public class Dashboard {
 
     public static enum Autos {
         EXAMPLE_AUTO("Example", "Description");
+        DynamicAutoFactory("DynamicAutoFactory", "Description", "Auto Test Description")
         //ForwardAuto("MoveForward", "Moves forward");
 
         private final String name;
