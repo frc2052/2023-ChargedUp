@@ -86,6 +86,7 @@ public class RobotContainer {
         /*
          * Elevator button bindings
          */
+
         JoystickButton elevatorGroundPickUpButton = new JoystickButton(controlPanel, 5);
         JoystickButton elevatorBottomRowButton = new JoystickButton(controlPanel, 3);
         // JoystickButton elevatorMiddleRowButton = new JoystickButton(controlPanel, 1);
@@ -96,8 +97,8 @@ public class RobotContainer {
         // elevatorTopRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_ROW, elevator));
 
         // TODO: Update values
-        JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 1);
-        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 1);
+        JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 12);
+        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 11);
         manualElevatorUpButton.whileTrue(new RunCommand(() -> elevator.manualUp(), elevator));
         manualElevatorDownButton.whileTrue(new RunCommand(() -> elevator.manualDown(), elevator));
         
