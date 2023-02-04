@@ -5,14 +5,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-public class PIDCSABCommand extends PIDCommand {
-  private final DrivetrainSubsystem drivetrain;
-
+public class PIDChargeStationAutoBalCommand extends PIDCommand {
   private final static double kP = 0.05;
   private final static double kI = 0.0;
   private final static double kD = 0.0;
 
-  public PIDCSABCommand(
+  public PIDChargeStationAutoBalCommand(
     DrivetrainSubsystem drivetrain
   ) {
       super(
@@ -26,8 +24,6 @@ public class PIDCSABCommand extends PIDCommand {
         output -> drivetrain.drive(new ChassisSpeeds(output, 0, 0))
           // Use the output here
       );
-
-      this.drivetrain = drivetrain;
 
       // Use addRequirements() here to declare subsystem dependencies.
       addRequirements(drivetrain);

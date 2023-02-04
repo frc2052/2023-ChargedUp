@@ -5,20 +5,18 @@
 package frc.robot;
 
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.PIDCSABCommand;
+import frc.robot.commands.PIDChargeStationAutoBalCommand;
 import frc.robot.commands.TestAuto;
 import frc.robot.io.ControlPanel;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj.Joystick; 
 import frc.robot.io.Dashboard;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.CSABCommand;
+import frc.robot.commands.ChargeStationAutoBalCommand;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -78,9 +76,9 @@ public class RobotContainer {
         
         JoystickButton simpleAutoBalance = new JoystickButton(driveJoystick, 4);
 
-        autoBalance.whileTrue(new PIDCSABCommand(drivetrain));
+        autoBalance.whileTrue(new PIDChargeStationAutoBalCommand(drivetrain));
 
-        simpleAutoBalance.whileTrue(new CSABCommand(drivetrain, 0, 1, -1, 0, 0, 0));
+        simpleAutoBalance.whileTrue(new ChargeStationAutoBalCommand(drivetrain, 1, -1, 3));
 
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
     }
@@ -91,7 +89,7 @@ public class RobotContainer {
     }
 
     /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
+     * Use this to pass the autonomous commd to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */

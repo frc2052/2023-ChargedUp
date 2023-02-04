@@ -1,4 +1,4 @@
-//Charge Station Auto-Balance Command
+//Simple Charge Station Auto-Balance Command
     
 package frc.robot.commands;
 
@@ -7,29 +7,24 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 
-public class CSABCommand extends CommandBase {
+public class ChargeStationAutoBalCommand extends CommandBase {
 private DrivetrainSubsystem drivetrain;
 private double angle;
-private double maxSpeed;
-private double minSpeed;
+private double maxMetersPerSecond;
+private double maxReverseMetersPerSecond;
 private double deadzone;
 private double speed;
 
-    public CSABCommand(
+    public ChargeStationAutoBalCommand(
         DrivetrainSubsystem drivetrain,
-        double angle,
-        double maxSpeed,
-        double minSpeed,
-        double delay,
-        double deadzone,
-        double speed)
+        double maxMetersPerSecond,
+        double maxReverseMetersPerSecond,
+        double deadzone)
         {
         this.drivetrain = drivetrain;
-        this.angle = angle;
-        this.maxSpeed = maxSpeed;
-        this.minSpeed = minSpeed;
+        this.maxMetersPerSecond = maxMetersPerSecond;
+        this.maxReverseMetersPerSecond = maxReverseMetersPerSecond;
         this.deadzone = deadzone;
-        this.speed = speed;
 
         addRequirements(this.drivetrain);
     }
@@ -37,9 +32,6 @@ private double speed;
     //Initialize
     @Override
     public void initialize() {
-        minSpeed = -1;
-        maxSpeed = 1;
-        deadzone = 3;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -50,7 +42,7 @@ private double speed;
             angle = drivetrain.getNavx().getPitch();
             //Calculates speed needed from angle
             //low2 + (value - low1) * (high2 - low2) / (high1 - low1)
-            speed = minSpeed + (angle - -15) * (maxSpeed - minSpeed) / (15 - -15); 
+            speed = maxReverseMetersPerSecond + (angle - -15) * (maxMetersPerSecond - maxReverseMetersPerSecond) / (15 - -15); 
         }
         else{
             speed = 0;
