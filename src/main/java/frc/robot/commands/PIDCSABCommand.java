@@ -1,8 +1,5 @@
 package frc.robot.commands;
 
-import java.util.function.DoubleConsumer;
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
@@ -36,8 +33,6 @@ public class PIDCSABCommand extends PIDCommand {
       addRequirements(drivetrain);
       // Configure additional PID options by calling `getController` here.
       getController().setTolerance(1);
-      getController().setSetpoint(0);
-      //getController().calculate(drivetrain.getNavx().getPitch());
   }
 
 
@@ -45,6 +40,6 @@ public class PIDCSABCommand extends PIDCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return getController.atSetpoint();
   }
 }
