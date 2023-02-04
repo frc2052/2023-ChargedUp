@@ -31,6 +31,8 @@ public class DynamicAutoFactory {
 
     private Pose2d lastEndingPose;
 
+    private Pose2d initialStartingPose;
+
     public DynamicAutoFactory(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
     }
@@ -49,18 +51,7 @@ public class DynamicAutoFactory {
     ) {
         SequentialCommandGroup autoCommand = new SequentialCommandGroup();
 
-        boolean onBlueAlliance = DriverStation.getAlliance() == Alliance.Blue;
-
-        double invert = onBlueAlliance ? Constants.Auto.COMMUNITY_WIDTH_METERS - 5.48 : 0.0;
-        
-
-        Pose2d initialStartingPose = new Pose2d(
-            getXAdjusted(getBaseLineXMeters(startingGrid, startingNode), onBlueAlliance), 
-            Constants.Auto.ROBOT_LENGTH_METERS / 2,
-            Rotation2d.fromDegrees(180)
-            
-        );
-        
+    
         
         Translation2d interpolationMidPoint = null;
         Pose2d launchPose = null;
@@ -69,30 +60,30 @@ public class DynamicAutoFactory {
 
         switch (exitChannel) {
             case LEFT_CHANNEL:
-                double leftChannelXMeters = getXAdjusted(Constants.Auto.COMMUNITY_WIDTH_METERS, onBlueAlliance) - (Constants.Auto.CHANNEL_WIDTH_METERS / 2);
+                double leftChannelYMeters =  (Constants.Auto.CHANNEL_WIDTH_METERS / 2);
 
                 interpolationMidPoint = new Translation2d(
-                    leftChannelXMeters,
+                    leftChannelYMeters,
                     Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_METERS / 2
                 );
 
                 launchPose = new Pose2d(
-                    leftChannelXMeters,
+                    leftChannelYMeters,
                     launchYMeters,
                     new Rotation2d()
                 );
                 break;
         
             case RIGHT_CHANNEL:
-            double rightChannelXMeters = Constants.Auto.CHANNEL_WIDTH_METERS / 2;
+            double rightChannelYMeters = Constants.Auto.CHANNEL_WIDTH_METERS / 2;
 
                 interpolationMidPoint = new Translation2d(
-                    getXAdjusted(rightChannelXMeters, onBlueAlliance),
+                    getYAdjusted(rightChannelYMeters, endChargeStation),
                     Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_METERS / 2
                 );
 
                 launchPose = new Pose2d(
-                    getXAdjusted(rightChannelXMeters, onBlueAlliance),
+                    getYAdjusted(rightChannelYMeters, endChargeStation),
                     launchYMeters,
                     new Rotation2d()
                 );
@@ -130,7 +121,7 @@ public class DynamicAutoFactory {
 
             if (scoreGamePiece) {
                 Pose2d scorePose = new Pose2d(
-                    getBaseLineXMeters(scoreGrid, scoreNode), 
+                    getBaseLineYMeters(scoreGrid, scoreNode), 
                     Constants.Auto.ROBOT_LENGTH_METERS / 2,
                     Rotation2d.fromDegrees(0)
                 );
@@ -138,7 +129,7 @@ public class DynamicAutoFactory {
                 SwerveControllerCommand scoreSwerveCommand = createSwerveCommand(
                     lastEndingPose,
                     List.of(
-                        new Translation2d(launchPose.getX(), launchPose.getY()),
+                        new Translation2d(launchPose.getY(), launchPose.getX()),
                         interpolationMidPoint
                     ),
                     scorePose, 
@@ -161,7 +152,7 @@ public class DynamicAutoFactory {
 
             Translation2d entryPoint = null;
 
-            Translation2d lastTranslation = new Translation2d(lastEndingPose.getX(), lastEndingPose.getY());
+            Translation2d lastTranslation = new Translation2d(lastEndingPose.getY(), lastEndingPose.getY());
             if (lastTranslation.getDistance(farEntryPoint) > lastTranslation.getDistance(nearEntryPoint)) {
                 entryPoint = nearEntryPoint;
             } else {
@@ -184,15 +175,15 @@ public class DynamicAutoFactory {
         return autoCommand;
     }
 
-    private double getXAdjusted(double originalX, boolean onBlueAlliance){
+    private double getYAdjusted(double originalY, boolean onBlueAlliance){
         if (!onBlueAlliance) {
-            return originalX;  
+            return originalY;  
         } else {
-            return Constants.Auto.FIELD_WIDTH - originalX;
+            return Constants.Auto.FIELD_WIDTH - originalY;
         }
     }
 
-    private double getBaseLineXMeters(Grid grid, Node node) {
+    private double getBaseLineYMeters(Grid grid, Node node) {
         return Units.inchesToMeters((3.5 + 16.5) + (3 * grid.ordinal() + node.ordinal()) * (18.5 + 13.5));
     }
 
