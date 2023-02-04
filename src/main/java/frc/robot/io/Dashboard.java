@@ -79,8 +79,6 @@ public class Dashboard {
         SmartDashboard.putString("Grid Name", getGrid().name());
         SmartDashboard.putString("Channel", getChannel().name());
         SmartDashboard.putString("Game Piece", getGamePiece().name());
-        /* Im honestly not sure if the above will work, I havent really been able to test it and I chose the
-        quick fixes, all I know is that theres no problems being reported so its fineeeeeeeeeeeeeee*/
     }
 
  /*UwU, senpai, wait for me kitty >//.//< */
@@ -126,7 +124,7 @@ public class Dashboard {
             this.name = name;
             this.description = description;
         }
-
+/*Bryan Griffin drank coffee, then he died. This is how family guy ends. */
      public static enum Grid {
             LEFT_GRID,
             MIDDLE_CONE,

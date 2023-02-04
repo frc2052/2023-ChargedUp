@@ -96,7 +96,7 @@ public final class Constants {
         public static final Rotation2d BACK_RIGHT_MODULE_STEER_OFFSET = new Rotation2d(5.217);
     }
 
-    public static class Dashboard {
+    public static final class Dashboard {
         public static final String FIELD_RELATIVE_KEY = "Placeholder";
         public static final boolean FIELD_RELATIVE_DEFAULT = true;
     }
