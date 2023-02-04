@@ -27,14 +27,12 @@ public class Dashboard {
     private final SendableChooser<Grid> gridChooser;
     private final SendableChooser<Channel> channelChooser;
     private final SendableChooser<GamePiece> gamePieceSelectable;
-    
 
     private Dashboard() {
         SmartDashboard.putBoolean(
             Constants.Dashboard.FIELD_RELATIVE_KEY,
             Constants.Dashboard.FIELD_RELATIVE_DEFAULT
         );
-        // Not sure what this does right now
 
         autoChooser = new SendableChooser<Autos>();
         for (Autos auto : Autos.values()) {
@@ -81,7 +79,6 @@ public class Dashboard {
         SmartDashboard.putString("Game Piece", getGamePiece().name());
     }
 
- /*UwU, senpai, wait for me kitty >//.//< */
     public boolean isFieldRelative() {
         return SmartDashboard.getBoolean(
             Constants.Dashboard.FIELD_RELATIVE_KEY,
@@ -92,6 +89,7 @@ public class Dashboard {
     public Autos getAuto() {
         return autoChooser.getSelected();
     }
+    
     public Node getNode() {
         return nodeChooser.getSelected();
     }
@@ -124,7 +122,8 @@ public class Dashboard {
             this.name = name;
             this.description = description;
         }
-/*Bryan Griffin drank coffee, then he died. This is how family guy ends. */
+    }
+        
      public static enum Grid {
             LEFT_GRID,
             MIDDLE_CONE,
@@ -148,7 +147,7 @@ public class Dashboard {
             FAR_RIGHT_GAME_PIECE,
             NO_GAME_PIECE,
             }
-  
+ 
         public String getName() {
             return name;
         }
@@ -158,4 +157,3 @@ public class Dashboard {
         }
     }
 }
-/*"All hail Matt, the Rizz King"*/
