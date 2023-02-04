@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.PIDCSABCommand;
 import frc.robot.commands.TestAuto;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
@@ -72,9 +73,13 @@ public class RobotContainer {
     private void configureBindings() {
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
 
-        JoystickButton autoBalance = new JoystickButton(driveJoystick, 2);
+        JoystickButton autoBalance = new JoystickButton(driveJoystick, 3);
+        
+        JoystickButton simpleAutoBalance = new JoystickButton(driveJoystick, 4);
 
-        autoBalance.whileTrue(new CSABCommand(drivetrain, 0, 1, -1, 0, 0, 0));
+        autoBalance.whileTrue(new PIDCSABCommand(null, null, null, null, drivetrain));
+
+        simpleAutoBalance.whileTrue(new CSABCommand(drivetrain, 0, 1, -1, 0, 0, 0));
 
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
     }
