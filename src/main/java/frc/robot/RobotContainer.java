@@ -5,6 +5,8 @@
 package frc.robot;
 
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.ElevatorManualDownCommand;
+import frc.robot.commands.ElevatorManualUpCommand;
 import frc.robot.commands.ElevatorPositionCommand;
 import frc.robot.commands.TestAuto;
 import frc.robot.io.ControlPanel;
@@ -99,8 +101,8 @@ public class RobotContainer {
         // TODO: Update values
         JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 12);
         JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 11);
-        manualElevatorUpButton.whileTrue(new RunCommand(() -> elevator.manualUp(), elevator));
-        manualElevatorDownButton.whileTrue(new RunCommand(() -> elevator.manualDown(), elevator));
+        manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
+        manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
         
         JoystickButton resetElevatorEncoderButton = new JoystickButton(controlPanel, 4);
         resetElevatorEncoderButton.onTrue(new InstantCommand(() -> elevator.zeroEncoder(), elevator));

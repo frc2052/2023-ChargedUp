@@ -26,14 +26,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         steerMotorConfiguration.slot0.kI = Constants.Elevator.BELT_MOTOR_I;
         steerMotorConfiguration.slot0.kD = Constants.Elevator.BELT_MOTOR_D;
         
-        steerMotorConfiguration.motionCruiseVelocity = 8.0 * Constants.Elevator.BELT_MOTOR_CRUISE_VELOCITY;
-        steerMotorConfiguration.motionAcceleration = 8.0 * Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION;
+        steerMotorConfiguration.motionCruiseVelocity = 4.0 * Constants.Elevator.BELT_MOTOR_CRUISE_VELOCITY;
+        steerMotorConfiguration.motionAcceleration = 4.0 * Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION;
 
         beltMotor = new TalonFX(Constants.Elevator.BELT_MOTOR);
         if ((error = beltMotor.configAllSettings(steerMotorConfiguration)) != ErrorCode.OK) {
             DriverStation.reportError("Failed to configure belt motor: " + error.toString(), false);
         }
-        beltMotor.setNeutralMode(NeutralMode.Coast);
+        beltMotor.setNeutralMode(NeutralMode.Brake);
         beltMotor.setInverted(true);
 
         // Assume the elevator will start at the lowest possible position.
@@ -76,11 +76,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void manualUp() {
-        beltMotor.set(TalonFXControlMode.PercentOutput, 0.05);
+        System.out.println("manual up");
+        beltMotor.set(TalonFXControlMode.PercentOutput, 0.15);
     }
 
     public void manualDown() {
-        beltMotor.set(TalonFXControlMode.PercentOutput, -0.05);
+        beltMotor.set(TalonFXControlMode.PercentOutput, -0.15);
+        System.out.println("Manual down");
     }
 
     public void stop() {
@@ -88,12 +90,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public static enum ElevatorPosition {
-        BOTTOM(10000),
-        TOP(65000);
-        // GROUND_PICK_UP(0),
-        // BOTTOM_ROW(0),
-        // MIDDLE_ROW(500),
-        // TOP_ROW(1000);
+        //BOTTOM(10000),
+        FLOORCUBE(16478),
+        FLOORCONE(20155),
+        BABYBIRD(23963),
+        MIDSCORE(86590),
+        TOPSCORE(117875);
 
         private final int positionTicks;
 
