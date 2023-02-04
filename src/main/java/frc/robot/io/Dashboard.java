@@ -56,7 +56,7 @@ public class Dashboard {
     }
 
     public static enum Autos {
-        
+        DYNAMIC_AUTO_FACTORY("dynamicAuto", "description"),
         EXAMPLE_AUTO("Example", "Description");
        
         //ForwardAuto("MoveForward", "Moves forward");
