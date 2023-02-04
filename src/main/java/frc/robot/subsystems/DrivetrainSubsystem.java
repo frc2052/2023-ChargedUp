@@ -5,9 +5,10 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.team2052.swerve.ModuleConfiguration;
-import com.team2052.swerve.NeoSwerverModule;
+import com.team2052.swervemodule.ModuleConfiguration;
+import com.team2052.swervemodule.NeoSwerverModule;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -16,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -25,7 +27,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final NeoSwerverModule backLeftModule;
     private final NeoSwerverModule backRightModule;
 
-    // Representation of our robots swerve module posititions relative to the center of the wheels.
+    // Representation of our robots swerve module positions relative to the center of the wheels.
     private final SwerveDriveKinematics kinematics;
 
     private final AHRS navx;
@@ -69,13 +71,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         kinematics = new SwerveDriveKinematics(
             // Front left
-            new Translation2d(Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Front right
             new Translation2d(Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            // Front right
+            new Translation2d(Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
             // Back left
-            new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
             // Back right
-            new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0)
+            new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0)
         );
 
         navx = new AHRS(SPI.Port.kMXP, (byte) 200);
@@ -83,35 +85,60 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         odometry = new SwerveDriveOdometry(
             kinematics, 
-            navx.getRotation2d(),
+            getRotation(),
             getModulePositions()
         );
     }
 
+    @Override
+    public void periodic() {
+        debug();
+    }
+
+    /**
+     * All parameters are taken in normalized terms of [-1.0 to 1.0].
+     */
+    public void drive(
+        double normalizedXVelocityMetersPerSecond, 
+        double normalizedYVelocityMetersPerSecond, 
+        double normalizedRotationVelocityRadiansPerSecond, 
+        boolean fieldCentric
+    ) {
+        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
+            normalizedXVelocityMetersPerSecond * getMaxVelocityMetersPerSecond(), 
+            normalizedYVelocityMetersPerSecond * getMaxVelocityMetersPerSecond(), 
+            normalizedRotationVelocityRadiansPerSecond * getMaxAngularVelocityRadiansPerSecond()
+        );
+
+        if (fieldCentric) {
+            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getRotation());
+        }
+
+        drive(chassisSpeeds);
+    }
+
+    /**
+     * Autonomous commands still require a drive method controlled via a ChassisSpeeds object
+     */
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
         setModuleStates(swerveModuleStates);
-
-        odometry.update(navx.getRotation2d(), getModulePositions());
     }
 
     public void stop() {
-        drive(new ChassisSpeeds());
-    }
-    
-    public Rotation2d getRotation() {
-        return navx.getRotation2d();
+        drive(0, 0, 0, false);
     }
 
     public AHRS getNavx(){
         return navx;
     }
 
-    private void setModuleStates(SwerveModuleState[] swerveModuleStates) {
+    public void setModuleStates(SwerveModuleState[] swerveModuleStates) {
+        // Check if the wheels don't have a drive velocity to maintain the current wheel orientation.
         boolean hasVelocity = swerveModuleStates[0].speedMetersPerSecond != 0
-            && swerveModuleStates[1].speedMetersPerSecond != 0 
-            && swerveModuleStates[2].speedMetersPerSecond != 0
-            && swerveModuleStates[3].speedMetersPerSecond != 0;
+            || swerveModuleStates[1].speedMetersPerSecond != 0 
+            || swerveModuleStates[2].speedMetersPerSecond != 0
+            || swerveModuleStates[3].speedMetersPerSecond != 0;
 
         frontLeftModule.setState(
             swerveModuleStates[0].speedMetersPerSecond, 
@@ -129,6 +156,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
             swerveModuleStates[3].speedMetersPerSecond, 
             hasVelocity ? swerveModuleStates[3].angle : backRightModule.getState().angle
         );
+        
+        odometry.update(getRotation(), getModulePositions());
     }
 
     private SwerveModulePosition[] getModulePositions() {
@@ -138,5 +167,59 @@ public class DrivetrainSubsystem extends SubsystemBase {
             backLeftModule.getPosition(),
             backRightModule.getPosition()
         };
+    }
+
+    public void zeroOdometry() {
+        odometry.resetPosition(getRotation(), getModulePositions(), new Pose2d());
+    }
+
+    public void zeroGyro() {
+        navx.reset();
+    }
+
+    public SwerveDriveKinematics getKinematics() {
+        return kinematics;
+    }
+
+    public Pose2d getPosition() {
+        return odometry.getPoseMeters();
+    }
+
+    public Rotation2d getRotation() {
+        // Ensure proper magnetometer calibration in order to get valid fused headings.
+        // if (navx.isMagnetometerCalibrated()) {
+        //     return Rotation2d.fromDegrees(navx.getFusedHeading());
+        // }
+
+        return navx.getRotation2d();
+    }
+
+    public double getMaxVelocityMetersPerSecond() {
+        return NeoSwerverModule.getMaxVelocityMetersPerSecond(ModuleConfiguration.MK4I_L2);
+    }
+
+    public double getMaxAngularVelocityRadiansPerSecond() {
+        /*
+         * Find the theoretical maximum angular velocity of the robot in radians per second 
+         * (a measure of how fast the robot can rotate in place).
+         */
+        return NeoSwerverModule.getMaxVelocityMetersPerSecond(ModuleConfiguration.MK4I_L2) / Math.hypot(
+            Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, 
+            Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0
+        );
+    }
+
+    /**
+     * For initial set up of swerve modules call this method from the periodic method, adjust the wheels
+     * to be at 90 angles, set all offsets to 0, and record the encoder values put in SmartDashboard. These encoder values will
+     * be the offsets for each SwerveModule respectively.
+     */
+    public void debug() {
+        SmartDashboard.putNumber("Drivetrain Rotation Degrees", getRotation().getDegrees());
+
+        frontLeftModule.debug();
+        frontRightModule.debug();
+        backLeftModule.debug();
+        backRightModule.debug();
     }
 }

@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package com.team2052.swerve;
+package com.team2052.swervemodule;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Shared elements of swerve modules regardless of motor type
@@ -29,8 +30,6 @@ public abstract class SwerveModule {
 
     protected final CANCoder canCoder;
 
-    protected final double maxVelocityMetersPerSecond;
-
     public SwerveModule(
         String debugName,
         ModuleConfiguration moduleConfiguration,
@@ -42,31 +41,11 @@ public abstract class SwerveModule {
         this.moduleConfiguration = moduleConfiguration;
 
         /*
-         * The formula for calculating the theoretical maximum velocity is:
-         * [Motor free speed (RPM)] / 60 * [Drive reduction] * [Wheel diameter (m)] * pi
-         * By default this value is setup for a Mk3 standard module using Falcon500s to drive.
-         * An example of this constant for a Mk4 L2 module with NEOs to drive is:
-         * 5880.0 (RPM) / 60.0 * SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
-         * This is a measure of how fast the robot should be able to drive in a straight line.
-         */
-        maxVelocityMetersPerSecond = 6380.0 / 60.0 * moduleConfiguration.getDriveReduction() * moduleConfiguration.getWheelDiameter() * Math.PI;
-        /*
-         * This would be the theoretical maximum angular velocity of the robot in radians per second.
-         * 
-         *  maxAngularVelocityRadiansPerSecond = maxVelocityMetersPerSecond / Math.hypot(
-         *      Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, 
-         *      Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0
-         *  );
-         *
-         * This would be a measure of how fast the robot can rotate in place.
-         */
-
-        /*
          * CANCoder Initialization
          */
         CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
         canCoderConfiguration.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        canCoderConfiguration.magnetOffsetDegrees = steerOffset.getDegrees();
+        canCoderConfiguration.magnetOffsetDegrees = -steerOffset.getDegrees();
         canCoderConfiguration.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
 
         canCoder = new CANCoder(canCoderChannel);
@@ -89,6 +68,10 @@ public abstract class SwerveModule {
         );
     }
 
+    public void debug() {
+        SmartDashboard.putNumber(debugName + " Offset Radians", canCoder.getAbsolutePosition());
+    }
+
     public abstract SwerveModuleState getState();
 
     public abstract void setState(double velocityMetersPerSecond, Rotation2d steerAngle);
@@ -104,7 +87,7 @@ public abstract class SwerveModule {
     @SuppressWarnings("unchecked")
     protected <E> void checkError(String message, E... errors) {
         for (E error : errors) {
-            if (error != REVLibError.kOk || error != ErrorCode.OK) {
+            if (error != REVLibError.kOk && error != ErrorCode.OK) {
                 DriverStation.reportError(
                     message + " on [" + debugName + "] module: " + error.toString(),
                     false
