@@ -44,7 +44,7 @@ public final class Constants {
         public static final double BACK_RIGHT_MODULE_STEER_OFFSET_RADIANS = 1.179;
     }
 
-    public static class Dashboard {
+    public static final class Dashboard {
         public static final String FIELD_RELATIVE_KEY = "Field Relative";
         public static final boolean FIELD_RELATIVE_DEFAULT = true;
     }

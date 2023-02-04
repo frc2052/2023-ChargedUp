@@ -8,9 +8,9 @@ import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.PIDChargeStationAutoBalCommand;
 import frc.robot.commands.TestAuto;
 import frc.robot.io.ControlPanel;
-import frc.robot.subsystems.DrivetrainSubsystem;
-import edu.wpi.first.wpilibj.Joystick; 
 import frc.robot.io.Dashboard;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -34,6 +34,8 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
 
+    private final Dashboard dashboard;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -43,6 +45,8 @@ public class RobotContainer {
         controlPanel = new ControlPanel(2);
 
         drivetrain = new DrivetrainSubsystem();
+
+        dashboard = Dashboard.getInstance();
 
         SmartDashboard.putBoolean("Field Centric", true);
         
