@@ -44,17 +44,7 @@ public final class Constants {
         public static final double BACK_RIGHT_MODULE_STEER_OFFSET_RADIANS = 1.179;
     }
 
-    public static class Dashboard {
-        public static final String FIELD_RELATIVE_KEY = "Field Relative";
-        public static final boolean FIELD_RELATIVE_DEFAULT = true;
-    }
-
-    public static final class Intake {
-        public static final int INTAKE_MOTOR_PWM_PORT = 0;
-    }
-<<<<<<< HEAD
-    
-    public static class Dashboard {
+    public static final class Dashboard {
         public static final String FIELD_RELATIVE_KEY = "Field Relative";
         public static final boolean FIELD_RELATIVE_DEFAULT = true;
 
@@ -62,20 +52,38 @@ public final class Constants {
     }
 
     public static final class Elevator {
-        public static final int CAN_ID = 1;
-        public static final int BELT_MOTOR = 1;
-
-        public static final int TICKS_PER_ROTATION = 2048;
-
-        public static final int MAX_POSITION_TICKS = 0;
+        public static final int BELT_MOTOR = 13;
 
         public static final double BELT_MOTOR_P = 0.2;
         public static final double BELT_MOTOR_I = 0;
         public static final double BELT_MOTOR_D = 0;
-=======
 
-    public static final class Elevator {
-        public static final int CAN_ID = 1;
->>>>>>> 7017bcf4dce0021f74d5a384a98e7eab7224314b
+        private static final int FALCON500_TICKS_PER_ROTATION = 2048;
+        public static final double BELT_MOTOR_CRUISE_VELOCITY = 8.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final double BELT_MOTOR_MAX_ACCELERATION = 8.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 250;
+    }
+
+    public static final class Auto {
+        public static final double ROBOT_LENGTH_METERS = 0;
+
+        public static final double CHANNEL_WIDTH_METERS = Units.inchesToMeters(59.375);
+
+        public static final double CHARGE_STATION_DEPTH = Units.inchesToMeters(76.125);
+
+        public static final double COMMUNITY_WIDTH_METERS = Units.feetToMeters(18);
+        public static final double COMMUNITY_DEPTH_METERS = Units.inchesToMeters(193.25);
+
+        public static final double DISTANCE_GRID_TO_CHARGE_STATION_METERS = Units.inchesToMeters(60.5625);
+        public static final double DISTANCE_GRID_TO_GAME_PIECES_METERS = Units.inchesToMeters(224);
+        
+        public static final double DISTANCE_BETWEEN_GAME_PIECES_METERS = Units.feetToMeters(4);
+        public static final double DISTANCE_WALL_TO_GAME_PIECE_METERS = Units.inchesToMeters(36.25);
+        public static final double FIELD_WIDTH = Units.feetToMeters(26.291667);
+       
+    }
+    
+    public static final class Intake {
+        public static final int INTAKE_MOTOR_PWM_PORT = 0;
     }
 }

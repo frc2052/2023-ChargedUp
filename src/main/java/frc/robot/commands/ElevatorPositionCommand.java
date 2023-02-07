@@ -5,8 +5,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.drive.ElevatorSubsystem;
-import frc.robot.subsystems.drive.ElevatorSubsystem.ElevatorPosition;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 public class ElevatorPositionCommand extends CommandBase {
     private final ElevatorSubsystem elevator;

@@ -7,26 +7,34 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ElevatorSubsystem;
 
-public class ElvDownElevatorCommand extends CommandBase {
+public class ElevatorManualUpCommand extends CommandBase {
+  /** Creates a new ElevatorManualUp. */
   private ElevatorSubsystem elevator;
 
-  /** Creates a new ElvDownElevatorCommand. */
-  public ElvDownElevatorCommand(ElevatorSubsystem elevator) {
+  public ElevatorManualUpCommand(ElevatorSubsystem elevator) {
     this.elevator = elevator;
-
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elevator);
+    addRequirements(this.elevator);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    elevator.elvDown();
+  public void initialize() {}
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    elevator.manualUp();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     elevator.stop();
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
   }
 }
