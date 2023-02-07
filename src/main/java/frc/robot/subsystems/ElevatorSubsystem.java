@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -15,12 +14,12 @@ import frc.robot.io.Dashboard;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final TalonFX beltMotor;
-
-private final DigitalInput limitSwitch;
     private ElevatorPosition currentDesiredPosition;
 
     public ElevatorSubsystem() {
         ErrorCode error;
+        
+        
         
         TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration();
         steerMotorConfiguration.slot0.kP = Constants.Elevator.BELT_MOTOR_P;
@@ -91,7 +90,6 @@ private final DigitalInput limitSwitch;
     }
 
     public static enum ElevatorPosition {
-        //BOTTOM(10000),
         FLOORCUBE(16478),
         FLOORCONE(20155),
         BABYBIRD(23963),
