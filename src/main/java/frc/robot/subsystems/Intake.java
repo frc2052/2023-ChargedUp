@@ -25,7 +25,7 @@ public class Intake extends SubsystemBase {
     intakeMotor.set(VictorSPXControlMode.PercentOutput, 0.1);
   }  
   public void reverseIntake() {
-    intakesolenoide.set(Value.kReverse);
+    intakesolenoide.set(Value.kForward);
     intakeMotor.set(VictorSPXControlMode.PercentOutput,  -0.1); }
     
   public void stop() {
