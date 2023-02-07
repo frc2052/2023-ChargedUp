@@ -10,13 +10,13 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class DriveTime extends CommandBase {
 
-  private double speed;
+  private double metersPerSecond;
   private double duration;
   private DrivetrainSubsystem drive;
   
   /** Creates a new DriveTime. */
-  public DriveTime(double speed, double time, DrivetrainSubsystem drivetrain) {
-    this.speed = speed;
+  public DriveTime(double metersPerSecond, double time, DrivetrainSubsystem drivetrain) {
+    this.metersPerSecond = metersPerSecond;
     this.duration = time * 1000;
     this.drive = drive;
     addRequirements(drive);
@@ -38,7 +38,7 @@ public class DriveTime extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    drive.drive(0.0, 0.5, 0.0, true);
+    drive.drive(0.0, 0.0, 0.0, true);
   }
 
   // Returns true when the command should end.
