@@ -9,6 +9,7 @@ package frc.robot.io;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.auto.DynamicAutoFactory;
 
 /** Add your docs here. */
 // Trying something different this year, instead of a normal class
@@ -122,10 +123,9 @@ public class Dashboard {
     }
 
     public static enum Autos {
-        DynamicAutoFactory("DynamicAuto", "Description"),
-        EXAMPLE_AUTO("Example", "Description");
-
-        // ForwardAuto("MoveForward", "Moves forward");
+        EXAMPLE_AUTO("Example", "Description"),
+        DynamicAutoFactory("DynamicAutoFactory", "Description");
+        //ForwardAuto("MoveForward", "Moves forward");
 
         private final String name;
         private final String description;
