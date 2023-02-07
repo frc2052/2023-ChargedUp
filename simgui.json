@@ -1,7 +1,18 @@
 {
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/SmartDashboard/Auto": "String Chooser",
+      "/SmartDashboard/Channel": "String Chooser",
+      "/SmartDashboard/Game Piece": "String Chooser",
+      "/SmartDashboard/Grid": "String Chooser",
+      "/SmartDashboard/Node": "String Chooser"
+    }
+  },
+  "NetworkTables": {
+    "Transitory Values": {
+      "open": false
     }
   }
 }
