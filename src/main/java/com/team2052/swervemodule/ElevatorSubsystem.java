@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -17,11 +18,16 @@ import com.ctre.phoenix.ErrorCode;
 
 public class ElevatorSubsystem extends SubsystemBase{
     private TalonFX beltMotor;
+    private final DigitalInput limitSwitch;
 
     private ElevatorPosition currentDesiredPosition;
 
     private ElevatorSubsystem() {
         ErrorCode error;
+
+        limitSwitch = new DigitalInput(0);
+
+
         TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration();
         steerMotorConfiguration.slot0.kP = Constants.Elevator.BELT_MOTOR_P;
         steerMotorConfiguration.slot0.kI = Constants.Elevator.BELT_MOTOR_I;
@@ -53,6 +59,12 @@ public class ElevatorSubsystem extends SubsystemBase{
             ElevatorStop();
             this.getCurrentCommand().cancel();
         }
+
+        if (limitSwitch.get()){
+            ElevatorStop(); 
+            beltMotor.setSelectedSensorPosition(0.0);
+        }
+
         Dashboard.getInstance().putData(
             Constants.Dashboard.ELEVATOR_POSITION_KEY, 
             beltMotor.getSelectedSensorPosition()
