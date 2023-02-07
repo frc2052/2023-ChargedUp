@@ -11,13 +11,13 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public class DriveTime extends CommandBase {
 
   private double metersPerSecond;
-  private double duration;
+  private double seconds;
   private DrivetrainSubsystem drive;
   
   /** Creates a new DriveTime. */
-  public DriveTime(double metersPerSecond, double time, DrivetrainSubsystem drivetrain) {
+  public DriveTime(double metersPerSecond, double seconds, DrivetrainSubsystem drivetrain) {
     this.metersPerSecond = metersPerSecond;
-    this.duration = time * 1000;
+    this.seconds = seconds * 1000;
     this.drive = drive;
     addRequirements(drive);
   }
