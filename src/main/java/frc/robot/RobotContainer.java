@@ -16,7 +16,6 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -36,7 +35,6 @@ public class RobotContainer {
     private final Joystick driveJoystick;
     private final Joystick turnJoystick;
     private final ControlPanel controlPanel;
-
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
 
@@ -50,7 +48,7 @@ public class RobotContainer {
         driveJoystick = new Joystick(0);
         turnJoystick = new Joystick(1);
         controlPanel = new ControlPanel(2);
-
+        
         drivetrain = new DrivetrainSubsystem();
 
         dashboard = Dashboard.getInstance();
