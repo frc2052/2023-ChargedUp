@@ -89,14 +89,17 @@ public class RobotContainer {
          * Elevator button bindings
          */
 
-        JoystickButton elevatorGroundPickUpButton = new JoystickButton(controlPanel, 5);
-        JoystickButton elevatorBottomRowButton = new JoystickButton(controlPanel, 3);
-        // JoystickButton elevatorMiddleRowButton = new JoystickButton(controlPanel, 1);
-        // JoystickButton elevatorTopRowButton = new JoystickButton(controlPanel, 1);
-        elevatorGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP, elevator));
-        elevatorBottomRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BOTTOM, elevator));
-        // elevatorMiddleRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MIDDLE_ROW, elevator));
-        // elevatorTopRowButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_ROW, elevator));
+        JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 8);
+        JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 2);
+        JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 4);
+        JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 3);
+        JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
+
+        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOORCUBE, elevator));
+        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOORCONE, elevator));
+        elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABYBIRD, elevator));
+        elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MIDSCORE, elevator));
+        elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOPSCORE, elevator));
 
         // TODO: Update values
         JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 12);
@@ -120,7 +123,7 @@ public class RobotContainer {
         drivetrain.zeroGyro();
         drivetrain.zeroOdometry();
     }
-
+    // ahhhhhhh
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *

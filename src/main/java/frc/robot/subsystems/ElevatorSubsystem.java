@@ -16,6 +16,7 @@ import frc.robot.io.Dashboard;
 public class ElevatorSubsystem extends SubsystemBase {
     private final TalonFX beltMotor;
 
+private final DigitalInput limitSwitch;
     private ElevatorPosition currentDesiredPosition;
 
     public ElevatorSubsystem() {
