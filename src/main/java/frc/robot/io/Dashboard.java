@@ -9,24 +9,21 @@ package frc.robot.io;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.io.Dashboard.Autos.Channel;
-import frc.robot.io.Dashboard.Autos.GamePiece;
-import frc.robot.io.Dashboard.Autos.Grid;
-import frc.robot.io.Dashboard.Autos.Node;
+import frc.robot.io.Dashboard.Autos.ChargingBalance;
+import frc.robot.io.Dashboard.Autos.DriveMode;
 
 /** Add your docs here. */
-// Trying something different this year, instead of a normal class
-// the dashboard this year is using a singleton class, so only one instance will run at once
+/*This Dashboard is a singleton class, meaning it only creates one instance at a time, that can be accessed
+globally*/
 public class Dashboard {
     private static Dashboard INSTANCE;
 
     // Creates sendable choosers
     // private final SendableChooser<Type> exampleChooser;
+    // Auto and Charge Station Balancing Chooser
     private final SendableChooser<Autos> autoChooser;
-    private final SendableChooser<Node> nodeChooser;
-    private final SendableChooser<Grid> gridChooser;
-    private final SendableChooser<Channel> channelChooser;
-    private final SendableChooser<GamePiece> gamePieceSelectable;
+    private final SendableChooser<ChargingBalance> balancingChooser;
+    private final SendableChooser<DriveMode> driveModeSelect;
     
 
     private Dashboard() {
@@ -34,8 +31,9 @@ public class Dashboard {
             Constants.Dashboard.FIELD_RELATIVE_KEY,
             Constants.Dashboard.FIELD_RELATIVE_DEFAULT
         );
-        // Not sure what this does right now
 
+
+        //Creates options for different choosers
         autoChooser = new SendableChooser<Autos>();
         for (Autos auto : Autos.values()) {
             autoChooser.addOption(auto.name, auto);
@@ -43,45 +41,28 @@ public class Dashboard {
         autoChooser.setDefaultOption(Autos.values()[0].name, Autos.values()[0]);
         SmartDashboard.putData("Auto", autoChooser);
 
-        nodeChooser = new SendableChooser<Node>();
-        for (Node node : Node.values()) {
-            nodeChooser.addOption(node.name(), node);
+        balancingChooser = new SendableChooser<ChargingBalance>();
+        for (ChargingBalance chargingBalance : ChargingBalance.values()){
+            balancingChooser.addOption(chargingBalance.name(), chargingBalance);
         }
-        nodeChooser.setDefaultOption(Node.values()[0].name(), Node.values()[0]);
-        SmartDashboard.putData("Node", nodeChooser);
+        balancingChooser.setDefaultOption(ChargingBalance.NOT_BALANCED.name(), ChargingBalance.values()[1]);
+        SmartDashboard.putData("Charging Balancer", balancingChooser);
 
-        gridChooser = new SendableChooser<Grid>();
-        for (Grid grid : Grid.values()) {
-            gridChooser.addOption(grid.name(), grid);
+        driveModeSelect = new SendableChooser<DriveMode>();
+        for (DriveMode driveMode : DriveMode.values()){
+            driveModeSelect.addOption(driveMode.name(), driveMode);
         }
-        gridChooser.setDefaultOption(Grid.values()[0].name(), Grid.values()[0]);
-        SmartDashboard.putData("Grid", gridChooser);
+        driveModeSelect.setDefaultOption(DriveMode.ROBOT_CENTRIC.name(), getDriveMode());
+        SmartDashboard.putData("Drive Mode", driveModeSelect);
 
-        channelChooser = new SendableChooser<Channel>();
-        for (Channel channel : Channel.values()) {
-            channelChooser.addOption(channel.name(), channel);
-        }
-        channelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
-        SmartDashboard.putData("Channel", channelChooser);
-        // for some reason there are two different "putData"s, which is only slightly confusing
-
-        gamePieceSelectable = new SendableChooser<GamePiece>();
-        for (GamePiece gamePiece : GamePiece.values()){
-            gamePieceSelectable.addOption(gamePiece.name(), gamePiece);
-        }
-        gamePieceSelectable.setDefaultOption(GamePiece.values()[0].name(), GamePiece.values()[0]);
-        SmartDashboard.putData("Game Piece", gamePieceSelectable);
     }
 // updates dashboard with needed information
     public void updateDashboard() {
-        SmartDashboard.putString("Auto Description", getAuto().description);
-        SmartDashboard.putString("Node Name", getNode().name());
-        SmartDashboard.putString("Grid Name", getGrid().name());
-        SmartDashboard.putString("Channel", getChannel().name());
-        SmartDashboard.putString("Game Piece", getGamePiece().name());
+       SmartDashboard.putString("Auto Description", getAuto().description);
+       SmartDashboard.putString("Charging Station Balancer", getChargingBalance().name());
     }
 
- /*UwU, senpai, wait for me kitty >//.//< */
+
     public boolean isFieldRelative() {
         return SmartDashboard.getBoolean(
             Constants.Dashboard.FIELD_RELATIVE_KEY,
@@ -89,22 +70,18 @@ public class Dashboard {
         );
     }
 
+    // creates getSelected command
     public Autos getAuto() {
         return autoChooser.getSelected();
     }
-    public Node getNode() {
-        return nodeChooser.getSelected();
+    public ChargingBalance getChargingBalance(){
+        return balancingChooser.getSelected();
     }
-    public Grid getGrid(){
-        return gridChooser.getSelected();
-    }
-    public Channel getChannel(){
-        return channelChooser.getSelected();
-    }
-    public GamePiece getGamePiece(){
-        return gamePieceSelectable.getSelected();
+    public DriveMode getDriveMode(){
+        return driveModeSelect.getSelected();
     }
 
+    // Creates new dashboard instance
     public static Dashboard getInstance(){
         if (INSTANCE == null) {
            INSTANCE = new Dashboard();
@@ -113,6 +90,7 @@ public class Dashboard {
         return INSTANCE;
     }
 
+    // Create enums for Dashboard elements/parts here
     public static enum Autos {
         EXAMPLE_AUTO("Example", "Description");
         //ForwardAuto("MoveForward", "Moves forward");
@@ -124,31 +102,17 @@ public class Dashboard {
             this.name = name;
             this.description = description;
         }
-/*Bryan Griffin drank coffee, then he died. This is how family guy ends. */
-     public static enum Grid {
-            LEFT_GRID,
-            MIDDLE_CONE,
-            RIGHT_CONE,
+
+        public static enum ChargingBalance {
+            BALANCED,
+            NOT_BALANCED,
             }
-            
-        public static enum Node {
-            LEFT_CONE,
-            MIDDLE_CONE,
-            RIGHT_CUBE,
+        
+        public enum DriveMode {
+                FIELD_CENTRIC,
+                ROBOT_CENTRIC,
             }
-            
-        public static enum Channel {
-            LEFT_CHANNEL,
-            RIGHT_CHANNEL,
-            }
-            
-        public static enum GamePiece {
-            FAR_LEFT_GAME_PIECE,
-            MIDDLE_LEFT_GAME_PIECE,
-            FAR_RIGHT_GAME_PIECE,
-            NO_GAME_PIECE,
-            }
-  
+
         public String getName() {
             return name;
         }
@@ -158,4 +122,3 @@ public class Dashboard {
         }
     }
 }
-/*"All hail Matt, the Rizz King"*/
