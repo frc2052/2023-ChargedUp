@@ -47,6 +47,21 @@ public final class Constants {
     public static final class Dashboard {
         public static final String FIELD_RELATIVE_KEY = "Field Relative";
         public static final boolean FIELD_RELATIVE_DEFAULT = true;
+
+        public static final String ELEVATOR_POSITION_KEY = "Elevator position";
+    }
+
+    public static final class Elevator {
+        public static final int BELT_MOTOR = 13;
+
+        public static final double BELT_MOTOR_P = 0.2;
+        public static final double BELT_MOTOR_I = 0;
+        public static final double BELT_MOTOR_D = 0;
+
+        private static final int FALCON500_TICKS_PER_ROTATION = 2048;
+        public static final double BELT_MOTOR_CRUISE_VELOCITY = 8.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final double BELT_MOTOR_MAX_ACCELERATION = 8.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 250;
     }
 
     public static final class Auto {
