@@ -14,7 +14,6 @@ import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,8 +42,7 @@ public class RobotContainer {
 
     private final Dashboard dashboard;
     private final ElevatorSubsystem elevator;
-    private final IntakeSubsystem intake;
-
+    
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -57,7 +55,7 @@ public class RobotContainer {
 
         dashboard = Dashboard.getInstance();
         elevator = new ElevatorSubsystem();
-        intake = new IntakeSubsystem();
+        
 
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
@@ -72,7 +70,7 @@ public class RobotContainer {
             )
         );
         elevator.setDefaultCommand(new RunCommand(() -> elevator.stop(), elevator));
-        intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
+        
 
         // Configure the trigger bindings
         configureBindings();
@@ -130,9 +128,8 @@ public class RobotContainer {
          */
         JoystickButton intakeButton = new JoystickButton(driveJoystick, 3);
         JoystickButton reverseIntakeButton = new JoystickButton(driveJoystick, 2);
-        intakeButton.whileTrue(new RunCommand(() -> intake.intake(), intake));
-        reverseIntakeButton.whileTrue(new RunCommand(() -> intake.reverseIntake(), intake));
     }
+      
 
     public void zeroOdometry() {
         drivetrain.zeroGyro();
