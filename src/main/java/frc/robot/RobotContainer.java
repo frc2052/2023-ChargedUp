@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.PIDChargeStationAutoBalCommand;
 import frc.robot.commands.ElevatorManualDownCommand;
 import frc.robot.commands.ElevatorManualUpCommand;
 import frc.robot.commands.ElevatorPositionCommand;
@@ -16,12 +17,13 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import frc.robot.commands.ChargeStationAutoBalCommand;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -38,6 +40,8 @@ public class RobotContainer {
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
+
+    private final Dashboard dashboard;
     private final ElevatorSubsystem elevator;
     private final IntakeSubsystem intake;
 
@@ -50,6 +54,8 @@ public class RobotContainer {
         controlPanel = new ControlPanel(2);
 
         drivetrain = new DrivetrainSubsystem();
+
+        dashboard = Dashboard.getInstance();
         elevator = new ElevatorSubsystem();
         intake = new IntakeSubsystem();
 
@@ -83,6 +89,15 @@ public class RobotContainer {
          * Drivetrain button bindings
          */
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
+
+        JoystickButton autoBalance = new JoystickButton(driveJoystick, 3);
+        
+        JoystickButton simpleAutoBalance = new JoystickButton(driveJoystick, 4);
+
+        autoBalance.whileTrue(new PIDChargeStationAutoBalCommand(drivetrain));
+
+        simpleAutoBalance.whileTrue(new ChargeStationAutoBalCommand(drivetrain, 1, -1, 3));
+
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
         /*
@@ -125,7 +140,7 @@ public class RobotContainer {
     }
     // ahhhhhhh
     /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
+     * Use this to pass the autonomous commd to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
