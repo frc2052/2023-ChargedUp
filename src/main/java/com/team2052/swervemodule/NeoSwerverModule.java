@@ -169,6 +169,7 @@ public class NeoSwerverModule extends SwerveModule {
             desiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition
         );
         
+        SmartDashboard.putNumber(debugName + ": Desired Rotation", steerAngle.getDegrees());
         SmartDashboard.putNumber(debugName + ": Rotation", Math.toDegrees(steerMotor.getEncoder().getPosition()));
     }
 
