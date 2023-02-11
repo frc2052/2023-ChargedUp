@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import javax.management.loading.PrivateClassLoader;
+
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -24,9 +26,13 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class PhotonVision extends SubsystemBase {
-  PhotonCamera camera = new PhotonCamera("2052April");
+  private final PhotonCamera camera;
+
+  private PhotonPipelineResult latestResult;
+  
   Transform3d robotToCamera = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
   AprilTagFieldLayout aprilTagFieldLayout;
   PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
@@ -38,6 +44,8 @@ public class PhotonVision extends SubsystemBase {
   Thread m_visionThread;
 
   public PhotonVision() {
+    camera = new PhotonCamera(Constants.Camera.CAMERA_NAME);
+
     camera.setDriverMode(true);
     camera.setPipelineIndex(0);
 
@@ -54,7 +62,7 @@ public class PhotonVision extends SubsystemBase {
   }
 
   public boolean hasTarget() {
-    return result.hasTargets();
+    return latestResult.hasTargets();
   } // Whether the pipeline is detecting targets or not.
 
   public double targetPitch() {
@@ -100,7 +108,7 @@ public class PhotonVision extends SubsystemBase {
 
     // Vision-alignment mode
     // Query the latest result from PhotonVision
-    PhotonPipelineResult result = camera.getLatestResult();
+    latestResult = camera.getLatestResult();
 
     List<PhotonTrackedTarget> targets = result.getTargets();
 
@@ -109,8 +117,39 @@ public class PhotonVision extends SubsystemBase {
     double pitch = target.getPitch();
     double area = target.getArea();
     double poseAmbiguity = target.getPoseAmbiguity();
-    Transform3d bestCameraToTarget = target.getBestCameraToTarget();
     Transform3d alternateCameraToTarget = target.getAlternateCameraToTarget();
     System.out.println(camera.isConnected());
   }
+
+public boolean hasTargets() {
+    return latestResult.hasTargets();
+}
+
+public PhotonTrackedTarget getTarget() throws TargetNotFoundException {
+    if (!hasTargets()) {
+        // If there aren't any targets stop any further vision processing. 
+        throw new TargetNotFoundException();
+    }
+    return latestResult.getBestTarget();
+}
+
+public static double getHorizontalOffsetMeters(PhotonTrackedTarget target) {
+    return target.getBestCameraToTarget().getY();
+}
+  /**
+     * @return Estimated height from the ground to the center of the april tag in meters.
+     */
+    public static double getTargetHeightFromGroundMeters(PhotonTrackedTarget target) {
+      // Special case for april tags mounted in the loading zone,
+      // which are heigher than those in the community.
+      if (target.getFiducialId() == 4 || target.getFiducialId() == 5) {
+          return Constants.Camera.LOADING_ZONE_GROUND_TO_APRIL_TAG_HEIGHT_METERS +
+              (Constants.Camera.APRIL_TAG_HEIGHT_METERS / 2);
+      }
+
+      return Constants.Camera.COMMUNITY_GROUND_TO_APRIL_TAG_HEIGHT_METERS +
+              (Constants.Camera.APRIL_TAG_HEIGHT_METERS / 2);
+  }
+public class TargetNotFoundException extends Exception { }
+
 }
