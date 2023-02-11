@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 
@@ -10,8 +12,35 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMVictorSPX;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.vision.PhotonVision;
 
 public class AprilTagD extends CommandBase{
+    private PhotonVision m_vision;
+    private DrivetrainSubsystem m_driveTrain;
+    private double visionRotation = 0;
+    private double horizontalAngle;
+    private boolean isLinedUp;
+
+    public AprilTagD(DrivetrainSubsystem drivetrainSubsystem,
+                               DoubleSupplier translationXSupplier,
+                               DoubleSupplier translationYSupplier,
+                               PhotonVision vision,
+                               DashboardSubsystem dashboard) {
+        super(drivetrainSubsystem,
+        translationXSupplier,
+        translationYSupplier,
+        () -> { return 0.0; }, //this value will not be used because getTurnWillBeOverriden
+        dashboard);
+
+        this.m_vision = vision;
+        this.m_driveTrain = drivetrainSubsystem;
+    }
+    public boolean getIsLinedUp() {
+        return isLinedUp;
+    }
+
+
        // Constants such as camera and target height stored. Change per robot and goal!
     final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(0);
     final double TARGET_HEIGHT_METERS = Units.feetToMeters(0);
@@ -26,11 +55,12 @@ public class AprilTagD extends CommandBase{
 
     // PID constants should be tuned per robot
     final double LINEAR_P = 0.1;
-    final double L
+    final double LINEAR_I = 0;
     final double LINEAR_D = 0.0;
     PIDController forwardController = new PIDController(LINEAR_P, 0, LINEAR_D);
 
     final double ANGULAR_P = 0.1;
+    final double ANGULAR_I = 0;
     final double ANGULAR_D = 0.0;
     PIDController turnController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
 
