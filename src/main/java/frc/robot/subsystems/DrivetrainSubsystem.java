@@ -81,7 +81,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         navx = new AHRS(SPI.Port.kMXP, (byte) 200);
-        navx.setAngleAdjustment(-90);
+        //navx.setAngleAdjustment(-90);
         navx.reset();
 
         odometry = new SwerveDriveOdometry(
