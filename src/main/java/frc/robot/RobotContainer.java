@@ -84,17 +84,18 @@ public class RobotContainer {
         /*
          * Drivetrain button bindings
          */
-        JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
-
-        JoystickButton autoBalance = new JoystickButton(driveJoystick, 3);
-        
-        JoystickButton simpleAutoBalance = new JoystickButton(driveJoystick, 4);
-
-        autoBalance.whileTrue(new PIDChargeStationAutoBalCommand(drivetrain));
-
-        simpleAutoBalance.whileTrue(new ChargeStationAutoBalCommand(drivetrain, 1, -1, 3));
+        JoystickButton zeroGyroButton = new JoystickButton(controlPanel, 2);
 
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
+
+        /*
+         * Charge station auto balancing button bindings
+         */
+        JoystickButton autoBalance = new JoystickButton(controlPanel, 9);
+        JoystickButton simpleAutoBalance = new JoystickButton(controlPanel, 10);
+
+        autoBalance.whileTrue(new PIDChargeStationAutoBalCommand(drivetrain));
+        simpleAutoBalance.whileTrue(new ChargeStationAutoBalCommand(drivetrain, 1, -1, 3));
 
         /*
          * Elevator button bindings

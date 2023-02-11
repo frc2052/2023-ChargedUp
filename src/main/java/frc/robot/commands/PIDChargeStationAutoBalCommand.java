@@ -21,7 +21,7 @@ public class PIDChargeStationAutoBalCommand extends PIDCommand {
         // This should return the setpoint (can also be a constant)
         () -> 0,
         // This uses the output
-        output -> drivetrain.drive(new ChassisSpeeds(output, 0, 0))
+        output -> drivetrain.drive(new ChassisSpeeds(output/4, 0, 0))
           // Use the output here
       );
 
