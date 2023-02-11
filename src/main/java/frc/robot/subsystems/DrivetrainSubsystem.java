@@ -194,7 +194,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         //     return Rotation2d.fromDegrees(navx.getFusedHeading());
         // }
 
-       return navx.getRotation2d().times(-1);
+       return navx.getRotation2d();
     }
 
     public double getMaxVelocityMetersPerSecond() {

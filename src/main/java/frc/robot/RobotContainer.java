@@ -145,9 +145,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An example command will be run in autonomous
         return new TestAuto(drivetrain);
-
         // switch (Dashboard.getInstance().getAuto()) {
         //     case DYNAMIC_AUTO_FACTORY:
         //         return new DynamicAutoFactory(drivetrain).getAuto(

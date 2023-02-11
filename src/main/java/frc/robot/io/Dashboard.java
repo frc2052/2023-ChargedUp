@@ -47,65 +47,65 @@ public class Dashboard {
             nodeChooser.addOption(node.name(), node);
         }
         nodeChooser.setDefaultOption(Node.values()[0].name(), Node.values()[0]);
-        SmartDashboard.putData("Node", nodeChooser);
+        SmartDashboard.putData("DA: Node", nodeChooser);
 
         gridChooser = new SendableChooser<Grid>();
         for (Grid grid : Grid.values()) {
             gridChooser.addOption(grid.name(), grid);
         }
         gridChooser.setDefaultOption(Grid.values()[0].name(), Grid.values()[0]);
-        SmartDashboard.putData("Grid", gridChooser);
+        SmartDashboard.putData("DA: Grid", gridChooser);
 
         exitChannelChooser = new SendableChooser<Channel>();
         for (Channel channel : Channel.values()) {
             exitChannelChooser.addOption(channel.name(), channel);
         }
         exitChannelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
-        SmartDashboard.putData("Channel", exitChannelChooser);
+        SmartDashboard.putData("DA: Channel", exitChannelChooser);
 
         gamePieceChooser = new SendableChooser<GamePiece>();
         for (GamePiece gamePiece : GamePiece.values()) {
             gamePieceChooser.addOption(gamePiece.name(), gamePiece);
         }
         gamePieceChooser.setDefaultOption(GamePiece.values()[0].name(), GamePiece.values()[0]);
-        SmartDashboard.putData("Game Piece", gamePieceChooser);
+        SmartDashboard.putData("DA: Game Piece", gamePieceChooser);
    
         scoreNodeChooser = new SendableChooser<Node>();
         for (Node node : Node.values()) {
             scoreNodeChooser.addOption(node.name(), node);
         }
         scoreNodeChooser.setDefaultOption(Node.values()[0].name(), Node.values()[0]);
-        SmartDashboard.putData("Score Node", scoreNodeChooser);
+        SmartDashboard.putData("DA: Score Node", scoreNodeChooser);
 
         scoreGridChooser = new SendableChooser<Grid>();
         for (Grid grid : Grid.values()) {
             scoreGridChooser.addOption(grid.name(), grid);
         }
         scoreGridChooser.setDefaultOption(Grid.values()[0].name(), Grid.values()[0]);
-        SmartDashboard.putData("Score Grid", scoreGridChooser);
+        SmartDashboard.putData("DA: Score Grid", scoreGridChooser);
 
         enterChannelChooser = new SendableChooser<Channel>();
         for (Channel channel : Channel.values()) {
             enterChannelChooser.addOption(channel.name(), channel);
         }
         enterChannelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
-        SmartDashboard.putData("Enter Channel", enterChannelChooser);
+        SmartDashboard.putData("DA: Enter Channel", enterChannelChooser);
    
     }
 
     // updates dashboard with needed information
     public void updateDashboard() {
         SmartDashboard.putString("Auto Description", getAuto().description);
-        SmartDashboard.putBoolean("Score Game Piece", false);
-        SmartDashboard.putBoolean("End Charge Station", false);
+        SmartDashboard.putBoolean("DA: Score Game Piece", false);
+        SmartDashboard.putBoolean("DA: End Charge Station", false);
     }
 
     public boolean getScoreGamePiece() {
-       return SmartDashboard.getBoolean("Score Game Piece", false);
+       return SmartDashboard.getBoolean("DA: Score Game Piece", false);
     }
 
     public boolean endChargeStation(){
-        return SmartDashboard.getBoolean("End Charge Station", false);
+        return SmartDashboard.getBoolean("DA: End Charge Station", false);
     }
 
     public <V> void putData(String key, V value) {

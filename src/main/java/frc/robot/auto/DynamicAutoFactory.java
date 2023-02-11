@@ -55,8 +55,7 @@ public class DynamicAutoFactory {
                 switch (configuration.getExitChannel()) {
                     case LEFT_CHANNEL:
                         // Subtracting by the width of the community will flip our coordinates from right to left.
-                        double leftChannelYMeters = Constants.Auto.COMMUNITY_WIDTH_METERS - 
-                            (Constants.Auto.CHANNEL_WIDTH_METERS / 2);
+                        double leftChannelYMeters = Constants.Auto.CHANNEL_WIDTH_METERS / 2;
         
                         chargeStationInterpolationMidPoint = new Translation2d(
                             Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_METERS / 2,
@@ -71,7 +70,8 @@ public class DynamicAutoFactory {
                         break;
                 
                     case RIGHT_CHANNEL:
-                        double rightChannelYMeters = Constants.Auto.CHANNEL_WIDTH_METERS / 2;
+                        double rightChannelYMeters = Constants.Auto.COMMUNITY_WIDTH_METERS - 
+                            (Constants.Auto.CHANNEL_WIDTH_METERS / 2);
         
                         chargeStationInterpolationMidPoint = new Translation2d(
                             Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_METERS / 2,
