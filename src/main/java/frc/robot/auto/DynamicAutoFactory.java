@@ -41,6 +41,8 @@ public class DynamicAutoFactory {
                     new Rotation2d()
                 );
 
+                drivetrain.zeroOdometry(initialStartingPose);
+
                 // Interpolation point used to avoid collisions with the charge station.
                 Translation2d chargeStationInterpolationMidPoint = null;
                 // Ending launch point to "launch" any of the next paths.

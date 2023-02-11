@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -81,6 +82,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         navx = new AHRS(SPI.Port.kMXP, (byte) 200);
+        Shuffleboard.getTab("Tab 3").add(navx);
         navx.reset();
 
         odometry = new SwerveDriveOdometry(
@@ -169,7 +171,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         };
     }
 
-    public void zeroOdometry() {
+    public void zeroOdometry(Pose2d initialStartingPose) {
+        //System.out.println("*************************************  CALLED ZERO ODOMETRY");
         odometry.resetPosition(getRotation(), getModulePositions(), new Pose2d());
     }
 
@@ -191,7 +194,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         //     return Rotation2d.fromDegrees(navx.getFusedHeading());
         // }
 
-        return navx.getRotation2d();
+       return navx.getRotation2d().times(-1);
     }
 
     public double getMaxVelocityMetersPerSecond() {
@@ -215,10 +218,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * be the offsets for each SwerveModule respectively.
      */
     public void debug() {
-        SmartDashboard.putNumber("Drivetrain Rotation Degrees", getRotation().getDegrees());
-
         frontLeftModule.debug();
-        frontRightModule.debug();
+        frontRightModule.debug();   
         backLeftModule.debug();
         backRightModule.debug();
     }

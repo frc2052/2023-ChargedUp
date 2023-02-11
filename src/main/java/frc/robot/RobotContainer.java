@@ -16,6 +16,7 @@ import frc.robot.io.Dashboard.Autos;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -135,7 +136,7 @@ public class RobotContainer {
 
     public void zeroOdometry() {
         drivetrain.zeroGyro();
-        drivetrain.zeroOdometry();
+        drivetrain.zeroOdometry(new Pose2d());
     }
     // ahhhhhhh
     /**
@@ -145,26 +146,26 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An example command will be run in autonomous
-        // return new TestAuto(drivetrain);
+        return new TestAuto(drivetrain);
 
-        switch (Dashboard.getInstance().getAuto()) {
-            case DYNAMIC_AUTO_FACTORY:
-                return new DynamicAutoFactory(drivetrain).getAuto(
-                    new DynamicAutoConfiguration(
-                        Dashboard.getInstance().getGrid(), 
-                        Dashboard.getInstance().getNode(),
-                        Dashboard.getInstance().getChannel(),
-                        Dashboard.getInstance().getGamePiece(), 
-                        Dashboard.getInstance().getScoreGamePiece(), 
-                        Dashboard.getInstance().getScoreGrid(), 
-                        Dashboard.getInstance().getScoreNode(), 
-                        Dashboard.getInstance().getEnterChannel(), 
-                        false
-                    )
-                );
+        // switch (Dashboard.getInstance().getAuto()) {
+        //     case DYNAMIC_AUTO_FACTORY:
+        //         return new DynamicAutoFactory(drivetrain).getAuto(
+        //             new DynamicAutoConfiguration(
+        //                 Dashboard.getInstance().getGrid(), 
+        //                 Dashboard.getInstance().getNode(),
+        //                 Dashboard.getInstance().getChannel(),
+        //                 Dashboard.getInstance().getGamePiece(), 
+        //                 Dashboard.getInstance().getScoreGamePiece(), 
+        //                 Dashboard.getInstance().getScoreGrid(), 
+        //                 Dashboard.getInstance().getScoreNode(), 
+        //                 Dashboard.getInstance().getEnterChannel(), 
+        //                 false
+        //             )
+        //         );
         
-            default:
-                return null;
-        }
+        //     default:
+        //         return null;
+        // }
     }
 }

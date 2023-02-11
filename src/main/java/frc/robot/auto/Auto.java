@@ -65,14 +65,14 @@ public abstract class Auto extends SequentialCommandGroup {
         Rotation2d rotation
     ) {
         TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
-            2.5,
-            1.5
+            2.5 / 2,
+            1.5 / 2
         ).setKinematics(drivetrain.getKinematics());
 
         PIDController translationController = new PIDController(1, 0, 0);
 
         ProfiledPIDController rotationController = new ProfiledPIDController(
-            10,
+            2,
             0,
             0,
             new TrapezoidProfile.Constraints(
