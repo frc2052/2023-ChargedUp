@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -34,6 +35,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final AHRS navx;
 
     private final SwerveDriveOdometry odometry;
+    private final Field2d field = new Field2d();
 
     /** Creates a new SwerveDrivetrainSubsystem. */
     public DrivetrainSubsystem() {
@@ -82,7 +84,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         navx = new AHRS(SPI.Port.kMXP, (byte) 200);
-        Shuffleboard.getTab("Tab 3").add(navx);
+        Shuffleboard.getTab("Odometry").add(navx);
+        Shuffleboard.getTab("Odometry").add(field);
         navx.reset();
 
         odometry = new SwerveDriveOdometry(
@@ -94,6 +97,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        field.setRobotPose(odometry.getPoseMeters());
         debug();
     }
 
@@ -172,8 +176,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void zeroOdometry(Pose2d initialStartingPose) {
-        //System.out.println("*************************************  CALLED ZERO ODOMETRY");
-        odometry.resetPosition(getRotation(), getModulePositions(), new Pose2d());
+        odometry.resetPosition(getRotation(), getModulePositions(), initialStartingPose);
     }
 
     public void zeroGyro() {

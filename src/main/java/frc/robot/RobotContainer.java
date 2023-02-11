@@ -145,25 +145,25 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new TestAuto(drivetrain);
-        // switch (Dashboard.getInstance().getAuto()) {
-        //     case DYNAMIC_AUTO_FACTORY:
-        //         return new DynamicAutoFactory(drivetrain).getAuto(
-        //             new DynamicAutoConfiguration(
-        //                 Dashboard.getInstance().getGrid(), 
-        //                 Dashboard.getInstance().getNode(),
-        //                 Dashboard.getInstance().getChannel(),
-        //                 Dashboard.getInstance().getGamePiece(), 
-        //                 Dashboard.getInstance().getScoreGamePiece(), 
-        //                 Dashboard.getInstance().getScoreGrid(), 
-        //                 Dashboard.getInstance().getScoreNode(), 
-        //                 Dashboard.getInstance().getEnterChannel(), 
-        //                 false
-        //             )
-        //         );
+        //return new TestAuto(drivetrain);
+        switch (Dashboard.getInstance().getAuto()) {
+            case DYNAMIC_AUTO_FACTORY:
+                return new DynamicAutoFactory(drivetrain).getAuto(
+                    new DynamicAutoConfiguration(
+                        Dashboard.getInstance().getGrid(), 
+                        Dashboard.getInstance().getNode(),
+                        Dashboard.getInstance().getChannel(),
+                        Dashboard.getInstance().getGamePiece(), 
+                        Dashboard.getInstance().getScoreGamePiece(), 
+                        Dashboard.getInstance().getScoreGrid(), 
+                        Dashboard.getInstance().getScoreNode(), 
+                        Dashboard.getInstance().getEnterChannel(), 
+                        false
+                    )
+                );
         
-        //     default:
-        //         return null;
-        // }
+            default:
+                return null;
+        }
     }
 }

@@ -65,7 +65,7 @@ public final class Constants {
     }
 
     public static final class Auto {
-        public static final double ROBOT_LENGTH_METERS = 0;
+        public static final double ROBOT_LENGTH_METERS = Units.inchesToMeters(28.5);
 
         public static final double CHANNEL_WIDTH_METERS = Units.inchesToMeters(59.375);
 
