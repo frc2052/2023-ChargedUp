@@ -126,9 +126,9 @@ public class NeoSwerverModule extends SwerveModule {
         SparkMaxPIDController controller = steerMotor.getPIDController();
         checkError(
             "Failed to set steer motor PID proportional constant",
-            controller.setP(SwerveConstants.NeoSwerveModule.STEER_P),
-            controller.setI(SwerveConstants.NeoSwerveModule.STEER_I),
-            controller.setD(SwerveConstants.NeoSwerveModule.STEER_D)
+            controller.setP(SwerveConstants.NeoSwerveModule.STEER_MOTOR_P),
+            controller.setI(SwerveConstants.NeoSwerveModule.STEER_MOTOR_I),
+            controller.setD(SwerveConstants.NeoSwerveModule.STEER_MOTOR_D)
         );
 
         checkError(
@@ -169,6 +169,7 @@ public class NeoSwerverModule extends SwerveModule {
             desiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition
         );
         
+        SmartDashboard.putNumber(debugName + ": Desired Rotation", steerAngle.getDegrees());
         SmartDashboard.putNumber(debugName + ": Rotation", Math.toDegrees(steerMotor.getEncoder().getPosition()));
     }
 

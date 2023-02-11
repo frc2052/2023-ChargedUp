@@ -26,27 +26,42 @@ public final class Constants {
         public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 12;
         public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 11;
         public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 10;
-        public static final double FRONT_LEFT_MODULE_STEER_OFFSET_RADIANS = 4.335;
+        public static final double FRONT_LEFT_MODULE_STEER_OFFSET_RADIANS = 4.335 + (Math.PI / 2);
 
         public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
         public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 2;
         public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 1;
-        public static final double FRONT_RIGHT_MODULE_STEER_OFFSET_RADIANS = 4.858;
+        public static final double FRONT_RIGHT_MODULE_STEER_OFFSET_RADIANS = 4.858 + (Math.PI / 2);
 
         public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 9;
         public static final int BACK_LEFT_MODULE_STEER_MOTOR = 8;
         public static final int BACK_LEFT_MODULE_STEER_ENCODER = 7;
-        public static final double BACK_LEFT_MODULE_STEER_OFFSET_RADIANS = 1.612;
+        public static final double BACK_LEFT_MODULE_STEER_OFFSET_RADIANS = 1.612 + (Math.PI / 2);
 
         public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 6;
         public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 5;
         public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 4;
-        public static final double BACK_RIGHT_MODULE_STEER_OFFSET_RADIANS = 1.179;
+        public static final double BACK_RIGHT_MODULE_STEER_OFFSET_RADIANS = 1.179 + (Math.PI / 2);
     }
 
     public static final class Dashboard {
         public static final String FIELD_RELATIVE_KEY = "Field Relative";
         public static final boolean FIELD_RELATIVE_DEFAULT = true;
+
+        public static final String ELEVATOR_POSITION_KEY = "Elevator position";
+    }
+
+    public static final class Elevator {
+        public static final int BELT_MOTOR = 13;
+
+        public static final double BELT_MOTOR_P = 0.2;
+        public static final double BELT_MOTOR_I = 0;
+        public static final double BELT_MOTOR_D = 0;
+
+        private static final int FALCON500_TICKS_PER_ROTATION = 2048;
+        public static final double BELT_MOTOR_CRUISE_VELOCITY = 8.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final double BELT_MOTOR_MAX_ACCELERATION = 8.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 250;
     }
 
     public static final class Auto {
@@ -71,4 +86,5 @@ public final class Constants {
     public static final class Intake {
         public static final int INTAKE_MOTOR_PWM_PORT = 0;
     }
+
 }
