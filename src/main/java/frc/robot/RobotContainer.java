@@ -58,9 +58,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
                 // Forward velocity supplier
-                () -> driveJoystick.getX(),
-                // Sideways velocity supplier
                 () -> driveJoystick.getY(),
+                // Sideways velocity supplier
+                () -> driveJoystick.getX(),
                 // Rotation velocity supplier
                 () -> turnJoystick.getX(),
                 () -> Dashboard.getInstance().isFieldRelative(),

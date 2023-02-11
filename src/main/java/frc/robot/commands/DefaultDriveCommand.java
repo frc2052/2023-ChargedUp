@@ -55,9 +55,9 @@ public class DefaultDriveCommand extends CommandBase {
     @Override
     public void execute() {
         drivetrain.drive(
-            slewAxis(xLimiter, deadBand(-xSupplier.getAsDouble())), 
-            slewAxis(yLimiter, deadBand(-ySupplier.getAsDouble())),
-            slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble())),
+            slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())), 
+            slewAxis(yLimiter, deadBand(ySupplier.getAsDouble())),
+            slewAxis(rotationLimiter, deadBand(rotationSupplier.getAsDouble())),
             fieldCentricSupplier.getAsBoolean()
         );
     }
