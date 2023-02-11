@@ -23,14 +23,17 @@ public class Dashboard {
     private final SendableChooser<Autos> autoChooser;
     private final SendableChooser<Node> nodeChooser;
     private final SendableChooser<Grid> gridChooser;
-    private final SendableChooser<Channel> channelChooser;
-    private final SendableChooser<GamePiece> gamePieceSelectable;
-
+    private final SendableChooser<Channel> exitChannelChooser;
+    private final SendableChooser<GamePiece> gamePieceChooser;
+    private final SendableChooser<Grid> scoreGridChooser;
+    private final SendableChooser<Node> scoreNodeChooser;
+    private final SendableChooser<Channel> enterChannelChooser;
 
     private Dashboard() {
         SmartDashboard.putBoolean(
-                Constants.Dashboard.FIELD_RELATIVE_KEY,
-                Constants.Dashboard.FIELD_RELATIVE_DEFAULT);
+            Constants.Dashboard.FIELD_RELATIVE_KEY,
+            Constants.Dashboard.FIELD_RELATIVE_DEFAULT
+        );
 
         autoChooser = new SendableChooser<Autos>();
         for (Autos auto : Autos.values()) {
@@ -53,49 +56,63 @@ public class Dashboard {
         gridChooser.setDefaultOption(Grid.values()[0].name(), Grid.values()[0]);
         SmartDashboard.putData("Grid", gridChooser);
 
-        channelChooser = new SendableChooser<Channel>();
+        exitChannelChooser = new SendableChooser<Channel>();
         for (Channel channel : Channel.values()) {
-            channelChooser.addOption(channel.name(), channel);
+            exitChannelChooser.addOption(channel.name(), channel);
         }
-        channelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
-        SmartDashboard.putData("Channel", channelChooser);
-        // for some reason there are two different "putData"s, which is only slightly
-        // confusing
+        exitChannelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
+        SmartDashboard.putData("Channel", exitChannelChooser);
 
-        gamePieceSelectable = new SendableChooser<GamePiece>();
-
+        gamePieceChooser = new SendableChooser<GamePiece>();
         for (GamePiece gamePiece : GamePiece.values()) {
-            gamePieceSelectable.addOption(gamePiece.name(), gamePiece);
+            gamePieceChooser.addOption(gamePiece.name(), gamePiece);
         }
-        gamePieceSelectable.setDefaultOption(GamePiece.values()[0].name(), GamePiece.values()[0]);
-        SmartDashboard.putData("Game Piece", gamePieceSelectable);
+        gamePieceChooser.setDefaultOption(GamePiece.values()[0].name(), GamePiece.values()[0]);
+        SmartDashboard.putData("Game Piece", gamePieceChooser);
+   
+        scoreNodeChooser = new SendableChooser<Node>();
+        for (Node node : Node.values()) {
+            scoreNodeChooser.addOption(node.name(), node);
+        }
+        scoreNodeChooser.setDefaultOption(Node.values()[0].name(), Node.values()[0]);
+        SmartDashboard.putData("Score Node", scoreNodeChooser);
+
+        scoreGridChooser = new SendableChooser<Grid>();
+        for (Grid grid : Grid.values()) {
+            scoreGridChooser.addOption(grid.name(), grid);
+        }
+        scoreGridChooser.setDefaultOption(Grid.values()[0].name(), Grid.values()[0]);
+        SmartDashboard.putData("Score Grid", scoreGridChooser);
+
+        enterChannelChooser = new SendableChooser<Channel>();
+        for (Channel channel : Channel.values()) {
+            enterChannelChooser.addOption(channel.name(), channel);
+        }
+        enterChannelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
+        SmartDashboard.putData("Enter Channel", enterChannelChooser);
+   
     }
 
     // updates dashboard with needed information
     public void updateDashboard() {
         SmartDashboard.putString("Auto Description", getAuto().description);
-        SmartDashboard.putString("Node Name", getNode().name());
-        SmartDashboard.putString("Grid Name", getGrid().name());
-        SmartDashboard.putString("Channel", getChannel().name());
-        SmartDashboard.putString("Game Piece", getGamePiece().name());
-        SmartDashboard.putBoolean("scoregamepiece", false);
-        SmartDashboard.putBoolean("DynamicAutoFactory", true);
+        SmartDashboard.putBoolean("Score Game Piece", false);
+        SmartDashboard.putBoolean("End Charge Station", false);
     }
 
     public boolean getScoreGamePiece() {
-       return SmartDashboard.getBoolean("scoregamepiece", false);
+       return SmartDashboard.getBoolean("Score Game Piece", false);
     }
 
     public boolean endChargeStation(){
-        return SmartDashboard.getBoolean("endchargestation", true);
+        return SmartDashboard.getBoolean("End Charge Station", false);
     }
 
     public boolean isFieldRelative() {
         return SmartDashboard.getBoolean(
-                Constants.Dashboard.FIELD_RELATIVE_KEY,
-                Constants.Dashboard.FIELD_RELATIVE_DEFAULT);
-                
-                
+            Constants.Dashboard.FIELD_RELATIVE_KEY,
+            Constants.Dashboard.FIELD_RELATIVE_DEFAULT
+        );      
     }
 
     public Autos getAuto() {
@@ -111,14 +128,24 @@ public class Dashboard {
     }
 
     public Channel getChannel() {
-        return channelChooser.getSelected();
+        return exitChannelChooser.getSelected();
     }
 
     public GamePiece getGamePiece() {
-        return gamePieceSelectable.getSelected();
+        return gamePieceChooser.getSelected();
     }
 
-   
+    public Node getScoreNode() {
+        return scoreNodeChooser.getSelected();
+    }
+
+    public Grid getScoreGrid() {
+        return scoreGridChooser.getSelected();
+    }
+
+    public Channel getEnterChannel() {
+        return enterChannelChooser.getSelected();
+    }
 
     public static Dashboard getInstance() {
         if (INSTANCE == null) {
@@ -129,9 +156,7 @@ public class Dashboard {
     }
 
     public static enum Autos {
-        EXAMPLE_AUTO("Example", "Description"),
-        DynamicAutoFactory("DynamicAutoFactory", "Description");
-        //ForwardAuto("MoveForward", "Moves forward");
+        DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description");
 
         private final String name;
         private final String description;
@@ -152,25 +177,25 @@ public class Dashboard {
 
     public static enum Grid {
         LEFT_GRID,
-        MIDDLE_CONE,
-        RIGHT_CONE,
+        MIDDLE_GRID,
+        RIGHT_GRID;
     }
 
     public static enum Node {
         LEFT_CONE,
-        MIDDLE_CONE,
-        RIGHT_CUBE,
+        MIDDLE_CUBE,
+        RIGHT_CONE;
     }
 
     public static enum Channel {
         LEFT_CHANNEL,
-        RIGHT_CHANNEL,
+        RIGHT_CHANNEL;
     }
 
     public static enum GamePiece {
         FAR_LEFT_GAME_PIECE,
         MIDDLE_LEFT_GAME_PIECE,
         FAR_RIGHT_GAME_PIECE,
-        NO_GAME_PIECE,
+        NO_GAME_PIECE;
     }
 }

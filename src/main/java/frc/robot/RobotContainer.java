@@ -9,6 +9,7 @@ import frc.robot.commands.PIDChargeStationAutoBalCommand;
 import frc.robot.commands.TestAuto;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
+import frc.robot.io.Dashboard.Autos;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.auto.DynamicAutoConfiguration;
+import frc.robot.auto.DynamicAutoFactory;
 import frc.robot.commands.ChargeStationAutoBalCommand;
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -34,8 +37,6 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
 
-    private final Dashboard dashboard;
-
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -45,8 +46,6 @@ public class RobotContainer {
         controlPanel = new ControlPanel(2);
 
         drivetrain = new DrivetrainSubsystem();
-
-        dashboard = Dashboard.getInstance();
 
         SmartDashboard.putBoolean("Field Centric", true);
         
@@ -75,15 +74,11 @@ public class RobotContainer {
      */
     private void configureBindings() {
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
-
         JoystickButton autoBalance = new JoystickButton(driveJoystick, 3);
-        
         JoystickButton simpleAutoBalance = new JoystickButton(driveJoystick, 4);
 
         autoBalance.whileTrue(new PIDChargeStationAutoBalCommand(drivetrain));
-
         simpleAutoBalance.whileTrue(new ChargeStationAutoBalCommand(drivetrain, 1, -1, 3));
-
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
     }
 
@@ -99,6 +94,26 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An example command will be run in autonomous
-        return new TestAuto(drivetrain);
+        // return new TestAuto(drivetrain);
+
+        switch (Dashboard.getInstance().getAuto()) {
+            case DYNAMIC_AUTO_FACTORY:
+                return new DynamicAutoFactory(drivetrain).getAuto(
+                    new DynamicAutoConfiguration(
+                        Dashboard.getInstance().getGrid(), 
+                        Dashboard.getInstance().getNode(),
+                        Dashboard.getInstance().getChannel(),
+                        Dashboard.getInstance().getGamePiece(), 
+                        Dashboard.getInstance().getScoreGamePiece(), 
+                        Dashboard.getInstance().getScoreGrid(), 
+                        Dashboard.getInstance().getScoreNode(), 
+                        Dashboard.getInstance().getEnterChannel(), 
+                        false
+                    )
+                );
+        
+            default:
+                return null;
+        }
     }
 }
