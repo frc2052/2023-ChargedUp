@@ -8,20 +8,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import javax.management.loading.PrivateClassLoader;
-
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -35,8 +31,7 @@ public class PhotonVision extends SubsystemBase {
   
   Transform3d robotToCamera = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
   AprilTagFieldLayout aprilTagFieldLayout;
-  PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
-      PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera, robotToCamera);
+  PhotonPoseEstimator photonPoseEstimator;
  // Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), aprilTagFieldLayout.getTagPose(target.getFiducialId()), robotToCamera);
  private PhotonPipelineResult result;
   private PhotonTrackedTarget target;
@@ -45,7 +40,8 @@ public class PhotonVision extends SubsystemBase {
 
   public PhotonVision() {
     camera = new PhotonCamera(Constants.Camera.CAMERA_NAME);
-
+    photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
+      PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera, robotToCamera);
     camera.setDriverMode(true);
     camera.setPipelineIndex(0);
 
@@ -62,11 +58,11 @@ public class PhotonVision extends SubsystemBase {
   }
 
   public boolean hasTarget() {
-    return latestResult.hasTargets();
+    return latestResult.getTargets();
   } // Whether the pipeline is detecting targets or not.
 
   public double targetPitch() {
-    return this.targetPitch();
+    return target.getPitch();
   }// The pitch of the target in degrees (positive up).
 
   public double targetYaw() {
@@ -74,24 +70,12 @@ public class PhotonVision extends SubsystemBase {
   } // The yaw of the target in degrees (positive right).
 
   public double targetArea() {
-    return this.targetArea();
+    return target.getArea();
   } // The area (percent of bounding box in screen) as a percent (0-100).
 
   public double targetSkew() {
-    return this.targetSkew();
+    return target.getSkew();
   } // The skew of the target in degrees (counter-clockwise positive).
-
-  public double targetPose() {
-    return this.targetPose();
-  } // The pose of the target relative to the robot (x, y, z, qw, qx, qy, qz)
-
-  public double targetPixelsX() {
-    return this.targetPixelsX();
-  } // The target crosshair location horizontally, in pixels (origin top-right)
-
-  public double targetPixelsY() {
-    return this.targetPixelsY();
-  }
 
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
     photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
@@ -150,6 +134,16 @@ public static double getHorizontalOffsetMeters(PhotonTrackedTarget target) {
       return Constants.Camera.COMMUNITY_GROUND_TO_APRIL_TAG_HEIGHT_METERS +
               (Constants.Camera.APRIL_TAG_HEIGHT_METERS / 2);
   }
+  return Estimated distance from the camera to the april tag in meters.
+     */
+    public static double getDistanceToTargetMeters(PhotonTrackedTarget target) {
+        return PhotonUtils.calculateDistanceToTargetMeters(
+            Constants.Camera.CAMERA_HEIGHT_METERS, 
+            getTargetHeightFromGroundMeters(target), 
+            Constants.Camera.CAMERA_PITCH_RADIANS,
+            Units.degreesToRadians(target.getPitch())
+        );
 public class TargetNotFoundException extends Exception { }
 
+}
 }
