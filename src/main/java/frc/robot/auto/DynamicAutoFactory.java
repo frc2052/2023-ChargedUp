@@ -7,8 +7,6 @@ package frc.robot.auto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
@@ -22,6 +20,10 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.Constants;
+import frc.robot.io.Dashboard.Channel;
+import frc.robot.io.Dashboard.GamePiece;
+import frc.robot.io.Dashboard.Grid;
+import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /** Add your docs here. */
@@ -53,9 +55,7 @@ public class DynamicAutoFactory {
             getBaseLineYMeters(startingGrid, startingNode), 
             Constants.Auto.ROBOT_LENGTH_METERS / 2,
             Rotation2d.fromDegrees(180)
-            
         );
-        
         
         Translation2d interpolationMidPoint = null;
         Pose2d launchPose = null;
@@ -145,7 +145,7 @@ public class DynamicAutoFactory {
         }
         
 
-        if (endChargeStation){
+        if (endChargeStation) {
             Translation2d farEntryPoint = new Translation2d(
                 Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_METERS + Constants.Auto.CHARGE_STATION_DEPTH,
                 Constants.Auto.COMMUNITY_WIDTH_METERS / 2
@@ -227,30 +227,4 @@ public class DynamicAutoFactory {
             drivetrain
         );
     }
-
-    public static enum Grid {
-        LEFT_GRID,
-        CO_OP,
-        RIGHT_GRID;
-    }
-
-    public static enum Node {
-        LEFT_CONE, 
-        MIDDLE_CONE, 
-        RIGHT_CUBE;
-    }
-
-    public static enum Channel {
-        LEFT_CHANNEL, 
-        RIGHT_CHANNEL;
-    }
-
-    public static enum GamePiece {
-        FAR_LEFT_GAME_PIECE,
-        MIDDLE_LEET_GAME_PIECE,
-        MIDDLE_RIGHT_GAME_PIECE,
-        FAR_RIGHT_GAME_PIECE,
-        NO_GAME_PIECE;
-    }
 }
-

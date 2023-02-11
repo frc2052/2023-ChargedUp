@@ -26,6 +26,7 @@ public class Dashboard {
     private final SendableChooser<Channel> channelChooser;
     private final SendableChooser<GamePiece> gamePieceSelectable;
 
+
     private Dashboard() {
         SmartDashboard.putBoolean(
                 Constants.Dashboard.FIELD_RELATIVE_KEY,
@@ -62,6 +63,7 @@ public class Dashboard {
         // confusing
 
         gamePieceSelectable = new SendableChooser<GamePiece>();
+
         for (GamePiece gamePiece : GamePiece.values()) {
             gamePieceSelectable.addOption(gamePiece.name(), gamePiece);
         }
@@ -76,12 +78,24 @@ public class Dashboard {
         SmartDashboard.putString("Grid Name", getGrid().name());
         SmartDashboard.putString("Channel", getChannel().name());
         SmartDashboard.putString("Game Piece", getGamePiece().name());
+        SmartDashboard.putBoolean("scoregamepiece", false);
+        SmartDashboard.putBoolean("DynamicAutoFactory", true);
+    }
+
+    public boolean getScoreGamePiece() {
+       return SmartDashboard.getBoolean("scoregamepiece", false);
+    }
+
+    public boolean endChargeStation(){
+        return SmartDashboard.getBoolean("endchargestation", true);
     }
 
     public boolean isFieldRelative() {
         return SmartDashboard.getBoolean(
                 Constants.Dashboard.FIELD_RELATIVE_KEY,
                 Constants.Dashboard.FIELD_RELATIVE_DEFAULT);
+                
+                
     }
 
     public Autos getAuto() {
@@ -103,6 +117,8 @@ public class Dashboard {
     public GamePiece getGamePiece() {
         return gamePieceSelectable.getSelected();
     }
+
+   
 
     public static Dashboard getInstance() {
         if (INSTANCE == null) {
