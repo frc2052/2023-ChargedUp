@@ -5,7 +5,6 @@
 package frc.robot.subsystems.vision;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
@@ -26,7 +25,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class PhotonVision extends SubsystemBase {
+public class PhotonVisionSubsystem extends SubsystemBase {
   private final PhotonCamera camera;
 
   private PhotonPipelineResult latestResult;
@@ -42,7 +41,7 @@ public class PhotonVision extends SubsystemBase {
 
   Thread m_visionThread;
 
-  public PhotonVision() {
+  public PhotonVisionSubsystem() {
     camera = new PhotonCamera(Constants.Camera.CAMERA_NAME);
     photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
         PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera, robotToCamera);
@@ -111,7 +110,7 @@ public class PhotonVision extends SubsystemBase {
     return latestResult.hasTargets();
   }
 
-    public PhotonTrackedTarget getTarget() throws TargetNotFoundException {
+  public PhotonTrackedTarget getTarget() throws TargetNotFoundException {
     if (!hasTargets()) {
       // If there aren't any targets stop any further vision processing.
       throw new TargetNotFoundException();

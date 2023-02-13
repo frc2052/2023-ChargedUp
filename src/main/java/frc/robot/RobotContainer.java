@@ -4,20 +4,18 @@
 
 package frc.robot;
 
-import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.TestAuto;
+import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import org.photonvision.PhotonCamera;
-
+import frc.robot.subsystems.vision.PhotonVisionSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.io.ControlPanel;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -32,6 +30,7 @@ public class RobotContainer {
     private final Joystick driveJoystick;
     private final Joystick turnJoystick;
     private final ControlPanel controlPanel;
+    private final PhotonVisionSubsystem vision;
     //private final VisionWPI vision;
 
     // The robot's subsystems and commands are defined here...
@@ -44,7 +43,7 @@ public class RobotContainer {
         driveJoystick = new Joystick(0);
         turnJoystick = new Joystick(1);
         controlPanel = new ControlPanel(2);
-        //vision = new VisionWPI();
+        vision = new PhotonVisionSubsystem();
         drivetrain = new DrivetrainSubsystem();
 
         SmartDashboard.putBoolean("Field Centric", true);

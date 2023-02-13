@@ -33,6 +33,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final AHRS navx;
 
     private final SwerveDriveOdometry odometry;
+    public Object drive;
 
     /** Creates a new SwerveDrivetrainSubsystem. */
     public DrivetrainSubsystem() {
