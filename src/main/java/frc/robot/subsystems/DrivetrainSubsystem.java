@@ -130,6 +130,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         drive(0, 0, 0, false);
     }
 
+    public AHRS getNavx(){
+        return navx;
+    }
+
     public void setModuleStates(SwerveModuleState[] swerveModuleStates) {
         // Check if the wheels don't have a drive velocity to maintain the current wheel orientation.
         boolean hasVelocity = swerveModuleStates[0].speedMetersPerSecond != 0

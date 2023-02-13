@@ -15,17 +15,17 @@ public final class SwerveConstants {
     public static final class NeoSwerveModule {
         public static final int NEO_ROUNDS_PER_MINUTE = 5676;
     
-        public static final double STEER_P = 1.0;
-        public static final double STEER_I = 0.0;
-        public static final double STEER_D = 0.1;
+        public static final double STEER_MOTOR_P = 1.0;
+        public static final double STEER_MOTOR_I = 0.0;
+        public static final double STEER_MOTOR_D = 0.1;
     }
 
     public static final class Falcon500SwerveModule {
         public static final int FALCON500_ROUNDS_PER_MINUTE = 6380;
         public static final int TICKS_PER_ROTATION = 2048;
         
-        public static final double STEER_P = 0.2;
-        public static final double STEER_I = 0.0;
-        public static final double STEER_D = 0.1;
+        public static final double STEER_MOTOR_P = 0.2;
+        public static final double STEER_MOTOR_I = 0.0;
+        public static final double STEER_MOTOR_D = 0.1;
     }
 }

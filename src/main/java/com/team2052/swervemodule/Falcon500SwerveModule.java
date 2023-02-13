@@ -78,9 +78,9 @@ public class Falcon500SwerveModule extends SwerveModule {
             moduleConfiguration.getSteerReduction();
 
         TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration();
-        steerMotorConfiguration.slot0.kP = SwerveConstants.Falcon500SwerveModule.STEER_P;
-        steerMotorConfiguration.slot0.kI = SwerveConstants.Falcon500SwerveModule.STEER_I;
-        steerMotorConfiguration.slot0.kD = SwerveConstants.Falcon500SwerveModule.STEER_D;
+        steerMotorConfiguration.slot0.kP = SwerveConstants.Falcon500SwerveModule.STEER_MOTOR_P;
+        steerMotorConfiguration.slot0.kI = SwerveConstants.Falcon500SwerveModule.STEER_MOTOR_I;
+        steerMotorConfiguration.slot0.kD = SwerveConstants.Falcon500SwerveModule.STEER_MOTOR_D;
 
         steerMotorConfiguration.voltageCompSaturation = SwerveConstants.MAX_VOLTAGE_VOLTS;
 

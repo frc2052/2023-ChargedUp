@@ -4,19 +4,26 @@
 
 package frc.robot;
 
+import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.PIDChargeStationAutoBalCommand;
+import frc.robot.commands.ElevatorManualDownCommand;
+import frc.robot.commands.ElevatorManualUpCommand;
+import frc.robot.commands.ElevatorPositionCommand;
 import frc.robot.commands.TestAuto;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.vision.PhotonVisionSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import frc.robot.commands.ChargeStationAutoBalCommand;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -31,11 +38,13 @@ public class RobotContainer {
     private final Joystick turnJoystick;
     private final ControlPanel controlPanel;
     private final PhotonVisionSubsystem vision;
-    //private final VisionWPI vision;
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
 
+    private final Dashboard dashboard;
+    private final ElevatorSubsystem elevator;
+    
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -46,8 +55,10 @@ public class RobotContainer {
         vision = new PhotonVisionSubsystem();
         drivetrain = new DrivetrainSubsystem();
 
-        SmartDashboard.putBoolean("Field Centric", true);
+        dashboard = Dashboard.getInstance();
+        elevator = new ElevatorSubsystem();
         
+
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
                 // Forward velocity supplier
@@ -56,11 +67,13 @@ public class RobotContainer {
                 () -> driveJoystick.getX(),
                 // Rotation velocity supplier
                 () -> turnJoystick.getX(),
-                () -> Dashboard.getInstance().isFieldRelative(), //SmartDashboard.getBoolean("Field Centric", true),
+                () -> Dashboard.getInstance().isFieldRelative(),
                 drivetrain
             )
         );
+        elevator.setDefaultCommand(new RunCommand(() -> elevator.stop(), elevator));
         
+
         // Configure the trigger bindings
         configureBindings();
     }
@@ -72,18 +85,62 @@ public class RobotContainer {
      * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joystick}.
      */
     private void configureBindings() {
-        JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
+        /*
+         * Drivetrain button bindings
+         */
+        JoystickButton zeroGyroButton = new JoystickButton(controlPanel, 2);
 
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
+
+        /*
+         * Charge station auto balancing button bindings
+         */
+        JoystickButton autoBalance = new JoystickButton(controlPanel, 9);
+        JoystickButton simpleAutoBalance = new JoystickButton(controlPanel, 10);
+
+        autoBalance.whileTrue(new PIDChargeStationAutoBalCommand(drivetrain));
+        simpleAutoBalance.whileTrue(new ChargeStationAutoBalCommand(drivetrain, 1, -1, 3));
+
+        /*
+         * Elevator button bindings
+         */
+
+        JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 8);
+        JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 2);
+        JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 4);
+        JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 3);
+        JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
+
+        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOORCUBE, elevator));
+        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOORCONE, elevator));
+        elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABYBIRD, elevator));
+        elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MIDSCORE, elevator));
+        elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOPSCORE, elevator));
+
+        // TODO: Update values
+        JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 12);
+        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 11);
+        manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
+        manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
+        
+        JoystickButton resetElevatorEncoderButton = new JoystickButton(controlPanel, 4);
+        resetElevatorEncoderButton.onTrue(new InstantCommand(() -> elevator.zeroEncoder(), elevator));
+
+        /*
+         * Intake button bindings
+         */
+        JoystickButton intakeButton = new JoystickButton(driveJoystick, 3);
+        JoystickButton reverseIntakeButton = new JoystickButton(driveJoystick, 2);
     }
+      
 
     public void zeroOdometry() {
         drivetrain.zeroGyro();
         drivetrain.zeroOdometry();
     }
-
+    // ahhhhhhh
     /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
+     * Use this to pass the autonomous commd to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
