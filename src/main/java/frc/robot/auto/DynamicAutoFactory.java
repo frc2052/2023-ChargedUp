@@ -58,11 +58,14 @@ public class DynamicAutoFactory {
                         double leftChannelYMeters = Constants.Auto.COMMUNITY_WIDTH_METERS -
                             (Constants.Auto.CHANNEL_WIDTH_METERS / 2);
         
+                        //a point that is half the distance between the charge station and grid (X)
+                        //and half the distance between charge station and side wall (y)
                         chargeStationInterpolationMidPoint = new Translation2d(
                             Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_METERS / 2,
                             leftChannelYMeters
                         );
-        
+
+                        //point half way between wall and charge station (y) and just outside the community line (x)
                         launchPointPose = new Pose2d(
                             launchPointXMeters,
                             leftChannelYMeters,
@@ -182,6 +185,9 @@ public class DynamicAutoFactory {
     }
 
     private double getBaseLineYMeters(Grid grid, Node node) {
-        return Constants.Auto.COMMUNITY_WIDTH_METERS - Units.inchesToMeters((3.5 + 16.5) + (3 * grid.ordinal() + node.ordinal()) * (18.5 + 13.5));
+        double distanceToFirstPipe = 3.5 + 16.5;
+        int scoringPosition = (3 * grid.ordinal()) + node.ordinal();
+        double scoringElementWidth = 18.5 + 13.5;
+        return Constants.Auto.COMMUNITY_WIDTH_METERS - Units.inchesToMeters(distanceToFirstPipe + (scoringPosition * scoringElementWidth));
     }
 }

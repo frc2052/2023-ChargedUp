@@ -197,7 +197,7 @@ public class Dashboard {
         RIGHT_CONE;
     }
 
-    public static enum Channel {
+    public static enum Channel { //This is the path around the charge station on the left or right side
         LEFT_CHANNEL,
         RIGHT_CHANNEL;
     }
@@ -205,6 +205,7 @@ public class Dashboard {
     public static enum GamePiece {
         FAR_LEFT_GAME_PIECE,
         MIDDLE_LEFT_GAME_PIECE,
+        MIDDLE_RIGHT_GAME_PIECE,
         FAR_RIGHT_GAME_PIECE,
         NO_GAME_PIECE;
     }
