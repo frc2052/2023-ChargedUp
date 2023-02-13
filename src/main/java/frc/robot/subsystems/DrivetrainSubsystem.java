@@ -175,7 +175,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         };
     }
 
-    public void zeroOdometry(Pose2d initialStartingPose) {
+    public void resetOdometry(Pose2d initialStartingPose) {
         odometry.resetPosition(getRotation(), getModulePositions(), initialStartingPose);
     }
 

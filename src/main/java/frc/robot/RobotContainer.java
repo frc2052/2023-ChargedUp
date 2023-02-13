@@ -136,7 +136,7 @@ public class RobotContainer {
 
     public void zeroOdometry() {
         drivetrain.zeroGyro();
-        drivetrain.zeroOdometry(new Pose2d());
+        drivetrain.resetOdometry(new Pose2d());
     }
     // ahhhhhhh
     /**

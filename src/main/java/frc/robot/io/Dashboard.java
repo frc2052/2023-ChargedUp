@@ -5,6 +5,7 @@
 
 package frc.robot.io;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 //import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -90,7 +91,6 @@ public class Dashboard {
         }
         enterChannelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
         SmartDashboard.putData("DA: Enter Channel", enterChannelChooser);
-   
     }
 
     // updates dashboard with needed information
@@ -197,7 +197,8 @@ public class Dashboard {
         RIGHT_CONE;
     }
 
-    public static enum Channel { //This is the path around the charge station on the left or right side
+    // Path around the charge station either on the left or right side
+    public static enum Channel {
         LEFT_CHANNEL,
         RIGHT_CHANNEL;
     }

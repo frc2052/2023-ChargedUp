@@ -41,7 +41,7 @@ public class DynamicAutoFactory {
                     new Rotation2d()
                 );
 
-                drivetrain.zeroOdometry(initialStartingPose);
+                drivetrain.resetOdometry(initialStartingPose);
 
                 // Interpolation point used to avoid collisions with the charge station.
                 Translation2d chargeStationInterpolationMidPoint = null;
@@ -94,8 +94,7 @@ public class DynamicAutoFactory {
                     initialStartingPose,
                     List.of(chargeStationInterpolationMidPoint),
                     launchPointPose,
-                    // Sets 0 as facing away from the grid and driver station
-                    // Rotation2d.fromDegrees(180)
+                    // Sets 0 degrees as facing away from the grid and driver station.
                     new Rotation2d()
                 );
                 addCommands(initialSwerveCommand);
@@ -104,7 +103,8 @@ public class DynamicAutoFactory {
                 if (configuration.getGamePiece() != GamePiece.NO_GAME_PIECE) {
                     Pose2d gamePieceEndPose = new Pose2d(
                         Constants.Auto.DISTANCE_GRID_TO_GAME_PIECES_METERS,
-                        (configuration.getGamePiece().ordinal() * Constants.Auto.DISTANCE_BETWEEN_GAME_PIECES_METERS) + 
+                        Constants.Auto.COMMUNITY_WIDTH_METERS - 
+                            (configuration.getGamePiece().ordinal() * Constants.Auto.DISTANCE_BETWEEN_GAME_PIECES_METERS) + 
                             Constants.Auto.DISTANCE_WALL_TO_GAME_PIECE_METERS,
                         new Rotation2d()
                     );
@@ -114,25 +114,20 @@ public class DynamicAutoFactory {
                         gamePieceEndPose, 
                         new Rotation2d()
                     );
-        
-                    addCommands(
-                        // TODO: Replace with ParallelDeadlineGroup with intake command.
-                        gamePieceSwerveCommand
-                    );
+                    addCommands(gamePieceSwerveCommand);
         
                     // Check to score picked up game piece if pick up game piece was selected.
                     if (configuration.scoreGamePiece()) {
                         Pose2d scorePose = new Pose2d(
                             Constants.Auto.ROBOT_LENGTH_METERS / 2,
                             getBaseLineYMeters(configuration.getScoreGrid(), configuration.getScoreNode()),
-                            // Rotation2d.fromDegrees(180)
                             new Rotation2d()
                         );
-        
+
                         SwerveControllerCommand scoreSwerveCommand = createSwerveCommand(
                             getLastEndingPose(),
                             List.of(
-                                new Translation2d(launchPointPose.getY(), launchPointPose.getX()),
+                                new Translation2d(launchPointPose.getX(), launchPointPose.getY()),
                                 chargeStationInterpolationMidPoint
                             ),
                             scorePose,
@@ -185,9 +180,11 @@ public class DynamicAutoFactory {
     }
 
     private double getBaseLineYMeters(Grid grid, Node node) {
-        double distanceToFirstPipe = 3.5 + 16.5;
-        int scoringPosition = (3 * grid.ordinal()) + node.ordinal();
-        double scoringElementWidth = 18.5 + 13.5;
-        return Constants.Auto.COMMUNITY_WIDTH_METERS - Units.inchesToMeters(distanceToFirstPipe + (scoringPosition * scoringElementWidth));
+        double distanceToFirstPipeInches = 3.5 + 16.5;
+        int scoringPositionIndex = (3 * grid.ordinal()) + node.ordinal();
+        double scoringElementWidthInches = 18.5 + 13.5;
+
+        return Constants.Auto.COMMUNITY_WIDTH_METERS - 
+            Units.inchesToMeters(distanceToFirstPipeInches + (scoringPositionIndex * scoringElementWidthInches));
     }
 }
