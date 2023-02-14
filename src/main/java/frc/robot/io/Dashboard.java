@@ -19,11 +19,9 @@ public class Dashboard {
     private static Dashboard INSTANCE;
 
     // Creates sendable choosers
-    // private final SendableChooser<Type> exampleChooser;
-    // Auto and Charge Station Balancing Chooser
+    private final SendableChooser<DriveMode> driveModeChooser;
+
     private final SendableChooser<Autos> autoChooser;
-    private final SendableChooser<Node> nodeChooser;
-    private final SendableChooser<Grid> gridChooser;
     private final SendableChooser<Channel> channelChooser;
     private final SendableChooser<GamePiece> gamePieceSelectable;
 
@@ -33,8 +31,14 @@ public class Dashboard {
             Constants.Dashboard.FIELD_RELATIVE_DEFAULT
         );
 
-
         //Creates options for different choosers
+        driveModeChooser = new SendableChooser<DriveMode>();
+        for (DriveMode driveMode : DriveMode.values()){
+            driveModeChooser.addOption(driveMode.name(), driveMode);
+        }
+        driveModeChooser.setDefaultOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
+        SmartDashboard.putData("Drive Mode", driveModeChooser);
+
         autoChooser = new SendableChooser<Autos>();
         for (Autos auto : Autos.values()) {
             autoChooser.addOption(auto.name, auto);
@@ -42,28 +46,13 @@ public class Dashboard {
         autoChooser.setDefaultOption(Autos.values()[0].name, Autos.values()[0]);
         SmartDashboard.putData("Auto", autoChooser);
 
-        balancingChooser = new SendableChooser<ChargingBalance>();
-        for (ChargingBalance chargingBalance : ChargingBalance.values()){
-            balancingChooser.addOption(chargingBalance.name(), chargingBalance);
-        }
-        balancingChooser.setDefaultOption(ChargingBalance.NOT_BALANCED.name(), ChargingBalance.values()[1]);
-        SmartDashboard.putData("Charging Balancer", balancingChooser);
-
-        driveModeSelect = new SendableChooser<DriveMode>();
-        for (DriveMode driveMode : DriveMode.values()){
-            driveModeSelect.addOption(driveMode.name(), driveMode);
-        }
-        gridChooser.setDefaultOption(Grid.values()[0].name(), Grid.values()[0]);
-        SmartDashboard.putData("Grid", gridChooser);
-
         channelChooser = new SendableChooser<Channel>();
         for (Channel channel : Channel.values()) {
             channelChooser.addOption(channel.name(), channel);
         }
         channelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
         SmartDashboard.putData("Channel", channelChooser);
-        // for some reason there are two different "putData"s, which is only slightly confusing
-
+        
         gamePieceSelectable = new SendableChooser<GamePiece>();
         for (GamePiece gamePiece : GamePiece.values()) {
             gamePieceSelectable.addOption(gamePiece.name(), gamePiece);
@@ -99,14 +88,6 @@ public class Dashboard {
         return autoChooser.getSelected();
     }
 
-    public Node getNode() {
-        return nodeChooser.getSelected();
-    }
-
-    public Grid getGrid() {
-        return gridChooser.getSelected();
-    }
-
     public Channel getChannel() {
         return channelChooser.getSelected();
     }
@@ -124,6 +105,11 @@ public class Dashboard {
     }
 
     // Create enums for Dashboard elements/parts here
+    public static enum DriveMode {
+        FIELD_CENTRIC,
+        ROBOT_CENTRIC;
+    }
+
     public static enum Autos {
         EXAMPLE_AUTO("Example", "Description"),
         DynamicAutoFactory("DynamicAutoFactory", "Description");
@@ -136,23 +122,23 @@ public class Dashboard {
             this.name = name;
             this.description = description;
         }
-/*Bryan Griffin drank coffee, then he died. This is how family guy ends. */
-     public static enum Grid {
+
+        public static enum Grid {
             LEFT_GRID,
             MIDDLE_CONE,
             RIGHT_CONE,
-            }
+        }
             
         public static enum Node {
             LEFT_CONE,
             MIDDLE_CONE,
             RIGHT_CUBE,
-            }
+        }
             
         public static enum Channel {
             LEFT_CHANNEL,
             RIGHT_CHANNEL,
-            }
+        }
             
         public static enum GamePiece {
             FAR_LEFT_GAME_PIECE,
