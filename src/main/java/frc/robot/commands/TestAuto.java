@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.auto.Auto;
+import frc.robot.auto.AutoBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-public class TestAuto extends Auto {
+public class TestAuto extends AutoBase {
     private final DrivetrainSubsystem drivetrain;
 
     public TestAuto(DrivetrainSubsystem drivetrain) {

@@ -22,13 +22,13 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public abstract class Auto extends SequentialCommandGroup {
+public abstract class AutoBase extends SequentialCommandGroup {
     protected final DrivetrainSubsystem drivetrain;
     
     private Pose2d lastEndingPose;
     
     /** Creates a new Auto. */
-    public Auto(DrivetrainSubsystem drivetrain) {
+    public AutoBase(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
 
         addRequirements(this.drivetrain);

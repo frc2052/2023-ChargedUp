@@ -29,7 +29,7 @@ public class DynamicAutoFactory {
 
     public SequentialCommandGroup getAuto(DynamicAutoConfiguration configuration) {
         // Inline implementation of the abstract auto class to create an instance of auto.
-        return new Auto(drivetrain) {
+        return new AutoBase(drivetrain) {
             @Override
             protected void init() {
                 // TODO: Start by automatically scoring the starting game piece.
@@ -95,7 +95,7 @@ public class DynamicAutoFactory {
                     List.of(chargeStationInterpolationMidPoint),
                     launchPointPose,
                     // Sets 0 degrees as facing away from the grid and driver station.
-                    new Rotation2d()
+                    Rotation2d.fromDegrees(180)
                 );
                 addCommands(initialSwerveCommand);
         
