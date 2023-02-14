@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -22,5 +23,10 @@ public class IntakeOutCommand extends CommandBase {
     @Override
     public void initialize() {
         intake.intakeOut();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
     }
 }

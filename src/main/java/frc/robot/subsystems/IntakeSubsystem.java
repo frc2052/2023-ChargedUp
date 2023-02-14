@@ -17,7 +17,7 @@ import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
     private TalonSRX intakeMotor = new TalonSRX(Constants.Intake.INTAKE_MOTOR_PWM_PORT);
-    private DoubleSolenoid intakesolenoide = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 0);
+    private DoubleSolenoid intakesolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 0);
 
     /** Creates a new Intake. */
     public IntakeSubsystem() {
@@ -27,18 +27,28 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor.enableCurrentLimit(true); 
     }
 
-    public void intakeIn() {
-        intakesolenoide.set(Value.kForward);
-        intakeMotor.set(ControlMode.PercentOutput, 0.1);
-    }  
+    public void armIn() {
+        intakesolenoid.set(Value.kReverse);
+    }
 
-    public void intakeOut() {
-        intakesolenoide.set(Value.kForward);
-        intakeMotor.set(ControlMode.PercentOutput,  -0.1);
+    public void armOut() {
+        intakesolenoid.set(Value.kForward);
+    }
+
+    public void toggleArm() {
+        intakesolenoid.toggle();
+    }
+    public void intakeIn() {
+        // speed of intake motor by percent
+        intakeMotor.set(ControlMode.PercentOutput, .1);
     }
     
+    public void intakeOut() {
+        intakeMotor.set(ControlMode.PercentOutput, -.1);
+    }
+
     public void stop() {
-        intakesolenoide.set(Value.kReverse);
+        intakesolenoid.set(Value.kReverse);
         intakeMotor.set(ControlMode.PercentOutput, 0);
     }
 }
