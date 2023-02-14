@@ -125,10 +125,13 @@ public class NeoSwerverModule extends SwerveModule {
 
         SparkMaxPIDController controller = steerMotor.getPIDController();
         checkError(
-            "Failed to set steer motor PID proportional constant",
+            "Failed to set steer motor PID",
             controller.setP(SwerveConstants.NeoSwerveModule.STEER_MOTOR_P),
             controller.setI(SwerveConstants.NeoSwerveModule.STEER_MOTOR_I),
-            controller.setD(SwerveConstants.NeoSwerveModule.STEER_MOTOR_D)
+            controller.setD(SwerveConstants.NeoSwerveModule.STEER_MOTOR_D),
+            controller.setPositionPIDWrappingEnabled(true),
+            controller.setPositionPIDWrappingMinInput(-Math.PI),
+            controller.setPositionPIDWrappingMaxInput(Math.PI)
         );
 
         checkError(
