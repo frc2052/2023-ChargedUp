@@ -8,6 +8,13 @@
       "/SmartDashboard/Game Piece": "String Chooser",
       "/SmartDashboard/Grid": "String Chooser",
       "/SmartDashboard/Node": "String Chooser"
+    },
+    "windows": {
+      "/SmartDashboard/Auto": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {

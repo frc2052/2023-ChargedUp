@@ -9,18 +9,21 @@ import frc.robot.commands.PIDChargeStationAutoBalCommand;
 import frc.robot.commands.ElevatorManualDownCommand;
 import frc.robot.commands.ElevatorManualUpCommand;
 import frc.robot.commands.ElevatorPositionCommand;
-import frc.robot.commands.TestAuto;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
+import frc.robot.io.Dashboard.DriveMode;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.auto.DynamicAutoConfiguration;
+import frc.robot.auto.DynamicAutoFactory;
 import frc.robot.commands.ChargeStationAutoBalCommand;
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -37,8 +40,6 @@ public class RobotContainer {
     private final ControlPanel controlPanel;
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
-
-    private final Dashboard dashboard;
     private final ElevatorSubsystem elevator;
     
     /**
@@ -50,10 +51,7 @@ public class RobotContainer {
         controlPanel = new ControlPanel(2);
         
         drivetrain = new DrivetrainSubsystem();
-
-        dashboard = Dashboard.getInstance();
         elevator = new ElevatorSubsystem();
-        
 
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
@@ -63,13 +61,12 @@ public class RobotContainer {
                 () -> driveJoystick.getX(),
                 // Rotation velocity supplier
                 () -> turnJoystick.getX(),
-                () -> Dashboard.getInstance().isFieldRelative(),
+                () -> Dashboard.getInstance().getDriveMode() == DriveMode.FIELD_CENTRIC,
                 drivetrain
             )
         );
         elevator.setDefaultCommand(new RunCommand(() -> elevator.stop(), elevator));
         
-
         // Configure the trigger bindings
         configureBindings();
     }
@@ -132,16 +129,34 @@ public class RobotContainer {
 
     public void zeroOdometry() {
         drivetrain.zeroGyro();
-        drivetrain.zeroOdometry();
+        drivetrain.resetOdometry(new Pose2d());
     }
-    // ahhhhhhh
+
     /**
-     * Use this to pass the autonomous commd to the main {@link Robot} class.
+     * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An example command will be run in autonomous
-        return new TestAuto(drivetrain);
+        //return new TestAuto(drivetrain);
+        switch (Dashboard.getInstance().getAuto()) {
+            case DYNAMIC_AUTO_FACTORY:
+                return new DynamicAutoFactory(drivetrain).getAuto(
+                    new DynamicAutoConfiguration(
+                        Dashboard.getInstance().getGrid(), 
+                        Dashboard.getInstance().getNode(),
+                        Dashboard.getInstance().getChannel(),
+                        Dashboard.getInstance().getGamePiece(), 
+                        Dashboard.getInstance().getScoreGamePiece(), 
+                        Dashboard.getInstance().getScoreGrid(), 
+                        Dashboard.getInstance().getScoreNode(), 
+                        Dashboard.getInstance().getEnterChannel(), 
+                        false
+                    )
+                );
+        
+            default:
+                return null;
+        }
     }
 }

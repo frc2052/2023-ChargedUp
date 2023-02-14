@@ -17,6 +17,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -33,6 +35,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final AHRS navx;
 
     private final SwerveDriveOdometry odometry;
+    private final Field2d field = new Field2d();
 
     /** Creates a new SwerveDrivetrainSubsystem. */
     public DrivetrainSubsystem() {
@@ -81,6 +84,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         navx = new AHRS(SPI.Port.kMXP, (byte) 200);
+        Shuffleboard.getTab("Odometry").add(navx);
+        Shuffleboard.getTab("Odometry").add(field);
         navx.reset();
 
         odometry = new SwerveDriveOdometry(
@@ -92,6 +97,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        field.setRobotPose(odometry.getPoseMeters());
         debug();
     }
 
@@ -169,8 +175,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         };
     }
 
-    public void zeroOdometry() {
-        odometry.resetPosition(getRotation(), getModulePositions(), new Pose2d());
+    public void resetOdometry(Pose2d initialStartingPose) {
+        odometry.resetPosition(getRotation(), getModulePositions(), initialStartingPose);
     }
 
     public void zeroGyro() {
@@ -191,7 +197,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         //     return Rotation2d.fromDegrees(navx.getFusedHeading());
         // }
 
-        return navx.getRotation2d();
+       return navx.getRotation2d();
     }
 
     public double getMaxVelocityMetersPerSecond() {
@@ -215,10 +221,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * be the offsets for each SwerveModule respectively.
      */
     public void debug() {
-        SmartDashboard.putNumber("Drivetrain Rotation Degrees", getRotation().getDegrees());
-
         frontLeftModule.debug();
-        frontRightModule.debug();
+        frontRightModule.debug();   
         backLeftModule.debug();
         backRightModule.debug();
     }

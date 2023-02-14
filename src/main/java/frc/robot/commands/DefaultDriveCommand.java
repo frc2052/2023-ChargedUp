@@ -54,10 +54,13 @@ public class DefaultDriveCommand extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        // WPILib's X-axis, Y-axis, and rotation are inverted from joystick input.
+        // That is, a positive input on the joystick in the Y-axis correlates to a negative 
+        // speed on the robot's X-axis.
         drivetrain.drive(
-            slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())), 
-            slewAxis(yLimiter, deadBand(ySupplier.getAsDouble())),
-            slewAxis(rotationLimiter, deadBand(rotationSupplier.getAsDouble())),
+            slewAxis(xLimiter, deadBand(-xSupplier.getAsDouble())), 
+            slewAxis(yLimiter, deadBand(-ySupplier.getAsDouble())),
+            slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble())),
             fieldCentricSupplier.getAsBoolean()
         );
     }
