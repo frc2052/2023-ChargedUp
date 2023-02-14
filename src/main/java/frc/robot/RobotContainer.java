@@ -9,12 +9,16 @@ import frc.robot.commands.PIDChargeStationAutoBalCommand;
 import frc.robot.commands.ElevatorManualDownCommand;
 import frc.robot.commands.ElevatorManualUpCommand;
 import frc.robot.commands.ElevatorPositionCommand;
+import frc.robot.commands.IntakeArmToggleCommand;
+import frc.robot.commands.IntakeInCommand;
+import frc.robot.commands.IntakeOutCommand;
 import frc.robot.commands.TestAuto;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
 import frc.robot.io.Dashboard.Autos;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
@@ -41,9 +45,10 @@ public class RobotContainer {
     private final ControlPanel controlPanel;
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
-
-    private final Dashboard dashboard;
+    private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
+    private final Dashboard dashboard;
+
     
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -54,10 +59,10 @@ public class RobotContainer {
         controlPanel = new ControlPanel(2);
         
         drivetrain = new DrivetrainSubsystem();
+        intake = new IntakeSubsystem();
+        elevator = new ElevatorSubsystem();
 
         dashboard = Dashboard.getInstance();
-        elevator = new ElevatorSubsystem();
-        
 
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
@@ -88,7 +93,7 @@ public class RobotContainer {
         /*
          * Drivetrain button bindings
          */
-        JoystickButton zeroGyroButton = new JoystickButton(controlPanel, 2);
+        JoystickButton zeroGyroButton = new JoystickButton(controlPanel, 10);
 
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
@@ -96,10 +101,8 @@ public class RobotContainer {
          * Charge station auto balancing button bindings
          */
         JoystickButton autoBalance = new JoystickButton(controlPanel, 9);
-        JoystickButton simpleAutoBalance = new JoystickButton(controlPanel, 10);
 
         autoBalance.whileTrue(new PIDChargeStationAutoBalCommand(drivetrain));
-        simpleAutoBalance.whileTrue(new ChargeStationAutoBalCommand(drivetrain, 1, -1, 3));
 
         /*
          * Elevator button bindings
@@ -123,14 +126,16 @@ public class RobotContainer {
         manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
         manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
         
-        JoystickButton resetElevatorEncoderButton = new JoystickButton(controlPanel, 4);
-        resetElevatorEncoderButton.onTrue(new InstantCommand(() -> elevator.zeroEncoder(), elevator));
-
         /*
          * Intake button bindings
          */
-        JoystickButton intakeButton = new JoystickButton(driveJoystick, 3);
-        JoystickButton reverseIntakeButton = new JoystickButton(driveJoystick, 2);
+        JoystickButton intakeInButton = new JoystickButton(controlPanel, 7);
+        JoystickButton intakeOutButton = new JoystickButton(controlPanel, 6);
+        JoystickButton intakeArmToggle = new JoystickButton(controlPanel, 1);
+
+        intakeInButton.whileTrue(new IntakeInCommand(intake));
+        intakeOutButton.whileTrue(new IntakeOutCommand(intake));
+        intakeArmToggle.onTrue(new IntakeArmToggleCommand(intake));
     }
       
 
