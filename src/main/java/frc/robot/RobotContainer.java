@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.PIDChargeStationAutoBalCommand;
 import frc.robot.commands.ElevatorManualDownCommand;
 import frc.robot.commands.ElevatorManualUpCommand;
@@ -12,11 +11,13 @@ import frc.robot.commands.ElevatorPositionCommand;
 import frc.robot.commands.arm.ArmToggleCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
 import frc.robot.io.Dashboard.DriveMode;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.vision.PhotonVisionSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
@@ -43,12 +44,13 @@ public class RobotContainer {
     private final Joystick driveJoystick;
     private final Joystick turnJoystick;
     private final ControlPanel controlPanel;
-
+    
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
     private final ArmSubsystem arm;
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
+    private final PhotonVisionSubsystem vision;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -57,11 +59,12 @@ public class RobotContainer {
         driveJoystick = new Joystick(0);
         turnJoystick = new Joystick(1);
         controlPanel = new ControlPanel(2);
-        
+
         drivetrain = new DrivetrainSubsystem();
         arm = new ArmSubsystem();
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
+        vision = new PhotonVisionSubsystem();
 
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(

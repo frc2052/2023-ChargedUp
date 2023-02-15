@@ -90,4 +90,14 @@ public final class Constants {
         public static final int ARM_SOLENOID_FORWARD_CHANNEL = 0;
         public static final int ARM_SOLENOID_REVERSE_CHANNEL = 0;
     }
+    
+    public static final class Camera {
+        public static final String CAMERA_NAME = "2052April";
+        public static final double CAMERA_HEIGHT_METERS = 0;
+        public static final double CAMERA_PITCH_RADIANS = 0;
+
+        public static final double APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(8);
+        public static final double COMMUNITY_GROUND_TO_APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(14.25);
+        public static final double LOADING_ZONE_GROUND_TO_APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(23.375);
+    }
 }
