@@ -86,11 +86,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     
     public void manualUp() {
         System.out.println("manual up");
-        beltMotor.set(TalonFXControlMode.PercentOutput, 0.15);
+        beltMotor.set(TalonFXControlMode.PercentOutput, 0.1);
     }
 
     public void manualDown() {
-        beltMotor.set(TalonFXControlMode.PercentOutput, -0.15);
+        beltMotor.set(TalonFXControlMode.PercentOutput, -0.05);
         System.out.println("Manual down");
     }
 
