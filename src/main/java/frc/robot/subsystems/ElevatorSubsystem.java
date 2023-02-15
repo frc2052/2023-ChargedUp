@@ -99,6 +99,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public static enum ElevatorPosition {
+        STARTING(0),
         FLOORCUBE(16478),
         FLOORCONE(20155),
         BABYBIRD(23963),

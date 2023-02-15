@@ -18,19 +18,24 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public abstract class AutoBase extends SequentialCommandGroup {
     protected final DrivetrainSubsystem drivetrain;
+    protected final ElevatorSubsystem elevator;
+    protected final IntakeSubsystem intake;
     
     private Pose2d lastEndingPose;
     
     /** Creates a new Auto. */
-    public AutoBase(DrivetrainSubsystem drivetrain) {
+    public AutoBase(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake) {
         this.drivetrain = drivetrain;
-
+        this.elevator = elevator;
+        this.intake = intake;
         addRequirements(this.drivetrain);
         
         init();
