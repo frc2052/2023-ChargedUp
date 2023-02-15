@@ -18,18 +18,24 @@ import frc.robot.io.Dashboard.GamePiece;
 import frc.robot.io.Dashboard.Grid;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 /** Add your docs here. */
 public class DynamicAutoFactory {
     private final DrivetrainSubsystem drivetrain;
+    private final ElevatorSubsystem elevator;
+    private final IntakeSubsystem intake;
 
-    public DynamicAutoFactory(DrivetrainSubsystem drivetrain) {
+    public DynamicAutoFactory(DrivetrainSubsystem drivetrain,ElevatorSubsystem elevator, IntakeSubsystem intake) {
         this.drivetrain = drivetrain;
+        this.elevator = elevator;
+        this.intake = intake;
     }
 
     public SequentialCommandGroup getAuto(DynamicAutoConfiguration configuration) {
         // Inline implementation of the abstract auto class to create an instance of auto.
-        return new AutoBase(drivetrain) {
+        return new AutoBase(this.drivetrain,this.elevator,this.intake) {
             @Override
             protected void init() {
                 // TODO: Start by automatically scoring the starting game piece.
