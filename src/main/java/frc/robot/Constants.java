@@ -87,4 +87,8 @@ public final class Constants {
         public static final int INTAKE_MOTOR_PWM_PORT = 0;
     }
 
+    public static final class Arm {
+        public static final int ARM_SOLENOID_FORWARD_CHANNEL = 0;
+        public static final int ARM_SOLENOID_REVERSE_CHANNEL = 0;
+    }
 }

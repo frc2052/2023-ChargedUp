@@ -9,12 +9,13 @@ import frc.robot.commands.PIDChargeStationAutoBalCommand;
 import frc.robot.commands.ElevatorManualDownCommand;
 import frc.robot.commands.ElevatorManualUpCommand;
 import frc.robot.commands.ElevatorPositionCommand;
-import frc.robot.commands.IntakeArmToggleCommand;
-import frc.robot.commands.IntakeInCommand;
-import frc.robot.commands.IntakeOutCommand;
 import frc.robot.commands.TestAuto;
+import frc.robot.commands.arm.ArmToggleCommand;
+import frc.robot.commands.intake.IntakeInCommand;
+import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -25,7 +26,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.ChargeStationAutoBalCommand;
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -41,10 +42,9 @@ public class RobotContainer {
     private final ControlPanel controlPanel;
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
+    private final ArmSubsystem arm;
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
-    private final Dashboard dashboard;
-
     
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -55,10 +55,9 @@ public class RobotContainer {
         controlPanel = new ControlPanel(2);
         
         drivetrain = new DrivetrainSubsystem();
+        arm = new ArmSubsystem();
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
-
-        dashboard = Dashboard.getInstance();
 
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
@@ -103,7 +102,6 @@ public class RobotContainer {
         /*
          * Elevator button bindings
          */
-
         JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 8);
         JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 2);
         JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 4);
@@ -116,22 +114,25 @@ public class RobotContainer {
         elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MIDSCORE, elevator));
         elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOPSCORE, elevator));
 
-        // TODO: Update values
         JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 12);
         JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 11);
         manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
         manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
         
         /*
+         * Arm button bindings
+         */
+        JoystickButton intakeArmToggle = new JoystickButton(controlPanel, 1);
+        intakeArmToggle.onTrue(new ArmToggleCommand(arm));
+
+        /*
          * Intake button bindings
          */
         JoystickButton intakeInButton = new JoystickButton(controlPanel, 7);
         JoystickButton intakeOutButton = new JoystickButton(controlPanel, 6);
-        JoystickButton intakeArmToggle = new JoystickButton(controlPanel, 1);
 
         intakeInButton.whileTrue(new IntakeInCommand(intake));
         intakeOutButton.whileTrue(new IntakeOutCommand(intake));
-        intakeArmToggle.onTrue(new IntakeArmToggleCommand(intake));
     }
       
 
