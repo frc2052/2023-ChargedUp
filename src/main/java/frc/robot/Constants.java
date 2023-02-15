@@ -26,27 +26,26 @@ public final class Constants {
         public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 12;
         public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 11;
         public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 10;
-        public static final double FRONT_LEFT_MODULE_STEER_OFFSET_RADIANS = 4.335 + (Math.PI / 2);
+        public static final double FRONT_LEFT_MODULE_STEER_OFFSET_RADIANS = 4.335 - (Math.PI / 2);
 
         public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
         public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 2;
         public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 1;
-        public static final double FRONT_RIGHT_MODULE_STEER_OFFSET_RADIANS = 4.858 + (Math.PI / 2);
+        public static final double FRONT_RIGHT_MODULE_STEER_OFFSET_RADIANS = 4.858 - (Math.PI / 2);
 
         public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 9;
         public static final int BACK_LEFT_MODULE_STEER_MOTOR = 8;
         public static final int BACK_LEFT_MODULE_STEER_ENCODER = 7;
-        public static final double BACK_LEFT_MODULE_STEER_OFFSET_RADIANS = 1.612 + (Math.PI / 2);
+        public static final double BACK_LEFT_MODULE_STEER_OFFSET_RADIANS = 1.612 - (Math.PI / 2);
 
         public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 6;
         public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 5;
         public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 4;
-        public static final double BACK_RIGHT_MODULE_STEER_OFFSET_RADIANS = 1.179 + (Math.PI / 2);
+        public static final double BACK_RIGHT_MODULE_STEER_OFFSET_RADIANS = 1.179 - (Math.PI / 2);
     }
 
     public static final class Dashboard {
-        public static final String FIELD_RELATIVE_KEY = "Field Relative";
-        public static final boolean FIELD_RELATIVE_DEFAULT = true;
+        public static final String DRIVE_MODE_KEY = "Drive Mode";
 
         public static final String ELEVATOR_POSITION_KEY = "Elevator position";
     }
@@ -65,14 +64,14 @@ public final class Constants {
     }
 
     public static final class Auto {
-        public static final double ROBOT_LENGTH_METERS = 0;
+        public static final double ROBOT_LENGTH_METERS = Units.inchesToMeters(28.5);
 
         public static final double CHANNEL_WIDTH_METERS = Units.inchesToMeters(59.375);
 
         public static final double CHARGE_STATION_DEPTH = Units.inchesToMeters(76.125);
 
-        public static final double COMMUNITY_WIDTH_METERS = Units.feetToMeters(18);
-        public static final double COMMUNITY_DEPTH_METERS = Units.inchesToMeters(193.25);
+        public static final double COMMUNITY_WIDTH_METERS = Units.feetToMeters(18); //SKD: Verified
+        public static final double COMMUNITY_DEPTH_METERS = Units.inchesToMeters(193.25);  //SKD: 139 inches
 
         public static final double DISTANCE_GRID_TO_CHARGE_STATION_METERS = Units.inchesToMeters(60.5625);
         public static final double DISTANCE_GRID_TO_GAME_PIECES_METERS = Units.inchesToMeters(224);
@@ -87,6 +86,11 @@ public final class Constants {
         public static final int INTAKE_MOTOR_PWM_PORT = 0;
     }
 
+    public static final class Arm {
+        public static final int ARM_SOLENOID_FORWARD_CHANNEL = 0;
+        public static final int ARM_SOLENOID_REVERSE_CHANNEL = 0;
+    }
+    
     public static final class Camera {
         public static final String CAMERA_NAME = "2052April";
         public static final double CAMERA_HEIGHT_METERS = 0;
