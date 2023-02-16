@@ -58,7 +58,10 @@ public class AutomaticScoringCommand extends SequentialCommandGroup {
         );
 
         addRequirements(
-            this.elevator
+            this.elevator,
+            this.intake,
+            this.arm,
+            this.drivetrain
         );
     }
 }
