@@ -20,12 +20,11 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonVisionSubsystem;
+import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -55,8 +54,6 @@ public class RobotContainer {
     private final ElevatorSubsystem elevator;
     private final PhotonVisionSubsystem vision;
 
-    private final Compressor compressor;
-
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -70,10 +67,7 @@ public class RobotContainer {
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
         vision = new PhotonVisionSubsystem();
-
-        compressor = new Compressor(Constants.Compressor.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH);
-        // Min and max recharge pressure, max pressure will stop at 115
-        compressor.enableAnalog(100, 120);
+        new PneumaticsSubsystem();
 
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
@@ -150,7 +144,6 @@ public class RobotContainer {
         intakeInButton.whileTrue(new IntakeInCommand(intake));
         intakeOutButton.whileTrue(new IntakeOutCommand(intake));
     }
-      
 
     public void zeroOdometry() {
         drivetrain.zeroGyro();
@@ -170,7 +163,7 @@ public class RobotContainer {
                     new DynamicAutoConfiguration(
                         Dashboard.getInstance().getGrid(), 
                         Dashboard.getInstance().getNode(),
-                        Dashboard.getInstance().getChannel(),
+                        Dashboard.getInstance().getExitChannel(),
                         Dashboard.getInstance().getGamePiece(), 
                         Dashboard.getInstance().getScoreGamePiece(), 
                         Dashboard.getInstance().getScoreGrid(), 

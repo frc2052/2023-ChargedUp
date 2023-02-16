@@ -99,8 +99,8 @@ public final class Constants {
 
     public static final class Dashboard {
         public static final String DRIVE_MODE_KEY = "Drive Mode";
-
-        public static final String ELEVATOR_POSITION_KEY = "Elevator position";
+        public static final String ELEVATOR_POSITION_KEY = "Elevator Position";
+        public static final String INTAKE_CURRENT_KEY = "Intake Current";
     }
 
     public static final class Auto {

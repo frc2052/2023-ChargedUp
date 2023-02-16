@@ -5,6 +5,8 @@
 
 package frc.robot.io;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 //import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -117,6 +119,8 @@ public class Dashboard {
             SmartDashboard.putString(key, (String) value);
         } else if (value instanceof Boolean) {
             SmartDashboard.putBoolean(key, (Boolean) value);
+        } else if (value instanceof Sendable) {
+            Shuffleboard.getTab("main").add(key, (Sendable) value);
         }
     }
 
@@ -124,7 +128,6 @@ public class Dashboard {
         return driveModeChooser.getSelected();      
     }
 
-    // creates getSelected command
     public Autos getAuto() {
         return autoChooser.getSelected();
     }
@@ -137,7 +140,7 @@ public class Dashboard {
         return gridChooser.getSelected();
     }
 
-    public Channel getChannel() {
+    public Channel getExitChannel() {
         return exitChannelChooser.getSelected();
     }
 
