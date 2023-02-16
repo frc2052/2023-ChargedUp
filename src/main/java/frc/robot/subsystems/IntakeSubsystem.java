@@ -20,7 +20,6 @@ import frc.robot.io.Dashboard;
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonSRX intakeMotor;
     
-    // private final PIDController intakeController;
     private final SlewRateLimiter intakeLimiter;
 
     /** Creates a new Intake. */
@@ -47,37 +46,24 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor.setNeutralMode(NeutralMode.Brake);
         intakeMotor.setInverted(true);
 
-        // intakeController = new PIDController(0.25, 0, 0);
-        // intakeController.setTolerance(0.05);
-
+        // Slew rate intake speed to take 0.25 seconds to go full speed.
         intakeLimiter = new SlewRateLimiter(4);
     }
 
     @Override
     public void periodic() {
         Dashboard.getInstance().putData(Constants.Dashboard.INTAKE_CURRENT_KEY, intakeMotor.getSupplyCurrent());
-
-        // intakeMotor.set(
-        //     ControlMode.PercentOutput, 
-        //     intakeController.calculate(intakeMotor.getMotorOutputPercent())
-        // );
-
-        intakeLimiter.calculate(0);
     }
 
     public void intakeIn() {
-        // intakeController.setSetpoint(0.75);
-        intakeMotor.set(ControlMode.PercentOutput, intakeLimiter.calculate(0.75));
+        intakeMotor.set(ControlMode.PercentOutput, intakeLimiter.calculate(1.0));
     }
     
     public void intakeOut() {
-        // intakeController.setSetpoint(-1.0);
-        intakeMotor.set(ControlMode.PercentOutput, intakeLimiter.calculate(-1.0));
+        intakeMotor.set(ControlMode.PercentOutput, intakeLimiter.calculate(-0.5));
     }
 
     public void stop() {
-        // intakeController.setSetpoint(0.0);
-
         // Immediately stop intake and reset the slew rate limiter
         intakeLimiter.calculate(0.0);
         intakeMotor.set(ControlMode.PercentOutput, 0.0);
