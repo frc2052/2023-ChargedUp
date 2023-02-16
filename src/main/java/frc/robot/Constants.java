@@ -66,6 +66,11 @@ public final class Constants {
 
     public static final class Intake {
         public static final int INTAKE_MOTOR_ID = 13;
+
+        // Minimum allowable amps
+        public static final double INTAKE_CRUISE_CURRENT_AMPS = 1.5;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 8;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.25;
     }
     
     public static final class Camera {

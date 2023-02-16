@@ -35,9 +35,12 @@ public class ElevatorSubsystem extends SubsystemBase {
         steerMotorConfiguration.motionAcceleration = Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION;
 
         beltMotor = new TalonFX(Constants.Elevator.BELT_MOTOR);
+        beltMotor.configFactoryDefault();
+
         if ((error = beltMotor.configAllSettings(steerMotorConfiguration)) != ErrorCode.OK) {
             DriverStation.reportError("Failed to configure belt motor: " + error.toString(), false);
         }
+        
         beltMotor.setNeutralMode(NeutralMode.Brake);
         beltMotor.setInverted(true);
 
