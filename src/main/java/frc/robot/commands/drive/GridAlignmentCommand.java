@@ -7,8 +7,8 @@ package frc.robot.commands.drive;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.vision.PhotonVisionSubsystem;
-import frc.robot.subsystems.vision.PhotonVisionSubsystem.TargetNotFoundException;
+import frc.robot.subsystems.PhotonVisionSubsystem;
+import frc.robot.subsystems.PhotonVisionSubsystem.TargetNotFoundException;
 
 
 

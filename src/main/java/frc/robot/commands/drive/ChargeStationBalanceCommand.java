@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.drive;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-public class PIDChargeStationAutoBalCommand extends PIDCommand {
+public class ChargeStationBalanceCommand extends PIDCommand {
     private final static double kP = 0.01;
     private final static double kI = 0.0;
     private final static double kD = 0.0;
@@ -16,7 +16,7 @@ public class PIDChargeStationAutoBalCommand extends PIDCommand {
 
     private DrivetrainSubsystem drivetrain; 
 
-    public PIDChargeStationAutoBalCommand(
+    public ChargeStationBalanceCommand(
         DrivetrainSubsystem drivetrain
     ) {
         super(

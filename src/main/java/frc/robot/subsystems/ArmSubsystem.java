@@ -16,9 +16,10 @@ public class ArmSubsystem extends SubsystemBase {
     /** Creates a new ArmSubsystem. */
     public ArmSubsystem() {
         intakesolenoid = new DoubleSolenoid(
+            Constants.Compressor.PNEUMATIC_HUB_ID,
             PneumaticsModuleType.REVPH, 
-            Constants.Arm.ARM_SOLENOID_FORWARD_CHANNEL, 
-            Constants.Arm.ARM_SOLENOID_REVERSE_CHANNEL
+            Constants.Arm.ARM_SOLENOID_OUT_CHANNEL, 
+            Constants.Arm.ARM_SOLENOID_IN_CHANNEL
         );
     }
 
@@ -31,6 +32,10 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void toggleArm() {
-        intakesolenoid.toggle();
+        if (intakesolenoid.get() == Value.kOff) {
+            armIn();
+        } else {
+            intakesolenoid.toggle();
+        }
     }
 }

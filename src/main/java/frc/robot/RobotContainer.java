@@ -4,25 +4,27 @@
 
 package frc.robot;
 
-import frc.robot.commands.PIDChargeStationAutoBalCommand;
-import frc.robot.commands.ElevatorManualDownCommand;
-import frc.robot.commands.ElevatorManualUpCommand;
-import frc.robot.commands.ElevatorPositionCommand;
 import frc.robot.commands.arm.ArmToggleCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
+import frc.robot.commands.elevator.ElevatorManualDownCommand;
+import frc.robot.commands.elevator.ElevatorManualUpCommand;
+import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
 import frc.robot.io.Dashboard.DriveMode;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.vision.PhotonVisionSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -50,7 +52,9 @@ public class RobotContainer {
     private final ArmSubsystem arm;
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
-    private final PhotonVisionSubsystem vision;
+    //private final PhotonVisionSubsystem vision;
+
+    private final Compressor compressor;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -64,7 +68,11 @@ public class RobotContainer {
         arm = new ArmSubsystem();
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
-        vision = new PhotonVisionSubsystem();
+        //vision = new PhotonVisionSubsystem();
+
+        compressor = new Compressor(Constants.Compressor.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH);
+        // Recharge pressure, max pressure stops at 115
+        compressor.enableAnalog(100, 120);
 
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
@@ -79,7 +87,8 @@ public class RobotContainer {
             )
         );
         elevator.setDefaultCommand(new RunCommand(() -> elevator.stop(), elevator));
-        
+        intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
+
         // Configure the trigger bindings
         configureBindings();
     }
@@ -103,7 +112,7 @@ public class RobotContainer {
          */
         JoystickButton autoBalance = new JoystickButton(controlPanel, 9);
 
-        autoBalance.whileTrue(new PIDChargeStationAutoBalCommand(drivetrain));
+        autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
         /*
          * Elevator button bindings
@@ -113,12 +122,14 @@ public class RobotContainer {
         JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 4);
         JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 3);
         JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
+        Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getY() < -0.5);
 
         elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOORCUBE, elevator));
         elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOORCONE, elevator));
         elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABYBIRD, elevator));
         elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MIDSCORE, elevator));
         elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOPSCORE, elevator));
+        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator));
 
         JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 12);
         JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 11);

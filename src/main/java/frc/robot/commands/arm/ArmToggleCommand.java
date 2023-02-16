@@ -21,7 +21,7 @@ public class ArmToggleCommand extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        arm.armIn();
+        arm.toggleArm();
     }
 
     @Override

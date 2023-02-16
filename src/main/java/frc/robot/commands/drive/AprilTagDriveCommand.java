@@ -2,8 +2,8 @@ package frc.robot.commands.drive;
 
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.vision.PhotonVisionSubsystem;
-import frc.robot.subsystems.vision.PhotonVisionSubsystem.TargetNotFoundException;
+import frc.robot.subsystems.PhotonVisionSubsystem;
+import frc.robot.subsystems.PhotonVisionSubsystem.TargetNotFoundException;
 
 public class AprilTagDriveCommand extends DriveCommand {
     private final PhotonVisionSubsystem vision;
