@@ -111,6 +111,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         STARTING(0),
         FLOORCUBE(10000),
         FLOORCONE(20155),
+        HYBRIDSCORE(20155),
         BABYBIRD(23963),
         MIDSCORE(86590),
         TOPSCORE(117875);
