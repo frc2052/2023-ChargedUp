@@ -8,24 +8,19 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class TestAuto extends AutoBase {
-    private final DrivetrainSubsystem drivetrain;
-
     public TestAuto(DrivetrainSubsystem drivetrain) {
         super(drivetrain);
-
-        this.drivetrain = drivetrain;
     }
 
     @Override
-    protected void init() {
+    public void init() {
         addCommands(
             createSwerveCommand(
                 new Pose2d(0, 0, new Rotation2d()), 
                 new ArrayList<Translation2d>(),
                 new Pose2d(2, 0, new Rotation2d()), 
                 Rotation2d.fromDegrees(0)
-            )
-            ,
+            ),
             createSwerveCommand(
                 new Pose2d(2, 0, new Rotation2d()), 
                 new ArrayList<Translation2d>(),

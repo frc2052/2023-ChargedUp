@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,6 +20,8 @@ import frc.robot.Constants;
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonSRX intakeMotor;
     
+    private final PIDController intakeController;
+
     /** Creates a new Intake. */
     public IntakeSubsystem() {
         ErrorCode error;
@@ -35,29 +38,38 @@ public class IntakeSubsystem extends SubsystemBase {
 
         intakeMotor = new TalonSRX(Constants.Intake.INTAKE_MOTOR_ID);
         intakeMotor.configFactoryDefault();
-        
+
         if ((error = intakeMotor.configSupplyCurrentLimit(currentLimitConfiguration)) != ErrorCode.OK) {
             DriverStation.reportError("Failed to configure intake motor current limit: " + error.toString(), true);
         }
 
         intakeMotor.setNeutralMode(NeutralMode.Brake);
         intakeMotor.setInverted(true);
+
+        intakeController = new PIDController(0.25, 0, 0);
+        intakeController.setTolerance(0.05);
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("intake CURRENT", intakeMotor.getSupplyCurrent());
+
+        intakeMotor.set(
+            ControlMode.PercentOutput, 
+            intakeController.calculate(intakeMotor.getMotorOutputPercent())
+        );
     }
 
     public void intakeIn() {
-        intakeMotor.set(ControlMode.PercentOutput, 0.75);
+        intakeController.setSetpoint(0.75);
     }
     
     public void intakeOut() {
-        intakeMotor.set(ControlMode.PercentOutput, -0.5);
+        intakeController.setSetpoint(-0.5);
     }
 
     public void stop() {
-        intakeMotor.set(ControlMode.PercentOutput, 0);
+        intakeController.setSetpoint(0.0);
+        intakeMotor.set(ControlMode.PercentOutput, 0.0);
     }
 }

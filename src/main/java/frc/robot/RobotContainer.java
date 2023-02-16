@@ -4,9 +4,9 @@
 
 package frc.robot;
 
-import frc.robot.commands.arm.ArmToggleCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.commands.drive.AprilTagDriveCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
@@ -19,7 +19,9 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PhotonVisionSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
@@ -51,7 +53,7 @@ public class RobotContainer {
     private final ArmSubsystem arm;
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
-    //private final PhotonVisionSubsystem vision;
+    private final PhotonVisionSubsystem vision;
 
     private final Compressor compressor;
 
@@ -67,7 +69,7 @@ public class RobotContainer {
         arm = new ArmSubsystem();
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
-        //vision = new PhotonVisionSubsystem();
+        vision = new PhotonVisionSubsystem();
 
         compressor = new Compressor(Constants.Compressor.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH);
         // Min and max recharge pressure, max pressure will stop at 115
@@ -103,15 +105,13 @@ public class RobotContainer {
          * Drivetrain button bindings
          */
         JoystickButton zeroGyroButton = new JoystickButton(controlPanel, 10);
-
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
-        /*
-         * Charge station auto balancing button bindings
-         */
         JoystickButton autoBalance = new JoystickButton(controlPanel, 9);
-
         autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
+
+        JoystickButton aprilTagDriveButton = new JoystickButton(driveJoystick, 1);
+        aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
 
         /*
          * Elevator button bindings
@@ -123,11 +123,11 @@ public class RobotContainer {
         JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
         Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getY() < -0.5);
 
-        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOORCUBE, elevator));
-        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOORCONE, elevator));
-        elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABYBIRD, elevator));
-        elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MIDSCORE, elevator));
-        elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOPSCORE, elevator));
+        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
+        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
+        elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
+        elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator));
+        elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator));
         elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator));
 
         JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 12);
@@ -139,7 +139,7 @@ public class RobotContainer {
          * Arm button bindings
          */
         JoystickButton intakeArmToggle = new JoystickButton(controlPanel, 1);
-        intakeArmToggle.onTrue(new ArmToggleCommand(arm));
+        intakeArmToggle.onTrue(new InstantCommand(() -> arm.toggleArm(), arm));
 
         /*
          * Intake button bindings

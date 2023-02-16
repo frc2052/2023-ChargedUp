@@ -35,7 +35,7 @@ shoot gamepiece (w/o stopping), go to chargestation */
   }
 
   @Override
-  protected void init() {
+  public void init() {
     // TODO Auto-generated method stub
     
   }
