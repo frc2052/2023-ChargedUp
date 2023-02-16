@@ -181,30 +181,6 @@ public class Dashboard {
             this.name = name;
             this.description = description;
         }
-
-        public static enum Grid {
-            LEFT_GRID,
-            MIDDLE_CONE,
-            RIGHT_CONE,
-        }
-            
-        public static enum Node {
-            LEFT_CONE,
-            MIDDLE_CONE,
-            RIGHT_CUBE,
-        }
-            
-        public static enum Channel {
-            LEFT_CHANNEL,
-            RIGHT_CHANNEL,
-        }
-            
-        public static enum GamePiece {
-            FAR_LEFT_GAME_PIECE,
-            MIDDLE_LEFT_GAME_PIECE,
-            FAR_RIGHT_GAME_PIECE,
-            NO_GAME_PIECE,
-        }
   
         public String getName() {
             return name;
