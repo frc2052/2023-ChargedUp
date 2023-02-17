@@ -109,51 +109,56 @@ public class RobotContainer {
         JoystickButton aprilTagDriveButton = new JoystickButton(driveJoystick, 1);
         aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
 
-        // /*
-        //  * Elevator button bindings
-        //  */
-        JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 8);
-        JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 2);
-        JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 4);
-        JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 3);
-        JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
+        /*
+         * Elevator button bindings
+         */
         Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getY() < -0.5);
+        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator, arm));
 
-        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
-        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
-        elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
-        elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator));
-        elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator));
-        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator));
+        JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 8);
+        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator, arm));
+
+        JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 2);
+        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator, arm));
+
+        JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 4);
+        elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator, arm));
+
+        JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 3);
+        elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator, arm));
+
+        JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
+        elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator, arm));
 
         JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 12);
-        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 11);
         manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
+
+        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 11);
         manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
         
         /*
          * Arm button bindings
          */
         JoystickButton driverIntakeArmToggle = new JoystickButton(driveJoystick, 1);
-        JoystickButton controlPannelIntakeArmToggle = new JoystickButton(controlPanel, 1);
-        driverIntakeArmToggle.or(controlPannelIntakeArmToggle).onTrue(new InstantCommand(() -> arm.toggleArm(), arm));
-
+        JoystickButton controlPanelIntakeArmToggle = new JoystickButton(controlPanel, 1);
+        driverIntakeArmToggle.or(controlPanelIntakeArmToggle).onTrue(new InstantCommand(() -> arm.toggleArm(), arm));
 
         JoystickButton armInButton = new JoystickButton(driveJoystick, 6);
-        JoystickButton armOutButton = new JoystickButton(driveJoystick, 7);
         armInButton.onTrue(new InstantCommand(() -> arm.armIn(), arm));
+
+        JoystickButton armOutButton = new JoystickButton(driveJoystick, 7);
         armOutButton.onTrue(new InstantCommand(() -> arm.armOut(), arm));
 
         /*
          * Intake button bindings
          */
-        JoystickButton controlPannelIntakeInButton = new JoystickButton(controlPanel, 7);
+        JoystickButton controlPanelIntakeInButton = new JoystickButton(controlPanel, 7);
         JoystickButton driverIntakeInButton = new JoystickButton(driveJoystick, 3);
-        JoystickButton controlPannelIntakeOutButton = new JoystickButton(controlPanel, 6);
+        driverIntakeInButton.or(controlPanelIntakeInButton).whileTrue(new IntakeInCommand(intake));
+        
+        JoystickButton controlPanelIntakeOutButton = new JoystickButton(controlPanel, 6);
         JoystickButton driverIntakeOutButton = new JoystickButton(driveJoystick, 2);
-
-        driverIntakeInButton.or(controlPannelIntakeInButton).whileTrue(new IntakeInCommand(intake));
-        driverIntakeOutButton.or(controlPannelIntakeOutButton).whileTrue(new IntakeOutCommand(intake));
+        driverIntakeOutButton.or(controlPanelIntakeOutButton).whileTrue(new IntakeOutCommand(intake));
     }
 
     public void zeroOdometry() {
