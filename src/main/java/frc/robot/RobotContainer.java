@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.DynamicAutoConfiguration;
 import frc.robot.auto.DynamicAutoFactory;
+import frc.robot.auto.RedLeftScoreOneBalanceAuto;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -159,25 +160,25 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        //return new TestAuto(drivetrain);
-        switch (Dashboard.getInstance().getAuto()) {
-            case DYNAMIC_AUTO_FACTORY:
-                return new DynamicAutoFactory(drivetrain, elevator, intake).getAuto(
-                    new DynamicAutoConfiguration(
-                        Dashboard.getInstance().getGrid(), 
-                        Dashboard.getInstance().getNode(),
-                        Dashboard.getInstance().getExitChannel(),
-                        Dashboard.getInstance().getGamePiece(), 
-                        Dashboard.getInstance().getScoreGamePiece(), 
-                        Dashboard.getInstance().getScoreGrid(), 
-                        Dashboard.getInstance().getScoreNode(), 
-                        Dashboard.getInstance().getEnterChannel(), 
-                        false
-                    )
-                );
+        return new RedLeftScoreOneBalanceAuto(drivetrain, elevator, intake, arm);
+        // switch (Dashboard.getInstance().getAuto()) {
+        //     case DYNAMIC_AUTO_FACTORY:
+        //         return new DynamicAutoFactory(drivetrain, elevator, intake, arm).getAuto(
+        //             new DynamicAutoConfiguration(
+        //                 Dashboard.getInstance().getGrid(), 
+        //                 Dashboard.getInstance().getNode(),
+        //                 Dashboard.getInstance().getExitChannel(),
+        //                 Dashboard.getInstance().getGamePiece(), 
+        //                 Dashboard.getInstance().getScoreGamePiece(), 
+        //                 Dashboard.getInstance().getScoreGrid(), 
+        //                 Dashboard.getInstance().getScoreNode(), 
+        //                 Dashboard.getInstance().getEnterChannel(), 
+        //                 false
+        //             )
+        //         );
         
-            default:
-                return null;
-        }
+        //     default:
+        //         return null;
+        // }
     }
 }

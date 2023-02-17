@@ -13,13 +13,14 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import frc.robot.commands.ElevatorPositionCommand;
-import frc.robot.commands.IntakeArmInCommand;
-import frc.robot.commands.IntakeArmOutCommand;
-import frc.robot.commands.IntakeInCommand;
-import frc.robot.commands.IntakeOutCommand;
 import frc.robot.commands.IntakeStopCommand;
-import frc.robot.commands.PIDChargeStationAutoBalCommand;
+import frc.robot.commands.arm.ArmInCommand;
+import frc.robot.commands.arm.ArmOutCommand;
+import frc.robot.commands.drive.ChargeStationBalanceCommand;
+import frc.robot.commands.elevator.ElevatorPositionCommand;
+import frc.robot.commands.intake.IntakeInCommand;
+import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -34,14 +35,14 @@ public class RedRightScoreTwoBalanceAuto extends AutoBase{
 shoot gamepiece (w/o stopping), go to chargestation */
 
   /** Creates a new scoretwoandbalence. */
-  public RedRightScoreTwoBalanceAuto(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake) {
-    super(drivetrain, elevator, intake);
+  public RedRightScoreTwoBalanceAuto(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
+    super(drivetrain, elevator, intake, arm);
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    ElevatorPositionCommand top = new ElevatorPositionCommand(ElevatorPosition.TOPSCORE, this.elevator);
+    ElevatorPositionCommand top = new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator);
     this.addCommands(top.until(() -> elevator.atPosition()));
-    this.addCommands(new IntakeArmOutCommand(this.intake).withTimeout(1));
+    this.addCommands(new ArmOutCommand(this.arm).withTimeout(1));
     this.addCommands(new IntakeInCommand(this.intake).withTimeout(1));
 
     //Drive to pick up first cone
@@ -59,8 +60,8 @@ shoot gamepiece (w/o stopping), go to chargestation */
 
     ParallelDeadlineGroup pickupGroup = new ParallelDeadlineGroup(
                 pickupPath, //deadline
-                new ElevatorPositionCommand(ElevatorPosition.FLOORCONE, this.elevator),
-                new IntakeArmOutCommand(this.intake),
+                new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, this.elevator),
+                new ArmOutCommand(this.arm),
                 new IntakeInCommand(this.intake)
                 );
     this.addCommands(pickupGroup);
@@ -75,7 +76,7 @@ shoot gamepiece (w/o stopping), go to chargestation */
     ParallelDeadlineGroup carryGroup = new ParallelDeadlineGroup(
                 driveBackPath, //deadline
                 new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator),
-                new IntakeArmInCommand(this.intake),
+                new ArmInCommand(this.arm),
                 new IntakeStopCommand(this.intake)
                 );
     this.addCommands(carryGroup);
@@ -107,11 +108,11 @@ shoot gamepiece (w/o stopping), go to chargestation */
                 
                 );  
     this.addCommands(lineupGroup);
-    this.addCommands(new PIDChargeStationAutoBalCommand(this.drivetrain));
+    this.addCommands(new ChargeStationBalanceCommand(this.drivetrain));
   }
  
   @Override
-  protected void init() {
+  public void init() {
     // TODO Auto-generated method stub
     
   }
