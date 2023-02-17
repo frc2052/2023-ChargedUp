@@ -29,7 +29,7 @@ public class AprilTagDriveCommand extends DriveCommand {
         try {
             drivetrain.drive(
                 0,
-                forwardController.calculate(PhotonVisionSubsystem.getHorizontalOffsetMeters(vision.getTarget()), 0), 
+                forwardController.calculate(PhotonVisionSubsystem.getHorizontalOffsetDegrees(vision.getTarget()), 0), 
                 0, 
                 false
             );

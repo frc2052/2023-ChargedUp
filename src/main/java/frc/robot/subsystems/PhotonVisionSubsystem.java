@@ -12,15 +12,13 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,26 +27,21 @@ import frc.robot.Constants;
 
 public class PhotonVisionSubsystem extends SubsystemBase {
     private final PhotonCamera camera;
-
-    private PhotonPipelineResult latestResult;
-
-    private final Transform3d robotToCamera;
     private PhotonPoseEstimator poseEstimator;
 
+    private PhotonPipelineResult latestResult;
+    
     public PhotonVisionSubsystem() {
         camera = new PhotonCamera(Constants.Camera.CAMERA_NAME);
-        
-        robotToCamera = new Transform3d(
-            new Translation3d(0.5, 0.0, 0.5), 
-            new Rotation3d(0, 0, 0)
-        );
-        
+
         try {
+            AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+
             poseEstimator = new PhotonPoseEstimator(
-                AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile),
-                PoseStrategy.CLOSEST_TO_REFERENCE_POSE, 
+                fieldLayout,
+                PoseStrategy.MULTI_TAG_PNP, 
                 camera, 
-                robotToCamera
+                Constants.Camera.cameraPosition
             );
         } catch (IOException e) {
             DriverStation.reportError(e.getMessage(), e.getStackTrace());
@@ -56,6 +49,8 @@ public class PhotonVisionSubsystem extends SubsystemBase {
 
         camera.setDriverMode(true);
         camera.setPipelineIndex(0);
+
+        camera.setLED(VisionLEDMode.kOff);
     }
 
     @Override
@@ -65,11 +60,6 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         if (latestResult.hasTargets()) {
             SmartDashboard.putNumber("TAG ID", latestResult.getBestTarget().getFiducialId());
         }
-    }
-
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        poseEstimator.setReferencePose(prevEstimatedRobotPose);
-        return poseEstimator.update();
     }
 
     public boolean hasTargets() {
@@ -84,8 +74,17 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         return latestResult.getBestTarget();
     }
 
-    public static double getHorizontalOffsetMeters(PhotonTrackedTarget target) {
-        return target.getBestCameraToTarget().getY();
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d previousEstimatedRobotPose) {
+        if (poseEstimator == null) {
+            return Optional.empty();
+        }
+        
+        poseEstimator.setReferencePose(previousEstimatedRobotPose);
+        return poseEstimator.update();
+    }
+
+    public static double getHorizontalOffsetDegrees(PhotonTrackedTarget target) {
+        return target.getYaw();
     }
 
     /**

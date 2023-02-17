@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -87,6 +90,12 @@ public final class Constants {
         public static final String CAMERA_NAME = "2052_Cicada";
         public static final double CAMERA_HEIGHT_METERS = 0;
         public static final double CAMERA_PITCH_RADIANS = 0;
+
+        public static final Transform3d cameraPosition = new Transform3d(
+            new Translation3d(0.5, 0.0, 0.5), 
+            new Rotation3d(0, 0, 0)
+        );
+
 
         public static final double APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(8);
         public static final double COMMUNITY_GROUND_TO_APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(14.25);
