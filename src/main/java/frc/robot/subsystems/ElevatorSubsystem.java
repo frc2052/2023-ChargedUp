@@ -16,28 +16,36 @@ import frc.robot.io.Dashboard;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final TalonFX beltMotor;
-    private ElevatorPosition currentDesiredPosition;
+    
+    private ElevatorPosition previousPosition;
+    private ElevatorPosition currentPosition;
 
     private DigitalInput limitSwitch;
     public ElevatorSubsystem() {
         ErrorCode error;
         
-        limitSwitch = new DigitalInput(0);
+        limitSwitch = new DigitalInput(Constants.Elevator.LIMIT_SWITCH_DIO_CHANNEL);
         
         TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration();
         steerMotorConfiguration.slot0.kP = Constants.Elevator.BELT_MOTOR_P;
         steerMotorConfiguration.slot0.kI = Constants.Elevator.BELT_MOTOR_I;
         steerMotorConfiguration.slot0.kD = Constants.Elevator.BELT_MOTOR_D;
         
-        steerMotorConfiguration.motionCruiseVelocity = 4.0 * Constants.Elevator.BELT_MOTOR_CRUISE_VELOCITY;
-        steerMotorConfiguration.motionAcceleration = 4.0 * Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION;
+        steerMotorConfiguration.motionCruiseVelocity = Constants.Elevator.BELT_MOTOR_CRUISE_VELOCITY;
+        steerMotorConfiguration.motionAcceleration = Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION;
 
         beltMotor = new TalonFX(Constants.Elevator.BELT_MOTOR);
+        beltMotor.configFactoryDefault();
+
         if ((error = beltMotor.configAllSettings(steerMotorConfiguration)) != ErrorCode.OK) {
             DriverStation.reportError("Failed to configure belt motor: " + error.toString(), false);
         }
+        
         beltMotor.setNeutralMode(NeutralMode.Brake);
         beltMotor.setInverted(true);
+
+        previousPosition = ElevatorPosition.STARTING;
+        currentPosition = ElevatorPosition.STARTING;
 
         // Assume the elevator will start at the lowest possible position.
         zeroEncoder();
@@ -49,14 +57,20 @@ public class ElevatorSubsystem extends SubsystemBase {
             Constants.Dashboard.ELEVATOR_POSITION_KEY, 
             beltMotor.getSelectedSensorPosition()
         );
-        if (limitSwitch.get()){
-            stop(); 
-            beltMotor.setSelectedSensorPosition(0.0);
+
+        if (!limitSwitch.get()) {
+            zeroEncoder();
+
+            if (currentPosition.getPositionTicks() < previousPosition.getPositionTicks()) {
+                stop();
+                getCurrentCommand().cancel();
+            }
         }
     }
 
     public void setPosition(ElevatorPosition elevatorPosition) {
-        currentDesiredPosition = elevatorPosition;
+        previousPosition = currentPosition;
+        currentPosition = elevatorPosition;
         
         // If the arm mechanism drags down the belt due to gravity add an arbitrary feed forward constant.
         beltMotor.set(
@@ -67,7 +81,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public boolean atPosition() {
         return Math.abs(
-            currentDesiredPosition.getPositionTicks() - beltMotor.getSelectedSensorPosition()
+            currentPosition.getPositionTicks() - beltMotor.getSelectedSensorPosition()
         ) <= Constants.Elevator.BELT_MOTOR_DEAD_ZONE_TICKS;
     }
 
@@ -82,16 +96,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
     }
 
-    
-    
     public void manualUp() {
-        System.out.println("manual up");
         beltMotor.set(TalonFXControlMode.PercentOutput, 0.1);
     }
 
     public void manualDown() {
-        beltMotor.set(TalonFXControlMode.PercentOutput, -0.05);
-        System.out.println("Manual down");
+        if (limitSwitch.get()) {
+            beltMotor.set(TalonFXControlMode.PercentOutput, -0.075);
+        }
     }
 
     public void stop() {
@@ -100,7 +112,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public static enum ElevatorPosition {
         STARTING(0),
-        FLOORCUBE(16478),
+        FLOORCUBE(10000),
         FLOORCONE(20155),
         BABYBIRD(23963),
         MIDSCORE(86590),

@@ -5,12 +5,10 @@
 
 package frc.robot.io;
 
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 //import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.auto.DynamicAutoFactory;
 
 /** Add your docs here. */
 // Trying something different this year, instead of a normal class
@@ -20,7 +18,8 @@ public class Dashboard {
     private static Dashboard INSTANCE;
 
     // Creates sendable choosers
-    // private final SendableChooser<Type> exampleChooser;
+    private final SendableChooser<DriveMode> driveModeChooser;
+
     private final SendableChooser<Autos> autoChooser;
     private final SendableChooser<Node> nodeChooser;
     private final SendableChooser<Grid> gridChooser;
@@ -31,10 +30,13 @@ public class Dashboard {
     private final SendableChooser<Channel> enterChannelChooser;
 
     private Dashboard() {
-        SmartDashboard.putBoolean(
-            Constants.Dashboard.FIELD_RELATIVE_KEY,
-            Constants.Dashboard.FIELD_RELATIVE_DEFAULT
-        );
+        //Creates options for different choosers
+        driveModeChooser = new SendableChooser<DriveMode>();
+        for (DriveMode driveMode : DriveMode.values()){
+            driveModeChooser.addOption(driveMode.name(), driveMode);
+        }
+        driveModeChooser.setDefaultOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
+        SmartDashboard.putData(Constants.Dashboard.DRIVE_MODE_KEY, driveModeChooser);
 
         autoChooser = new SendableChooser<Autos>();
         for (Autos auto : Autos.values()) {
@@ -118,13 +120,11 @@ public class Dashboard {
         }
     }
 
-    public boolean isFieldRelative() {
-        return SmartDashboard.getBoolean(
-            Constants.Dashboard.FIELD_RELATIVE_KEY,
-            Constants.Dashboard.FIELD_RELATIVE_DEFAULT
-        );      
+    public DriveMode getDriveMode() {
+        return driveModeChooser.getSelected();      
     }
 
+    // creates getSelected command
     public Autos getAuto() {
         return autoChooser.getSelected();
     }
@@ -165,6 +165,12 @@ public class Dashboard {
         return INSTANCE;
     }
 
+    // Create enums for Dashboard elements/parts here
+    public static enum DriveMode {
+        FIELD_CENTRIC,
+        ROBOT_CENTRIC;
+    }
+
     public static enum Autos {
         DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description");
 
@@ -175,7 +181,7 @@ public class Dashboard {
             this.name = name;
             this.description = description;
         }
-
+  
         public String getName() {
             return name;
         }

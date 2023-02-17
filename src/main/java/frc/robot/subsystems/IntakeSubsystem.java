@@ -5,50 +5,59 @@
 package frc.robot.subsystems;
 
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private TalonSRX intakeMotor = new TalonSRX(Constants.Intake.INTAKE_MOTOR_PWM_PORT);
-    private DoubleSolenoid intakesolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 0);
-
+    private final TalonSRX intakeMotor;
+    
     /** Creates a new Intake. */
     public IntakeSubsystem() {
-        intakeMotor.configPeakCurrentLimit(6); // don't activate current limit until current exceeds 30 A ...
-        intakeMotor.configPeakCurrentDuration(100); // ... for at least 100 ms
-        intakeMotor.configContinuousCurrentLimit(5); // once current-limiting is actived, hold at 20A
-        intakeMotor.enableCurrentLimit(true); 
+        ErrorCode error;
+
+        SupplyCurrentLimitConfiguration currentLimitConfiguration = new SupplyCurrentLimitConfiguration(
+            true,
+            // Limiting current once the peak current has been exceeded in amps
+            Constants.Intake.INTAKE_CRUISE_CURRENT_AMPS,
+            // Peak current in amps
+            Constants.Intake.INTAKE_PEAK_CURRENT_THRESHOLD_AMPS,
+            // Peak current duration before limiting in seconds
+            Constants.Intake.INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS
+        );
+
+        intakeMotor = new TalonSRX(Constants.Intake.INTAKE_MOTOR_ID);
+        intakeMotor.configFactoryDefault();
+        
+        if ((error = intakeMotor.configSupplyCurrentLimit(currentLimitConfiguration)) != ErrorCode.OK) {
+            DriverStation.reportError("Failed to configure intake motor current limit: " + error.toString(), true);
+        }
+
+        intakeMotor.setNeutralMode(NeutralMode.Brake);
+        intakeMotor.setInverted(true);
     }
 
-    public void armIn() {
-        intakesolenoid.set(Value.kReverse);
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("intake CURRENT", intakeMotor.getSupplyCurrent());
     }
 
-    public void armOut() {
-        intakesolenoid.set(Value.kForward);
-    }
-
-    public void toggleArm() {
-        intakesolenoid.toggle();
-    }
     public void intakeIn() {
-        // speed of intake motor by percent
-        intakeMotor.set(ControlMode.PercentOutput, .1);
+        intakeMotor.set(ControlMode.PercentOutput, 0.75);
     }
     
     public void intakeOut() {
-        intakeMotor.set(ControlMode.PercentOutput, -.1);
+        intakeMotor.set(ControlMode.PercentOutput, -0.5);
     }
 
     public void stop() {
-        intakesolenoid.set(Value.kReverse);
         intakeMotor.set(ControlMode.PercentOutput, 0);
     }
 }

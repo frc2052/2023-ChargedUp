@@ -1,22 +1,17 @@
-package frc.robot.commands;
+package frc.robot.auto;
 
 import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.Constants.Elevator;
-import frc.robot.Constants.Intake;
-import frc.robot.auto.AutoBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 
 public class TestAuto extends AutoBase {
     private final DrivetrainSubsystem drivetrain;
 
-    public TestAuto(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake) {
-        super(drivetrain,elevator,intake);
+    public TestAuto(DrivetrainSubsystem drivetrain) {
+        super(drivetrain);
 
         this.drivetrain = drivetrain;
     }

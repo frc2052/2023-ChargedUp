@@ -43,25 +43,54 @@ public final class Constants {
         public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 4;
         public static final double BACK_RIGHT_MODULE_STEER_OFFSET_RADIANS = 1.179 - (Math.PI / 2);
     }
-
-    public static final class Dashboard {
-        public static final String FIELD_RELATIVE_KEY = "Field Relative";
-        public static final boolean FIELD_RELATIVE_DEFAULT = true;
-
-        public static final String ELEVATOR_POSITION_KEY = "Elevator position";
-    }
-
+    
     public static final class Elevator {
-        public static final int BELT_MOTOR = 13;
+        public static final int BELT_MOTOR = 15;
+
+        public static final int LIMIT_SWITCH_DIO_CHANNEL = 0;
 
         public static final double BELT_MOTOR_P = 0.2;
         public static final double BELT_MOTOR_I = 0;
         public static final double BELT_MOTOR_D = 0;
 
         private static final int FALCON500_TICKS_PER_ROTATION = 2048;
-        public static final double BELT_MOTOR_CRUISE_VELOCITY = 8.0 * FALCON500_TICKS_PER_ROTATION;
-        public static final double BELT_MOTOR_MAX_ACCELERATION = 8.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final double BELT_MOTOR_CRUISE_VELOCITY = 2.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final double BELT_MOTOR_MAX_ACCELERATION = 2.0 * FALCON500_TICKS_PER_ROTATION;
         public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 250;
+    }
+
+    public static final class Arm {
+        public static final int ARM_SOLENOID_OUT_CHANNEL = 0;
+        public static final int ARM_SOLENOID_IN_CHANNEL = 1;
+    }
+
+    public static final class Intake {
+        public static final int INTAKE_MOTOR_ID = 13;
+
+        // Minimum allowable amps
+        public static final double INTAKE_CRUISE_CURRENT_AMPS = 1.5;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 8;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.25;
+    }
+    
+    public static final class Camera {
+        public static final String CAMERA_NAME = "2052April";
+        public static final double CAMERA_HEIGHT_METERS = 0;
+        public static final double CAMERA_PITCH_RADIANS = 0;
+
+        public static final double APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(8);
+        public static final double COMMUNITY_GROUND_TO_APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(14.25);
+        public static final double LOADING_ZONE_GROUND_TO_APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(23.375);
+    }
+
+    public static final class Compressor {
+        public static final int PNEUMATIC_HUB_ID = 14;
+    }
+
+    public static final class Dashboard {
+        public static final String DRIVE_MODE_KEY = "Drive Mode";
+
+        public static final String ELEVATOR_POSITION_KEY = "Elevator position";
     }
 
     public static final class Auto {
@@ -80,11 +109,5 @@ public final class Constants {
         public static final double DISTANCE_BETWEEN_GAME_PIECES_METERS = Units.feetToMeters(4);
         public static final double DISTANCE_WALL_TO_GAME_PIECE_METERS = Units.inchesToMeters(36.25);
         public static final double FIELD_WIDTH = Units.feetToMeters(26.291667);
-       
     }
-    
-    public static final class Intake {
-        public static final int INTAKE_MOTOR_PWM_PORT = 0;
-    }
-
 }
