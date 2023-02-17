@@ -207,6 +207,11 @@ public class Dashboard {
         RIGHT_CONE;
     }
 
+    public static enum Row {
+        HYBRID,
+        MIDDLE,
+        HIGH
+    }
     // Path around the charge station either on the left or right side
     public static enum Channel {
         LEFT_CHANNEL,
