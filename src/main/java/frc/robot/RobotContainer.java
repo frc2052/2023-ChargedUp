@@ -101,8 +101,8 @@ public class RobotContainer {
         /*
          * Drivetrain button bindings
          */
-        // JoystickButton zeroGyroButton = new JoystickButton(controlPanel, 10);
-        // zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
+        JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
+        zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
         // JoystickButton autoBalance = new JoystickButton(controlPanel, 9);
         // autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
@@ -132,20 +132,23 @@ public class RobotContainer {
         // manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
         // manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
         
-        // /*
-        //  * Arm button bindings
-        //  */
-        // JoystickButton intakeArmToggle = new JoystickButton(controlPanel, 1);
-        // intakeArmToggle.onTrue(new InstantCommand(() -> arm.toggleArm(), arm));
+        /*
+         * Arm button bindings
+         */
+        JoystickButton driverIntakeArmToggle = new JoystickButton(driveJoystick, 1);
+        JoystickButton controlPannelIntakeArmToggle = new JoystickButton(controlPanel, 1);
+        driverIntakeArmToggle.or(controlPannelIntakeArmToggle).onTrue(new InstantCommand(() -> arm.toggleArm(), arm));
 
-        // /*
-        //  * Intake button bindings
-        //  */
-        // JoystickButton intakeInButton = new JoystickButton(controlPanel, 7);
-        // JoystickButton intakeOutButton = new JoystickButton(controlPanel, 6);
+        /*
+         * Intake button bindings
+         */
+        JoystickButton controlPannelIntakeInButton = new JoystickButton(controlPanel, 7);
+        JoystickButton driverIntakeInButton = new JoystickButton(driveJoystick, 3);
+        JoystickButton controlPannelIntakeOutButton = new JoystickButton(controlPanel, 6);
+        JoystickButton driverIntakeOutButton = new JoystickButton(driveJoystick, 2);
 
-        // intakeInButton.whileTrue(new IntakeInCommand(intake));
-        // intakeOutButton.whileTrue(new IntakeOutCommand(intake));
+        driverIntakeInButton.or(controlPannelIntakeInButton).whileTrue(new IntakeInCommand(intake));
+        driverIntakeOutButton.or(controlPannelIntakeOutButton).whileTrue(new IntakeOutCommand(intake));
     }
 
     public void zeroOdometry() {
