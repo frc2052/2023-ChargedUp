@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -19,8 +18,6 @@ import frc.robot.io.Dashboard;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonSRX intakeMotor;
-    
-    // private final SlewRateLimiter intakeLimiter;
 
     /** Creates a new Intake. */
     public IntakeSubsystem() {
@@ -45,9 +42,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
         intakeMotor.setNeutralMode(NeutralMode.Brake);
         intakeMotor.setInverted(true);
-
-        // Slew rate intake speed to take 0.25 seconds to go full speed.
-        // intakeLimiter = new SlewRateLimiter(4);
     }
 
     @Override
@@ -64,8 +58,6 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        // Immediately stop intake and reset the slew rate limiter
-        // intakeLimiter.calculate(0.0);
         intakeMotor.set(ControlMode.PercentOutput, 0.0);
     }
 }

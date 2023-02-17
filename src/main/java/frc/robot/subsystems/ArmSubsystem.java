@@ -32,10 +32,10 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void armIn() {
-        intakeSolenoid.set(Value.kReverse);
+        intakeSolenoid.set(Value.kForward);
     }
 
     public void armOut() {
-        intakeSolenoid.set(Value.kForward);
+        intakeSolenoid.set(Value.kReverse);
     }
 }

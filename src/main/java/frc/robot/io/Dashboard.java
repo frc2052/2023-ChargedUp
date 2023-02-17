@@ -175,7 +175,8 @@ public class Dashboard {
     }
 
     public static enum Autos {
-        DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description");
+        DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description"),
+        RED_LEFT_SCORE_ONE_BALANCE("Red Left Score One Balance", "Description");
 
         private final String name;
         private final String description;

@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.DynamicAutoConfiguration;
 import frc.robot.auto.DynamicAutoFactory;
+import frc.robot.auto.RedLeftScoreOneBalanceAuto;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -48,10 +49,10 @@ public class RobotContainer {
     private final ControlPanel controlPanel;
     
     // The robot's subsystems and commands are defined here...
-    // private final DrivetrainSubsystem drivetrain;
-    // private final ArmSubsystem arm;
-    // private final IntakeSubsystem intake;
-    // private final ElevatorSubsystem elevator;
+    private final DrivetrainSubsystem drivetrain;
+    private final ArmSubsystem arm;
+    private final IntakeSubsystem intake;
+    private final ElevatorSubsystem elevator;
     private final PhotonVisionSubsystem vision;
 
     /**
@@ -62,30 +63,28 @@ public class RobotContainer {
         turnJoystick = new Joystick(1);
         controlPanel = new ControlPanel(2);
 
-        // drivetrain = new DrivetrainSubsystem();
-        // arm = new ArmSubsystem();
-        // intake = new IntakeSubsystem();
-        // elevator = new ElevatorSubsystem();
+        drivetrain = new DrivetrainSubsystem();
+        arm = new ArmSubsystem();
+        intake = new IntakeSubsystem();
+        elevator = new ElevatorSubsystem();
         vision = new PhotonVisionSubsystem();
 
-        
+        new PneumaticsSubsystem();
 
-        //new PneumaticsSubsystem();
-
-        // drivetrain.setDefaultCommand(
-        //     new DefaultDriveCommand(
-        //         // Forward velocity supplier
-        //         () -> driveJoystick.getY(),
-        //         // Sideways velocity supplier
-        //         () -> driveJoystick.getX(),
-        //         // Rotation velocity supplier
-        //         () -> turnJoystick.getX(),
-        //         () -> Dashboard.getInstance().getDriveMode() == DriveMode.FIELD_CENTRIC,
-        //         drivetrain
-        //     )
-        // );
-        // elevator.setDefaultCommand(new RunCommand(() -> elevator.stop(), elevator));
-        // intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
+        drivetrain.setDefaultCommand(
+            new DefaultDriveCommand(
+                // Forward velocity supplier
+                () -> driveJoystick.getY(),
+                // Sideways velocity supplier
+                () -> driveJoystick.getX(),
+                // Rotation velocity supplier
+                () -> turnJoystick.getX(),
+                () -> Dashboard.getInstance().getDriveMode() == DriveMode.FIELD_CENTRIC,
+                drivetrain
+            )
+        );
+        elevator.setDefaultCommand(new RunCommand(() -> elevator.stop(), elevator));
+        intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
 
         // Configure the trigger bindings
         configureBindings();
@@ -104,33 +103,33 @@ public class RobotContainer {
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
-        // JoystickButton autoBalance = new JoystickButton(controlPanel, 9);
-        // autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
+        JoystickButton autoBalance = new JoystickButton(controlPanel, 9);
+        autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
-        // JoystickButton aprilTagDriveButton = new JoystickButton(driveJoystick, 1);
-        // aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
+        JoystickButton aprilTagDriveButton = new JoystickButton(driveJoystick, 1);
+        aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
 
         // /*
         //  * Elevator button bindings
         //  */
-        // JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 8);
-        // JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 2);
-        // JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 4);
-        // JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 3);
-        // JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
-        // Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getY() < -0.5);
+        JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 8);
+        JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 2);
+        JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 4);
+        JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 3);
+        JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
+        Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getY() < -0.5);
 
-        // elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
-        // elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
-        // elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
-        // elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator));
-        // elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator));
-        // elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator));
+        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
+        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
+        elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
+        elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator));
+        elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator));
+        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator));
 
-        // JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 12);
-        // JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 11);
-        // manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
-        // manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
+        JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 12);
+        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 11);
+        manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
+        manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
         
         /*
          * Arm button bindings
@@ -138,6 +137,12 @@ public class RobotContainer {
         JoystickButton driverIntakeArmToggle = new JoystickButton(driveJoystick, 1);
         JoystickButton controlPannelIntakeArmToggle = new JoystickButton(controlPanel, 1);
         driverIntakeArmToggle.or(controlPannelIntakeArmToggle).onTrue(new InstantCommand(() -> arm.toggleArm(), arm));
+
+
+        JoystickButton armInButton = new JoystickButton(driveJoystick, 6);
+        JoystickButton armOutButton = new JoystickButton(driveJoystick, 7);
+        armInButton.onTrue(new InstantCommand(() -> arm.armIn(), arm));
+        armOutButton.onTrue(new InstantCommand(() -> arm.armOut(), arm));
 
         /*
          * Intake button bindings
@@ -152,8 +157,8 @@ public class RobotContainer {
     }
 
     public void zeroOdometry() {
-        // drivetrain.zeroGyro();
-        // drivetrain.resetOdometry(new Pose2d());
+        drivetrain.zeroGyro();
+        drivetrain.resetOdometry(new Pose2d());
     }
 
     /**
@@ -162,26 +167,27 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        //return new TestAuto(drivetrain);
-        // switch (Dashboard.getInstance().getAuto()) {
-        //     case DYNAMIC_AUTO_FACTORY:
-        //         return new DynamicAutoFactory(drivetrain).getAuto(
-        //             new DynamicAutoConfiguration(
-        //                 Dashboard.getInstance().getGrid(), 
-        //                 Dashboard.getInstance().getNode(),
-        //                 Dashboard.getInstance().getExitChannel(),
-        //                 Dashboard.getInstance().getGamePiece(), 
-        //                 Dashboard.getInstance().getScoreGamePiece(), 
-        //                 Dashboard.getInstance().getScoreGrid(), 
-        //                 Dashboard.getInstance().getScoreNode(), 
-        //                 Dashboard.getInstance().getEnterChannel(), 
-        //                 false
-        //             )
-        //         );
-        
-        //     default:
-        //         return null;
-        // }
-        return null;
+        switch (Dashboard.getInstance().getAuto()) {
+            case DYNAMIC_AUTO_FACTORY:
+                return new DynamicAutoFactory(drivetrain, elevator, intake, arm).getAuto(
+                    new DynamicAutoConfiguration(
+                        Dashboard.getInstance().getGrid(), 
+                        Dashboard.getInstance().getNode(),
+                        Dashboard.getInstance().getExitChannel(),
+                        Dashboard.getInstance().getGamePiece(), 
+                        Dashboard.getInstance().getScoreGamePiece(), 
+                        Dashboard.getInstance().getScoreGrid(), 
+                        Dashboard.getInstance().getScoreNode(), 
+                        Dashboard.getInstance().getEnterChannel(), 
+                        false
+                    )
+                );
+            
+            case RED_LEFT_SCORE_ONE_BALANCE:
+                return new RedLeftScoreOneBalanceAuto(drivetrain, elevator, intake, arm);
+
+            default:
+                return null;
+        }
     }
 }

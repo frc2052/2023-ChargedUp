@@ -56,7 +56,7 @@ public final class Constants {
         private static final int FALCON500_TICKS_PER_ROTATION = 2048;
         public static final double BELT_MOTOR_CRUISE_VELOCITY = 4.0 * FALCON500_TICKS_PER_ROTATION;
         public static final double BELT_MOTOR_MAX_ACCELERATION = 4.0 * FALCON500_TICKS_PER_ROTATION;
-        public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 250;
+        public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 500;
     }
 
     public static final class Arm {
@@ -68,7 +68,7 @@ public final class Constants {
         public static final int INTAKE_MOTOR_ID = 13;
 
         // Minimum allowable amps
-        public static final double INTAKE_CRUISE_CURRENT_AMPS = 1.5;
+        public static final double INTAKE_CRUISE_CURRENT_AMPS = 2.0;
         public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 8.0;
         public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.25;
     }
