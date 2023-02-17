@@ -47,16 +47,17 @@ shoot gamepiece (w/o stopping), go to chargestation */
     //Drive to pick up first cone
     Rotation2d rotation = Rotation2d.fromDegrees(180);
     Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
-    Pose2d endPose = new Pose2d(Units.inchesToMeters(75), Units.inchesToMeters(-8), Rotation2d.fromDegrees(0));
+    Pose2d endPose = new Pose2d(Units.inchesToMeters(175), Units.inchesToMeters(-8), Rotation2d.fromDegrees(0));
     SwerveControllerCommand commandOne = super.createSwerveCommand(startPose, endPose, rotation);    
     this.addCommands(commandOne);
 
     //drive to pickup cone
     rotation = Rotation2d.fromDegrees(0);
     startPose = endPose;
-    endPose = new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(-8), Rotation2d.fromDegrees(0));
+    endPose = new Pose2d(Units.inchesToMeters(190), Units.inchesToMeters(-8), Rotation2d.fromDegrees(0));
     SwerveControllerCommand pickupPath = super.createSwerveCommand(startPose, endPose, rotation);
 
+    //pickup cone
     ParallelDeadlineGroup pickupGroup = new ParallelDeadlineGroup(
                 pickupPath, //deadline
                 new ElevatorPositionCommand(ElevatorPosition.FLOORCONE, this.elevator),
@@ -72,6 +73,7 @@ shoot gamepiece (w/o stopping), go to chargestation */
     endPose = new Pose2d(Units.inchesToMeters(6), Units.inchesToMeters(-33), Rotation2d.fromDegrees(90));
     SwerveControllerCommand driveBackPath = super.createSwerveCommand(startPose, midpoint, endPose, rotation);
 
+    //stop picking up
     ParallelDeadlineGroup carryGroup = new ParallelDeadlineGroup(
                 driveBackPath, //deadline
                 new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator),
@@ -95,7 +97,7 @@ shoot gamepiece (w/o stopping), go to chargestation */
     
     this.addCommands(shootGroup);
 
-    //going to charge station
+    //going on charge station
      rotation = Rotation2d.fromDegrees(180);
     startPose = endPose;
     endPose = new Pose2d(Units.inchesToMeters(76), Units.inchesToMeters(-67), Rotation2d.fromDegrees(0));
