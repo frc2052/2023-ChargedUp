@@ -162,7 +162,7 @@ public class RobotContainer {
         //return new TestAuto(drivetrain);
         switch (Dashboard.getInstance().getAuto()) {
             case DYNAMIC_AUTO_FACTORY:
-                return new DynamicAutoFactory(drivetrain).getAuto(
+                return new DynamicAutoFactory(drivetrain, elevator, intake).getAuto(
                     new DynamicAutoConfiguration(
                         Dashboard.getInstance().getGrid(), 
                         Dashboard.getInstance().getNode(),

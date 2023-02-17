@@ -20,6 +20,9 @@ import frc.robot.commands.IntakeInCommand;
 import frc.robot.commands.IntakeOutCommand;
 import frc.robot.commands.IntakeStopCommand;
 import frc.robot.commands.PIDChargeStationAutoBalCommand;
+import frc.robot.commands.arm.ArmInCommand;
+import frc.robot.commands.drive.ChargeStationBalanceCommand;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -34,8 +37,8 @@ public class RedLeftScoreOneBalanceAuto extends AutoBase{
 shoot gamepiece (w/o stopping), go to chargestation */
 
   /** Creates a new scoretwoandbalence. */
-  public RedLeftScoreOneBalanceAuto(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake) {
-    super(drivetrain, elevator, intake);
+  public RedLeftScoreOneBalanceAuto(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
+    super(drivetrain, elevator, intake, arm);
 
     AutoTrajectoryConfig drivingToTerminalTrajectoryConfig = super.createTrajectoryConfig(4, 3, 1, 3.5, 2);
     AutoTrajectoryConfig intakingBothTerminalBallsTrajectoryConfig = super.createTrajectoryConfig(2, 1, 1, 3, 2); 
@@ -66,7 +69,7 @@ shoot gamepiece (w/o stopping), go to chargestation */
     //pickup cone
     ParallelDeadlineGroup pickupGroup = new ParallelDeadlineGroup(
                 pickupPath, //deadline
-                new ElevatorPositionCommand(ElevatorPosition.FLOORCONE, this.elevator),
+                new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, this.elevator),
                 new IntakeArmOutCommand(this.intake),
                 new IntakeInCommand(this.intake)
                 );
@@ -81,7 +84,7 @@ shoot gamepiece (w/o stopping), go to chargestation */
     ParallelDeadlineGroup carryGroup = new ParallelDeadlineGroup(
                 lineupPath, //deadline
                 new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator),
-                new IntakeArmInCommand(this.intake),
+                new ArmInCommand(this.intake),
                 new IntakeStopCommand(this.intake)
                 );
     this.addCommands(carryGroup);
@@ -97,11 +100,11 @@ shoot gamepiece (w/o stopping), go to chargestation */
                 
                 );  
     this.addCommands(lineupGroup);
-    this.addCommands(new PIDChargeStationAutoBalCommand(this.drivetrain));
+    this.addCommands(new ChargeStationBalanceCommand(this.drivetrain));
   }
  
   @Override
-  protected void init() {
+  public void init() {
     // TODO Auto-generated method stub
     
   }
