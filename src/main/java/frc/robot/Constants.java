@@ -84,7 +84,7 @@ public final class Constants {
     }
 
     public static final class Camera {
-        public static final String CAMERA_NAME = "2052April";
+        public static final String CAMERA_NAME = "2052_Cicada";
         public static final double CAMERA_HEIGHT_METERS = 0;
         public static final double CAMERA_PITCH_RADIANS = 0;
 

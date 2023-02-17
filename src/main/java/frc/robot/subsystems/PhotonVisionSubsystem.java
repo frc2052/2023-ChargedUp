@@ -23,6 +23,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -60,6 +62,10 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         latestResult = camera.getLatestResult();
+
+        if (latestResult.hasTargets()) {
+            SmartDashboard.putNumber("TAG ID", latestResult.getBestTarget().getFiducialId());
+        }
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
@@ -84,8 +90,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * @return Estimated height from the ground to the center of the april tag in
-     *         meters.
+     * @return Estimated height from the ground to the center of the april tag in meters.
      */
     public static double getTargetHeightFromGroundMeters(PhotonTrackedTarget target) {
         // Special case for april tags mounted in the loading zone,
