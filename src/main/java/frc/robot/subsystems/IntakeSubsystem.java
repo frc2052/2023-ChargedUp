@@ -11,14 +11,17 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.io.Dashboard;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonSRX intakeMotor;
     
+    // private final SlewRateLimiter intakeLimiter;
+
     /** Creates a new Intake. */
     public IntakeSubsystem() {
         ErrorCode error;
@@ -35,22 +38,25 @@ public class IntakeSubsystem extends SubsystemBase {
 
         intakeMotor = new TalonSRX(Constants.Intake.INTAKE_MOTOR_ID);
         intakeMotor.configFactoryDefault();
-        
+
         if ((error = intakeMotor.configSupplyCurrentLimit(currentLimitConfiguration)) != ErrorCode.OK) {
             DriverStation.reportError("Failed to configure intake motor current limit: " + error.toString(), true);
         }
 
         intakeMotor.setNeutralMode(NeutralMode.Brake);
         intakeMotor.setInverted(true);
+
+        // Slew rate intake speed to take 0.25 seconds to go full speed.
+        // intakeLimiter = new SlewRateLimiter(4);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("intake CURRENT", intakeMotor.getSupplyCurrent());
+        Dashboard.getInstance().putData(Constants.Dashboard.INTAKE_CURRENT_KEY, intakeMotor.getSupplyCurrent());
     }
 
     public void intakeIn() {
-        intakeMotor.set(ControlMode.PercentOutput, 0.75);
+        intakeMotor.set(ControlMode.PercentOutput, 0.9);
     }
     
     public void intakeOut() {
@@ -58,6 +64,8 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        intakeMotor.set(ControlMode.PercentOutput, 0);
+        // Immediately stop intake and reset the slew rate limiter
+        // intakeLimiter.calculate(0.0);
+        intakeMotor.set(ControlMode.PercentOutput, 0.0);
     }
 }

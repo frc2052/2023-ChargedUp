@@ -37,7 +37,7 @@ public class DynamicAutoFactory {
         // Inline implementation of the abstract auto class to create an instance of auto.
         return new AutoBase(this.drivetrain,this.elevator,this.intake) {
             @Override
-            protected void init() {
+            public void init() {
                 // TODO: Start by automatically scoring the starting game piece.
 
                 // Initial starting position of the robot across the front of the grids.

@@ -99,7 +99,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        field.setRobotPose(odometry.getPoseMeters());
         debug();
     }
 
@@ -107,15 +106,28 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * All parameters are taken in normalized terms of [-1.0 to 1.0].
      */
     public void drive(
-        double normalizedXVelocityMetersPerSecond, 
-        double normalizedYVelocityMetersPerSecond, 
-        double normalizedRotationVelocityRadiansPerSecond, 
+        double normalizedXVelocity, 
+        double normalizedYVelocity, 
+        double normalizedRotationVelocity, 
         boolean fieldCentric
     ) {
+        normalizedXVelocity = Math.copySign(
+            Math.min(Math.abs(normalizedXVelocity), 1.0),
+            normalizedXVelocity
+        );
+        normalizedYVelocity = Math.copySign(
+            Math.min(Math.abs(normalizedYVelocity), 1.0),
+            normalizedYVelocity
+        );
+        normalizedRotationVelocity = Math.copySign(
+            Math.min(Math.abs(normalizedRotationVelocity), 1.0),
+            normalizedRotationVelocity
+        );
+
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
-            normalizedXVelocityMetersPerSecond * getMaxVelocityMetersPerSecond(), 
-            normalizedYVelocityMetersPerSecond * getMaxVelocityMetersPerSecond(), 
-            normalizedRotationVelocityRadiansPerSecond * getMaxAngularVelocityRadiansPerSecond()
+            normalizedXVelocity * getMaxVelocityMetersPerSecond(), 
+            normalizedYVelocity * getMaxVelocityMetersPerSecond(), 
+            normalizedRotationVelocity * getMaxAngularVelocityRadiansPerSecond()
         );
 
         if (fieldCentric) {
@@ -165,7 +177,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             hasVelocity ? swerveModuleStates[3].angle : backRightModule.getState().angle
         );
         
-        odometry.update(getRotation(), getModulePositions());
+        field.setRobotPose(odometry.update(getRotation(), getModulePositions()));
     }
 
     private SwerveModulePosition[] getModulePositions() {
@@ -194,11 +206,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
-        // Ensure proper magnetometer calibration in order to get valid fused headings.
-        // if (navx.isMagnetometerCalibrated()) {
-        //     return Rotation2d.fromDegrees(navx.getFusedHeading());
-        // }
-
        return navx.getRotation2d();
     }
 

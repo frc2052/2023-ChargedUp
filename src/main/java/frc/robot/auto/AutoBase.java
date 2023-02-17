@@ -79,7 +79,7 @@ public abstract class AutoBase extends SequentialCommandGroup {
     /**
      * Add commands to auto sequence from this method.
      */
-    protected abstract void init();
+    public abstract void init();
 
     public Pose2d getLastEndingPose() {
         return lastEndingPose;
