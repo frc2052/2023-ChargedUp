@@ -117,9 +117,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         STARTING(0),
         FLOOR_CUBE(10000),
         FLOOR_CONE(20155),
-        BABY_BIRD(23963),
-        MID_SCORE(86590),
-        TOP_SCORE(117875);
+        BABY_BIRD(9500),
+        MID_SCORE(91500),
+        TOP_SCORE(122000);
 
         private final int positionTicks;
 

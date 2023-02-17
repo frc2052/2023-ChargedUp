@@ -20,7 +20,7 @@ import frc.robot.io.Dashboard;
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonSRX intakeMotor;
     
-    private final SlewRateLimiter intakeLimiter;
+    // private final SlewRateLimiter intakeLimiter;
 
     /** Creates a new Intake. */
     public IntakeSubsystem() {
@@ -47,7 +47,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor.setInverted(true);
 
         // Slew rate intake speed to take 0.25 seconds to go full speed.
-        intakeLimiter = new SlewRateLimiter(4);
+        // intakeLimiter = new SlewRateLimiter(4);
     }
 
     @Override
@@ -56,16 +56,16 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void intakeIn() {
-        intakeMotor.set(ControlMode.PercentOutput, intakeLimiter.calculate(1.0));
+        intakeMotor.set(ControlMode.PercentOutput, 0.9);
     }
     
     public void intakeOut() {
-        intakeMotor.set(ControlMode.PercentOutput, intakeLimiter.calculate(-0.5));
+        intakeMotor.set(ControlMode.PercentOutput, -0.5);
     }
 
     public void stop() {
         // Immediately stop intake and reset the slew rate limiter
-        intakeLimiter.calculate(0.0);
+        // intakeLimiter.calculate(0.0);
         intakeMotor.set(ControlMode.PercentOutput, 0.0);
     }
 }
