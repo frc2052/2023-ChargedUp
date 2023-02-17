@@ -137,6 +137,12 @@ public class RobotContainer {
         JoystickButton controlPannelIntakeArmToggle = new JoystickButton(controlPanel, 1);
         driverIntakeArmToggle.or(controlPannelIntakeArmToggle).onTrue(new InstantCommand(() -> arm.toggleArm(), arm));
 
+
+        JoystickButton armInButton = new JoystickButton(driveJoystick, 6);
+        JoystickButton armOutButton = new JoystickButton(driveJoystick, 7);
+        armInButton.onTrue(new InstantCommand(() -> arm.armIn(), arm));
+        armOutButton.onTrue(new InstantCommand(() -> arm.armOut(), arm));
+
         /*
          * Intake button bindings
          */

@@ -65,7 +65,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void stop() {
         // Immediately stop intake and reset the slew rate limiter
-        // intakeLimiter.calculate(0.0);
         intakeMotor.set(ControlMode.PercentOutput, 0.0);
     }
 }

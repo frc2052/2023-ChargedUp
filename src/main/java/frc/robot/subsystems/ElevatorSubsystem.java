@@ -25,19 +25,19 @@ public class ElevatorSubsystem extends SubsystemBase {
     public ElevatorSubsystem() {
         ErrorCode error;
         
-        TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration();
-        steerMotorConfiguration.slot0.kP = Constants.Elevator.BELT_MOTOR_P;
-        steerMotorConfiguration.slot0.kI = Constants.Elevator.BELT_MOTOR_I;
-        steerMotorConfiguration.slot0.kD = Constants.Elevator.BELT_MOTOR_D;
+        TalonFXConfiguration beltMotorConfiguration = new TalonFXConfiguration();
+        beltMotorConfiguration.slot0.kP = Constants.Elevator.BELT_MOTOR_P;
+        beltMotorConfiguration.slot0.kI = Constants.Elevator.BELT_MOTOR_I;
+        beltMotorConfiguration.slot0.kD = Constants.Elevator.BELT_MOTOR_D;
         
         // Set motion magic cruise velocity and max acceleration.
-        steerMotorConfiguration.motionCruiseVelocity = Constants.Elevator.BELT_MOTOR_CRUISE_VELOCITY;
-        steerMotorConfiguration.motionAcceleration = Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION;
+        beltMotorConfiguration.motionCruiseVelocity = Constants.Elevator.BELT_MOTOR_CRUISE_VELOCITY;
+        beltMotorConfiguration.motionAcceleration = Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION;
 
         beltMotor = new TalonFX(Constants.Elevator.BELT_MOTOR);
         beltMotor.configFactoryDefault();
 
-        if ((error = beltMotor.configAllSettings(steerMotorConfiguration)) != ErrorCode.OK) {
+        if ((error = beltMotor.configAllSettings(beltMotorConfiguration)) != ErrorCode.OK) {
             DriverStation.reportError("Failed to configure belt motor: " + error.toString(), false);
         }
         
@@ -61,7 +61,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         );
 
         // Limit switch returns true by default.
-        if (!limitSwitch.get()) {
+        if (!limitSwitch.get() || beltMotor.getSelectedSensorPosition() < 0) {
             zeroEncoder();
 
             // If the elevator is traveling downwards stop the belt motor and end the current command.
