@@ -12,7 +12,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.IntakeStopCommand;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
@@ -40,52 +42,73 @@ shoot gamepiece (w/o stopping), go to chargestation */
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    ElevatorPositionCommand top = new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator);
-    this.addCommands(top.until(() -> elevator.atPosition()));
-    this.addCommands(new ArmOutCommand(this.arm).withTimeout(1));
-    this.addCommands(new IntakeInCommand(this.intake).withTimeout(1));
+      // Score first time
+    this.addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator));
+    this.addCommands(new ArmOutCommand(this.arm));
+    this.addCommands(new WaitCommand(1.5));
+    this.addCommands(new IntakeOutCommand(this.intake).withTimeout(1));
 
-    //Drive to pick up first cone
-    Rotation2d rotation = Rotation2d.fromDegrees(180);
-    Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
-    Pose2d endPose = new Pose2d(Units.inchesToMeters(175), Units.inchesToMeters(8), Rotation2d.fromDegrees(0));
-    SwerveControllerCommand commandOne = super.createSwerveCommand(startPose, endPose, createRotation(180));    
-    this.addCommands(commandOne);
+    drivetrain.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(180)));
+    //backup from grid?
+    Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+    Pose2d endPose = new Pose2d(Units.inchesToMeters(36), 0, Rotation2d.fromDegrees(0));
+    SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
+        AutoTrajectoryConfig.slowTrajectoryConfig, 
+        startPose, 
+        endPose,
+        createRotation(0)
+    );
+
+    ParallelCommandGroup retract = new ParallelCommandGroup(
+        backupPath,
+        new ArmInCommand(this.arm),
+        new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator).beforeStarting(new WaitCommand(0.5)),
+        new IntakeStopCommand(this.intake)
+    );
+    
+    addCommands(retract);
 
     //drive to pickup cone
-    rotation = Rotation2d.fromDegrees(0);
     startPose = endPose;
     endPose = new Pose2d(Units.inchesToMeters(190), Units.inchesToMeters(8), Rotation2d.fromDegrees(0));
-    SwerveControllerCommand pickupPath = super.createSwerveCommand(startPose, endPose, createRotation(0));
-
-    ParallelDeadlineGroup pickupGroup = new ParallelDeadlineGroup(
-                pickupPath, //deadline
-                new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, this.elevator),
-                new ArmOutCommand(this.arm),
-                new IntakeInCommand(this.intake)
-                );
-    this.addCommands(pickupGroup);
-
+    SwerveControllerCommand pickupPath = createSwerveTrajectoryCommand(
+        AutoTrajectoryConfig.slowTrajectoryConfig, 
+        startPose, 
+        endPose,
+        createRotation(0)
+    );
     //driving back to grid
-    rotation = Rotation2d.fromDegrees(180);
     startPose = endPose;
     List<Translation2d> midpoint = List.of(new Translation2d(Units.inchesToMeters(40),Units.inchesToMeters(5)));
     endPose = new Pose2d(Units.inchesToMeters(6), Units.inchesToMeters(33), Rotation2d.fromDegrees(90));
     SwerveControllerCommand driveBackPath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
+    createRotation(180);
 
-    ParallelDeadlineGroup carryGroup = new ParallelDeadlineGroup(
+    ParallelDeadlineGroup pickupAndCarryGroup = new ParallelDeadlineGroup(
+        new SequentialCommandGroup(
+            // Drive to pick up cone command
+            new ParallelCommandGroup(
+                pickupPath, //deadline
+                new ArmOutCommand(arm)
+            ),
+            // drive back command
+            new ParallelCommandGroup(
                 driveBackPath, //deadline
-                new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator),
-                new ArmInCommand(this.arm),
-                new IntakeStopCommand(this.intake)
-                );
-    this.addCommands(carryGroup);
+                new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator)
+            )
+        ),
+        new IntakeInCommand(intake).beforeStarting(new WaitCommand(3))
+    );
+
+     //pickup cone
+    this.addCommands(pickupAndCarryGroup);
+
 
     //driving sideways in front of grid
-    rotation = Rotation2d.fromDegrees(180);
     startPose = endPose;
     midpoint = List.of(new Translation2d(Units.inchesToMeters(6),Units.inchesToMeters(55)));
     endPose = new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(67), Rotation2d.fromDegrees(0));
+    createRotation(0);
    SwerveControllerCommand scorePath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
 
     ParallelDeadlineGroup shootGroup = new ParallelDeadlineGroup(
@@ -97,17 +120,17 @@ shoot gamepiece (w/o stopping), go to chargestation */
     this.addCommands(shootGroup);
 
     //going on charge station
-     rotation = Rotation2d.fromDegrees(180);
     startPose = endPose;
     endPose = new Pose2d(Units.inchesToMeters(76), Units.inchesToMeters(67), Rotation2d.fromDegrees(0));
-   SwerveControllerCommand lineupPath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
+    createRotation(0);
+   SwerveControllerCommand onChargePath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
    
-        ParallelDeadlineGroup lineupGroup = new ParallelDeadlineGroup(
-                lineupPath, //deadline
+        ParallelDeadlineGroup onChargeGroup = new ParallelDeadlineGroup(
+                onChargePath, //deadline
                 new IntakeStopCommand(this.intake)
                 
                 );  
-    this.addCommands(lineupGroup);
+    this.addCommands(onChargeGroup);
     this.addCommands(new ChargeStationBalanceCommand(this.drivetrain));
   }
  
