@@ -8,6 +8,8 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public class ChargeStationBalanceCommand extends DriveCommand {    
     private final PIDController balanceController;
 
+    private boolean holding = false;
+
     public ChargeStationBalanceCommand(DrivetrainSubsystem drivetrain) {
         super(drivetrain);
 
@@ -21,23 +23,38 @@ public class ChargeStationBalanceCommand extends DriveCommand {
     }
 
     @Override
+    public void initialize(){
+        holding = false;
+    }
+
+    @Override
     protected void drive() {
         double output = balanceController.calculate(drivetrain.getNavx().getPitch(), 0);
 
-        Dashboard.getInstance().putData("Balance Drive", Math.copySign(
-            Math.min(Math.abs(output), Constants.AutoBalance.MAX_SPEED_METERS_PER_SECOND), 
-            output
-        ));
-
-        drivetrain.drive(
-            Math.copySign(
-                Math.min(Math.abs(output), Constants.AutoBalance.MAX_SPEED_METERS_PER_SECOND), 
-                output
-            ),
-            0,
-            0, 
-            false
+        Dashboard.getInstance().putData(
+            "Balance Drive",
+            drivetrain.getNavx().getPitch()
+            // Math.copySign(
+            //     Math.min(Math.abs(output), Constants.AutoBalance.MAX_SPEED_METERS_PER_SECOND), 
+            //     output
+            // )
         );
+
+        if (Math.abs(drivetrain.getNavx().getPitch()) > 5 && !holding) {
+            drivetrain.drive(
+                Math.copySign(0.1, (double) -(drivetrain.getNavx().getPitch())),
+                // Math.copySign(
+                //     Math.min(Math.abs(output), Constants.AutoBalance.MAX_SPEED_METERS_PER_SECOND), 
+                //     output
+                // ),
+                0,
+                0, 
+                false
+            );
+        } else {
+            drivetrain.xWheels();
+            holding = true;
+        }
     }
 
     // Returns true when the command should end.

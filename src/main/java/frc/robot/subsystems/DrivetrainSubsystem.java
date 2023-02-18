@@ -151,6 +151,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return navx;
     }
 
+    public void xWheels() {
+        System.out.println("wheels x-ing");
+        
+        frontLeftModule.setState(0, Rotation2d.fromDegrees(45));
+        frontRightModule.setState(0, Rotation2d.fromDegrees(-45));
+        backLeftModule.setState(0, Rotation2d.fromDegrees(-45));
+        backRightModule.setState(0, Rotation2d.fromDegrees(45));
+    }
+
     public void setModuleStates(SwerveModuleState[] swerveModuleStates) {
         // Check if the wheels don't have a drive velocity to maintain the current wheel orientation.
         boolean hasVelocity = swerveModuleStates[0].speedMetersPerSecond != 0

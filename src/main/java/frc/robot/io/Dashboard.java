@@ -113,7 +113,9 @@ public class Dashboard {
     }
 
     public <V> void putData(String key, V value) {
-        if (value instanceof Number) {
+        if (value instanceof Float) {
+            SmartDashboard.putNumber(key, (Float) value);
+        } else if (value instanceof Number) {
             SmartDashboard.putNumber(key, (Double) value);
         } else if (value instanceof String) {
             SmartDashboard.putString(key, (String) value);

@@ -47,7 +47,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
             DriverStation.reportError(e.getMessage(), e.getStackTrace());
         }
 
-        camera.setDriverMode(true);
+        camera.setDriverMode(false);
         camera.setPipelineIndex(0);
 
         camera.setLED(VisionLEDMode.kOff);
