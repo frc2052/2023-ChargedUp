@@ -39,7 +39,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
 
             poseEstimator = new PhotonPoseEstimator(
                 fieldLayout,
-                PoseStrategy.MULTI_TAG_PNP, 
+                PoseStrategy.AVERAGE_BEST_TARGETS, 
                 camera, 
                 Constants.Camera.cameraPosition
             );

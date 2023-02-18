@@ -618,7 +618,7 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "6,1": {
+          "7,0": {
             "size": [
               3,
               3
@@ -638,7 +638,7 @@
               "Visible data/SmartDashboard/Intake Current": true
             }
           },
-          "4,2": {
+          "3,3": {
             "size": [
               2,
               1
@@ -651,7 +651,7 @@
               "_showGlyph": false
             }
           },
-          "4,1": {
+          "0,1": {
             "size": [
               1,
               1
@@ -664,7 +664,7 @@
               "_showGlyph": false
             }
           },
-          "5,1": {
+          "1,1": {
             "size": [
               1,
               1
@@ -679,7 +679,7 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "4,0": {
+          "5,3": {
             "size": [
               2,
               1
@@ -690,6 +690,43 @@
               "_title": "/SmartDashboard/Auto",
               "_glyph": 148,
               "_showGlyph": false
+            }
+          },
+          "3,0": {
+            "size": [
+              4,
+              3
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://photonvision_Port_1182_MJPEG_Server",
+              "_title": "photonvision_Port_1182_MJPEG_Server",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": 0,
+              "imageHeight": 0
+            }
+          },
+          "7,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Simple Dial",
+              "_source0": "network_table:///SmartDashboard/Pressure",
+              "_title": "SmartDashboard/Pressure",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Range/Min": 0.0,
+              "Range/Max": 100.0,
+              "Visuals/Show value": true
             }
           }
         }

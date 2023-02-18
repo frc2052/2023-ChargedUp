@@ -77,13 +77,12 @@ public final class Constants {
     }
     
     public static final class AutoBalance {
-        public final static double BALANCE_P = 0.01;
+        public final static double BALANCE_P = 0.08;
         public final static double BALANCE_I = 0.0;
         public final static double BALANCE_D = 0.0;
     
-
-        public final static double BALANCE_TOLERANCE_DEGREES = 14.0;
-        public static final double MAX_SPEED_METERS_PER_SECOND = 0.05;
+        public final static double BALANCE_TOLERANCE_DEGREES = 14.5;
+        public static final double MAX_SPEED_METERS_PER_SECOND = 0.15;
     }
 
     public static final class Camera {

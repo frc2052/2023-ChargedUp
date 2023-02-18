@@ -56,11 +56,11 @@ shoot gamepiece (w/o stopping), go to chargestation */
 
     //pickup cone
     ParallelDeadlineGroup pickupGroup = new ParallelDeadlineGroup(
-                pickupPath, //deadline
-                new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, this.elevator),
-                new ArmOutCommand(this.arm),
-                new IntakeInCommand(this.intake)
-                );
+        pickupPath, //deadline
+        new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, this.elevator),
+        new ArmOutCommand(this.arm),
+        new IntakeInCommand(this.intake)
+    );
     this.addCommands(pickupGroup);
 
     //driving back to grid

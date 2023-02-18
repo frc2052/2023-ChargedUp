@@ -14,6 +14,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.IntakeStopCommand;
@@ -44,14 +45,14 @@ shoot gamepiece (w/o stopping), go to chargestation */
     // Score first time
     this.addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator));
     this.addCommands(new ArmOutCommand(this.arm));
-    this.addCommands(new WaitCommand(1));
+    this.addCommands(new WaitCommand(1.5));
     this.addCommands(new IntakeOutCommand(this.intake).withTimeout(1));
 
     drivetrain.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(180)));
 
     Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
     Pose2d endPose = new Pose2d(Units.inchesToMeters(36), 0, Rotation2d.fromDegrees(0));
-    SwerveControllerCommand backupPath = super.createSwerveTrajectoryCommand(
+    SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
         AutoTrajectoryConfig.slowTrajectoryConfig, 
         startPose, 
         endPose,
@@ -59,60 +60,65 @@ shoot gamepiece (w/o stopping), go to chargestation */
     );
 
     ParallelCommandGroup retract = new ParallelCommandGroup(
+        backupPath,
         new ArmInCommand(this.arm),
-        new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator),
-        new IntakeStopCommand(this.intake),
-        backupPath
+        new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator).beforeStarting(new WaitCommand(0.5)),
+        new IntakeStopCommand(this.intake)
     );
     
     addCommands(retract);
 
-    // Drive to pick up first cone
-//    startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
-//    endPose = new Pose2d(Units.inchesToMeters(-175), Units.inchesToMeters(-8), Rotation2d.fromDegrees(0));
-//    SwerveControllerCommand commandOne = super.createSwerveTrajectoryCommand(super.slowTrajectoryConfig, startPose, endPose, super.createRotationAngle(180));
-//    this.addCommands(commandOne);
+    //drive to pickup cone
+    startPose = endPose;
+    endPose = new Pose2d(Units.inchesToMeters(190), Units.inchesToMeters(-8), Rotation2d.fromDegrees(0));
+    SwerveControllerCommand pickupPath = createSwerveTrajectoryCommand(
+        AutoTrajectoryConfig.slowTrajectoryConfig, 
+        startPose, 
+        endPose,
+        createRotation(0)
+    );
 
-//     //drive to pickup cone
-//     startPose = endPose;
-//     endPose = new Pose2d(Units.inchesToMeters(190), Units.inchesToMeters(-8), Rotation2d.fromDegrees(0));
-//     SwerveControllerCommand pickupPath = super.createSwerveTrajectoryCommand(super.slowTrajectoryConfig, startPose, endPose);
+    //drive to lineup w/ charge station
+    startPose = endPose;
+    endPose = new Pose2d(Units.inchesToMeters(142), Units.inchesToMeters(-66), Rotation2d.fromDegrees(180));
+    SwerveControllerCommand lineupPath = createSwerveTrajectoryCommand(
+        AutoTrajectoryConfig.slowTrajectoryConfig, 
+        startPose, 
+        endPose, 
+        createRotation(180)
+    );
 
-//     //pickup cone
-//     ParallelDeadlineGroup pickupGroup = new ParallelDeadlineGroup(
-//                 pickupPath, //deadline
-//                 new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, this.elevator),
-//                 new ArmOutCommand(this.arm),
-//                 new IntakeInCommand(this.intake)
-//                 );
-//     this.addCommands(pickupGroup);
+    ParallelDeadlineGroup pickupAndCarryGroup = new ParallelDeadlineGroup(
+        new SequentialCommandGroup(
+            // Drive to pick up cone command
+            new ParallelCommandGroup(
+                pickupPath, //deadline
+                new ArmOutCommand(arm)
+            ),
+            // Line up command
+            new ParallelCommandGroup(
+                lineupPath, //deadline
+                new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator)
+            )
+        ),
+        new IntakeInCommand(intake).beforeStarting(new WaitCommand(3))
+    );
 
-//     //drive to lineup w/ charge station
-//     startPose = endPose;
-//     endPose = new Pose2d(Units.inchesToMeters(123), Units.inchesToMeters(-75), Rotation2d.fromDegrees(90));
-//     SwerveControllerCommand lineupPath = super.createSwerveTrajectoryCommand(super.slowTrajectoryConfig, startPose, endPose, super.createRotationAngle(180));
+    //pickup cone
+    this.addCommands(pickupAndCarryGroup);
 
-//     //stop picking up
-//     ParallelDeadlineGroup carryGroup = new ParallelDeadlineGroup(
-//                 lineupPath, //deadline
-//                 new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator),
-//                 new ArmInCommand(this.arm),
-//                 new IntakeStopCommand(this.intake)
-//                 );
-//     this.addCommands(carryGroup);
+    //going on charge station
+    startPose = endPose;
+    endPose = new Pose2d(Units.inchesToMeters(100), Units.inchesToMeters(-66), Rotation2d.fromDegrees(180));
+    SwerveControllerCommand onChargePath = super.createSwerveTrajectoryCommand(
+        AutoTrajectoryConfig.chargeStationTrajectoryConfig, 
+        startPose, 
+        endPose, 
+        createRotation(180)
+    );
 
-//     //going on charge station
-//     startPose = endPose;
-//     endPose = new Pose2d(Units.inchesToMeters(76), Units.inchesToMeters(-75), Rotation2d.fromDegrees(0));
-//    SwerveControllerCommand onChargePath = super.createSwerveTrajectoryCommand(super.slowTrajectoryConfig, startPose, endPose, super.createRotationAngle(180));
-   
-//         ParallelDeadlineGroup lineupGroup = new ParallelDeadlineGroup(
-//                 onChargePath, //deadline
-//                 new IntakeStopCommand(this.intake)
-                
-//                 );  
-//     this.addCommands(lineupGroup);
-//     this.addCommands(new ChargeStationBalanceCommand(this.drivetrain));
+    this.addCommands(onChargePath);
+    this.addCommands(new ChargeStationBalanceCommand(this.drivetrain));
   }
  
   @Override

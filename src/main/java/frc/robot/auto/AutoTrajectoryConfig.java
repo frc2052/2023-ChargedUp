@@ -18,6 +18,19 @@ public class AutoTrajectoryConfig {
             )
         )
     );
+
+    public static final AutoTrajectoryConfig chargeStationTrajectoryConfig = new AutoTrajectoryConfig(
+        new TrajectoryConfig(5, 3).setKinematics(DrivetrainSubsystem.getKinematics()),
+        new PIDController(2, 0, 0),
+        new ProfiledPIDController(
+            2, 0, 0,
+            new TrapezoidProfile.Constraints(
+                DrivetrainSubsystem.getMaxAngularVelocityRadiansPerSecond(), 
+                Math.PI
+            )
+        )
+    );
+
     public static final AutoTrajectoryConfig fastTurnTrajectoryConfig = new AutoTrajectoryConfig(
         // Speed of actions, 1st TrajectoryFactory value is max velocity and 2nd is max accelaration.
         new TrajectoryConfig(3, 1.5).setKinematics(DrivetrainSubsystem.getKinematics()),
