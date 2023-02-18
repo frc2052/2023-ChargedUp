@@ -105,7 +105,7 @@ public class DynamicAutoFactory {
                     List.of(chargeStationInterpolationMidPoint),
                     launchPointPose,
                     // Sets 0 degrees as facing away from the grid and driver station.
-                    Rotation2d.fromDegrees(180)
+                    createRotation(180)
                 );
                 addCommands(initialSwerveCommand);
         
@@ -122,7 +122,7 @@ public class DynamicAutoFactory {
                     SwerveControllerCommand gamePieceSwerveCommand = createSwerveCommand(
                         getLastEndingPose(),
                         gamePieceEndPose, 
-                        new Rotation2d()
+                        createRotation(0)
                     );
                     addCommands(gamePieceSwerveCommand);
         
@@ -141,7 +141,7 @@ public class DynamicAutoFactory {
                                 chargeStationInterpolationMidPoint
                             ),
                             scorePose,
-                            new Rotation2d()
+                            createRotation(0)
                         );
                         addCommands(scoreSwerveCommand);
                     }
@@ -179,7 +179,7 @@ public class DynamicAutoFactory {
                             Constants.Auto.COMMUNITY_WIDTH_METERS / 2,
                             new Rotation2d()
                         ),
-                        new Rotation2d()
+                        createRotation(0)
                     );
                     addCommands(endChargeStationSwerveCommand);
 

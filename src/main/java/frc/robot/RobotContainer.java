@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.DynamicAutoConfiguration;
 import frc.robot.auto.DynamicAutoFactory;
 import frc.robot.auto.RedLeftScoreOneBalanceAuto;
+import frc.robot.auto.TestAuto;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -53,7 +54,7 @@ public class RobotContainer {
     private final ArmSubsystem arm;
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
-    private final PhotonVisionSubsystem vision;
+    //private final PhotonVisionSubsystem vision;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -67,7 +68,7 @@ public class RobotContainer {
         arm = new ArmSubsystem();
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
-        vision = new PhotonVisionSubsystem();
+        //vision = new PhotonVisionSubsystem();
 
         new PneumaticsSubsystem();
 
@@ -106,29 +107,29 @@ public class RobotContainer {
         JoystickButton autoBalance = new JoystickButton(controlPanel, 9);
         autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
-        JoystickButton aprilTagDriveButton = new JoystickButton(driveJoystick, 1);
-        aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
+        // JoystickButton aprilTagDriveButton = new JoystickButton(driveJoystick, 1);
+        // aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
 
         /*
          * Elevator button bindings
          */
         Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getY() < -0.5);
-        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator, arm));
+        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator));
 
         JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 8);
-        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator, arm));
+        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
 
         JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 2);
-        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator, arm));
+        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
 
         JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 4);
-        elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator, arm));
+        elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
 
         JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 3);
-        elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator, arm));
+        elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator));
 
         JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
-        elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator, arm));
+        elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator));
 
         JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 12);
         manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
@@ -189,6 +190,7 @@ public class RobotContainer {
                 );
             
             case RED_LEFT_SCORE_ONE_BALANCE:
+                //return new TestAuto(drivetrain, elevator, intake, arm);
                 return new RedLeftScoreOneBalanceAuto(drivetrain, elevator, intake, arm);
 
             default:

@@ -121,6 +121,7 @@ public final class Constants {
 
         public static final double COMMUNITY_WIDTH_METERS = Units.feetToMeters(18); //SKD: Verified
         public static final double COMMUNITY_DEPTH_METERS = Units.inchesToMeters(193.25);  //SKD: 139 inches
+        public static final double LOADING_ZONE_WIDTH = Units.inchesToMeters(99);
 
         public static final double DISTANCE_GRID_TO_CHARGE_STATION_METERS = Units.inchesToMeters(60.5625);
         public static final double DISTANCE_GRID_TO_GAME_PIECES_METERS = Units.inchesToMeters(224);

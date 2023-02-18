@@ -4,6 +4,7 @@
 
 package frc.robot.auto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,6 +13,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.IntakeStopCommand;
@@ -39,34 +41,33 @@ shoot gamepiece (w/o stopping), go to chargestation */
   public RedLeftScoreOneBalanceAuto(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
     super(drivetrain, elevator, intake, arm);
 
-    // AutoTrajectoryConfig drivingToTerminalTrajectoryConfig = super.createTrajectoryConfig(4, 3, 1, 3.5, 2);
-    // AutoTrajectoryConfig intakingBothTerminalBallsTrajectoryConfig = super.createTrajectoryConfig(2, 1, 1, 3, 2); 
-    // AutoTrajectoryConfig backToShootTrajectoryConfig = super.createTrajectoryConfig(4, 3, 1, 3, 2); 
-    // AutoTrajectoryConfig driveToBall4PosTrajectoryConfig = super.createTrajectoryConfig(2, 1, 1, 3, 2);
-
-
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
-    //score first time
-    ElevatorPositionCommand top = new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator);
-    this.addCommands(top);
+    // Score first time
+    this.addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator));
     this.addCommands(new ArmOutCommand(this.arm));
     this.addCommands(new WaitCommand(1));
     this.addCommands(new IntakeOutCommand(this.intake).withTimeout(1));
 
-    Pose2d startPose = new Pose2d(0,0, new Rotation2d());
-    Pose2d endPose = new Pose2d(Units.inchesToMeters(-12), Units.inchesToMeters(0), Rotation2d.fromDegrees(0));
-    SwerveControllerCommand backupPath = super.createSwerveTrajectoryCommand(super.slowTrajectoryConfig, startPose, endPose);
+    drivetrain.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(180)));
+
+    Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+    Pose2d endPose = new Pose2d(Units.inchesToMeters(36), 0, Rotation2d.fromDegrees(0));
+    SwerveControllerCommand backupPath = super.createSwerveTrajectoryCommand(
+        AutoTrajectoryConfig.slowTrajectoryConfig, 
+        startPose, 
+        endPose,
+        createRotation(0)
+    );
 
     ParallelCommandGroup retract = new ParallelCommandGroup(
-                new ArmInCommand(this.arm),
-                backupPath,
-                new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator),
-                new IntakeStopCommand(this.intake)
-                );
-    this.addCommands(retract);
+        new ArmInCommand(this.arm),
+        new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator),
+        new IntakeStopCommand(this.intake),
+        backupPath
+    );
+    
+    addCommands(retract);
 
-    //Drive to pick up first cone
+    // Drive to pick up first cone
 //    startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
 //    endPose = new Pose2d(Units.inchesToMeters(-175), Units.inchesToMeters(-8), Rotation2d.fromDegrees(0));
 //    SwerveControllerCommand commandOne = super.createSwerveTrajectoryCommand(super.slowTrajectoryConfig, startPose, endPose, super.createRotationAngle(180));

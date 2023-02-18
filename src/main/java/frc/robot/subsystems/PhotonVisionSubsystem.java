@@ -57,6 +57,8 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     public void periodic() {
         latestResult = camera.getLatestResult();
 
+        SmartDashboard.putBoolean("Camera Connected", camera.isConnected());
+
         if (latestResult.hasTargets()) {
             SmartDashboard.putNumber("TAG ID", latestResult.getBestTarget().getFiducialId());
         }

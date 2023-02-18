@@ -49,14 +49,14 @@ shoot gamepiece (w/o stopping), go to chargestation */
     Rotation2d rotation = Rotation2d.fromDegrees(180);
     Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
     Pose2d endPose = new Pose2d(Units.inchesToMeters(175), Units.inchesToMeters(8), Rotation2d.fromDegrees(0));
-    SwerveControllerCommand commandOne = super.createSwerveCommand(startPose, endPose, rotation);    
+    SwerveControllerCommand commandOne = super.createSwerveCommand(startPose, endPose, createRotation(180));    
     this.addCommands(commandOne);
 
     //drive to pickup cone
     rotation = Rotation2d.fromDegrees(0);
     startPose = endPose;
     endPose = new Pose2d(Units.inchesToMeters(190), Units.inchesToMeters(8), Rotation2d.fromDegrees(0));
-    SwerveControllerCommand pickupPath = super.createSwerveCommand(startPose, endPose, rotation);
+    SwerveControllerCommand pickupPath = super.createSwerveCommand(startPose, endPose, createRotation(0));
 
     ParallelDeadlineGroup pickupGroup = new ParallelDeadlineGroup(
                 pickupPath, //deadline
@@ -71,7 +71,7 @@ shoot gamepiece (w/o stopping), go to chargestation */
     startPose = endPose;
     List<Translation2d> midpoint = List.of(new Translation2d(Units.inchesToMeters(40),Units.inchesToMeters(5)));
     endPose = new Pose2d(Units.inchesToMeters(6), Units.inchesToMeters(33), Rotation2d.fromDegrees(90));
-    SwerveControllerCommand driveBackPath = super.createSwerveCommand(startPose, midpoint, endPose, rotation);
+    SwerveControllerCommand driveBackPath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
 
     ParallelDeadlineGroup carryGroup = new ParallelDeadlineGroup(
                 driveBackPath, //deadline
@@ -86,7 +86,7 @@ shoot gamepiece (w/o stopping), go to chargestation */
     startPose = endPose;
     midpoint = List.of(new Translation2d(Units.inchesToMeters(6),Units.inchesToMeters(55)));
     endPose = new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(67), Rotation2d.fromDegrees(0));
-   SwerveControllerCommand scorePath = super.createSwerveCommand(startPose, midpoint, endPose, rotation);
+   SwerveControllerCommand scorePath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
 
     ParallelDeadlineGroup shootGroup = new ParallelDeadlineGroup(
                 scorePath, //deadline
@@ -100,7 +100,7 @@ shoot gamepiece (w/o stopping), go to chargestation */
      rotation = Rotation2d.fromDegrees(180);
     startPose = endPose;
     endPose = new Pose2d(Units.inchesToMeters(76), Units.inchesToMeters(67), Rotation2d.fromDegrees(0));
-   SwerveControllerCommand lineupPath = super.createSwerveCommand(startPose, midpoint, endPose, rotation);
+   SwerveControllerCommand lineupPath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
    
         ParallelDeadlineGroup lineupGroup = new ParallelDeadlineGroup(
                 lineupPath, //deadline

@@ -67,7 +67,9 @@ public class ElevatorSubsystem extends SubsystemBase {
             // If the elevator is traveling downwards stop the belt motor and end the current command.
             if (currentPosition.getPositionTicks() < previousPosition.getPositionTicks()) {
                 stop();
-                getCurrentCommand().cancel();
+                if (getCurrentCommand() != null) {
+                    getCurrentCommand().cancel();
+                }
             }
         }
     }
@@ -119,12 +121,12 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public static enum ElevatorPosition {
         STARTING(0),
-        FLOORCUBE(10000),
-        FLOORCONE(20155),
-        HYBRIDSCORE(20155),
-        BABYBIRD(23963),
-        MIDSCORE(86590),
-        TOPSCORE(117875);
+        FLOOR_CUBE(10000),
+        FLOOR_CONE(20155),
+        HYBRID_SCORE(20155),
+        BABY_BIRD(23963),
+        MID_SCORE(92000),
+        TOP_SCORE(125000);
 
         private final int positionTicks;
 

@@ -5,7 +5,6 @@
 package frc.robot.commands.elevator;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
@@ -13,36 +12,22 @@ public class ElevatorPositionCommand extends CommandBase {
     private final ElevatorPosition position;
 
     private final ElevatorSubsystem elevator;
-    private final ArmSubsystem arm;
   
     /** Creates a new ElevatorPositionCommand. */
     public ElevatorPositionCommand(
         ElevatorPosition position, 
-        ElevatorSubsystem elevator, 
-        ArmSubsystem arm
+        ElevatorSubsystem elevator
     ) {
         this.position = position;
 
         this.elevator = elevator;
-        this.arm = arm;
 
-        addRequirements(this.elevator, this.arm);
+        addRequirements(this.elevator);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        switch (position) {
-            case TOP_SCORE:
-            case MID_SCORE:
-                arm.armOut();
-                break;
-        
-            default:
-                arm.armIn();
-                break;
-        }
-
         elevator.setPosition(position);
     }
 
