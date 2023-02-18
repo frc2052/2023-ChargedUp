@@ -32,12 +32,15 @@ public class AutoTrajectoryConfig {
     );
 
     public static final AutoTrajectoryConfig fastTurnTrajectoryConfig = new AutoTrajectoryConfig(
-        // Speed of actions, 1st TrajectoryFactory value is max velocity and 2nd is max accelaration.
-        new TrajectoryConfig(3, 1.5).setKinematics(DrivetrainSubsystem.getKinematics()),
-        // The XY controller PID value
+        new TrajectoryConfig(2.5 / 2, 1.5 / 2).setKinematics(DrivetrainSubsystem.getKinematics()),
         new PIDController(1, 0, 0),
-        // Turning PID COntroller. Increasing 1st value increases speed of turning, and the TrapezoidalProfile is our contraints of these values.
-        new ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(4 * Math.PI, 4 * Math.PI))
+        new ProfiledPIDController(
+            4, 0, 0,
+            new TrapezoidProfile.Constraints(
+                4 * DrivetrainSubsystem.getMaxAngularVelocityRadiansPerSecond(), 
+                4 * Math.PI
+            )
+        )
     );
     public static final AutoTrajectoryConfig fastTurnSlowDriveTrajectoryConfig = new AutoTrajectoryConfig(
         new TrajectoryConfig(2, 1.5).setKinematics(DrivetrainSubsystem.getKinematics()), 

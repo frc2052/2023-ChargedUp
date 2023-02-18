@@ -45,7 +45,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         beltMotor.setInverted(true);
 
         limitSwitch = new DigitalInput(Constants.Elevator.LIMIT_SWITCH_DIO_CHANNEL);
-
+        
         previousPosition = ElevatorPosition.STARTING;
         currentPosition = ElevatorPosition.STARTING;
 

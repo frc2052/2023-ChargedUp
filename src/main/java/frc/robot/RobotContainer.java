@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.DynamicAutoConfiguration;
 import frc.robot.auto.DynamicAutoFactory;
 import frc.robot.auto.RedLeftScoreOneBalanceAuto;
+import frc.robot.auto.RedLeftScoreTwoBalanceAuto;
 import frc.robot.auto.TestAuto;
 
 /**
@@ -192,6 +193,10 @@ public class RobotContainer {
             case RED_LEFT_SCORE_ONE_BALANCE:
                 //return new TestAuto(drivetrain, elevator, intake, arm);
                 return new RedLeftScoreOneBalanceAuto(drivetrain, elevator, intake, arm);
+
+                case RED_LEFT_SCORE_TWO_BALANCE:
+                //return new TestAuto(drivetrain, elevator, intake, arm);
+                return new RedLeftScoreTwoBalanceAuto(drivetrain, elevator, intake, arm);
 
             default:
                 return null;

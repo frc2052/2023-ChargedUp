@@ -102,11 +102,11 @@ shoot gamepiece (w/o stopping), go to chargestation */
 
     //stop picking up
     ParallelDeadlineGroup carryGroup = new ParallelDeadlineGroup(
-                driveBackPath, //deadline
-                new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator),
-                new ArmInCommand(this.arm),
-                new IntakeStopCommand(this.intake)
-                );
+        driveBackPath, //deadline
+        new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator),
+        new ArmInCommand(this.arm),
+        new IntakeStopCommand(this.intake)
+    );
     this.addCommands(carryGroup);
     //score the cone
      this.addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator));
