@@ -45,7 +45,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         beltMotor.setInverted(true);
 
         limitSwitch = new DigitalInput(Constants.Elevator.LIMIT_SWITCH_DIO_CHANNEL);
-
+        
         previousPosition = ElevatorPosition.STARTING;
         currentPosition = ElevatorPosition.STARTING;
 
@@ -67,7 +67,9 @@ public class ElevatorSubsystem extends SubsystemBase {
             // If the elevator is traveling downwards stop the belt motor and end the current command.
             if (currentPosition.getPositionTicks() < previousPosition.getPositionTicks()) {
                 stop();
-                getCurrentCommand().cancel();
+                if (getCurrentCommand() != null) {
+                    getCurrentCommand().cancel();
+                }
             }
         }
     }
@@ -81,6 +83,10 @@ public class ElevatorSubsystem extends SubsystemBase {
             ControlMode.MotionMagic,
             elevatorPosition.getPositionTicks()
         );
+    }
+
+    public ElevatorPosition getPosition() {
+        return currentPosition;
     }
 
     public boolean atPosition() {
@@ -117,9 +123,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         STARTING(0),
         FLOOR_CUBE(10000),
         FLOOR_CONE(20155),
-        BABY_BIRD(9500),
-        MID_SCORE(91500),
-        TOP_SCORE(122000);
+        HYBRID_SCORE(20155),
+        BABY_BIRD(13000),
+        MID_SCORE(92000),
+        TOP_SCORE(125000);
 
         private final int positionTicks;
 

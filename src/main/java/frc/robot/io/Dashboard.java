@@ -113,7 +113,9 @@ public class Dashboard {
     }
 
     public <V> void putData(String key, V value) {
-        if (value instanceof Number) {
+        if (value instanceof Float) {
+            SmartDashboard.putNumber(key, (Float) value);
+        } else if (value instanceof Number) {
             SmartDashboard.putNumber(key, (Double) value);
         } else if (value instanceof String) {
             SmartDashboard.putString(key, (String) value);
@@ -176,7 +178,9 @@ public class Dashboard {
 
     public static enum Autos {
         DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description"),
-        RED_LEFT_SCORE_ONE_BALANCE("Red Left Score One Balance", "Description");
+        RED_LEFT_SCORE_ONE_BALANCE("Red Left Score One Balance", "Description"),
+        RED_LEFT_SCORE_TWO_BALANCE("Red Left Score Two Balance", "Description");
+
 
         private final String name;
         private final String description;
@@ -207,6 +211,11 @@ public class Dashboard {
         RIGHT_CONE;
     }
 
+    public static enum Row {
+        HYBRID,
+        MIDDLE,
+        HIGH
+    }
     // Path around the charge station either on the left or right side
     public static enum Channel {
         LEFT_CHANNEL,

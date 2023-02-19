@@ -9,15 +9,18 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 public class ElevatorPositionCommand extends CommandBase {
-    private final ElevatorSubsystem elevator;
-    
     private final ElevatorPosition position;
+
+    private final ElevatorSubsystem elevator;
   
     /** Creates a new ElevatorPositionCommand. */
-    public ElevatorPositionCommand(ElevatorPosition position, ElevatorSubsystem elevator) {
-        this.elevator = elevator;
-
+    public ElevatorPositionCommand(
+        ElevatorPosition position, 
+        ElevatorSubsystem elevator
+    ) {
         this.position = position;
+
+        this.elevator = elevator;
 
         addRequirements(this.elevator);
     }

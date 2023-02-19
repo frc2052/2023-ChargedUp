@@ -31,7 +31,7 @@ shoot gamepiece (w/o stopping), go to chargestation */
     Rotation2d rotation = null;
     Pose2d endPose = null;
     Pose2d startPose = null;
-    SwerveControllerCommand commandOne = super.createSwerveCommand(startPose, endPose, rotation);
+    SwerveControllerCommand commandOne = super.createSwerveCommand(startPose, endPose, createRotation(0));
     
     this.addCommands(commandOne);
 

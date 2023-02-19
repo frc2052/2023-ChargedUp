@@ -39,7 +39,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
 
             poseEstimator = new PhotonPoseEstimator(
                 fieldLayout,
-                PoseStrategy.MULTI_TAG_PNP, 
+                PoseStrategy.AVERAGE_BEST_TARGETS, 
                 camera, 
                 Constants.Camera.cameraPosition
             );
@@ -47,7 +47,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
             DriverStation.reportError(e.getMessage(), e.getStackTrace());
         }
 
-        camera.setDriverMode(true);
+        camera.setDriverMode(false);
         camera.setPipelineIndex(0);
 
         camera.setLED(VisionLEDMode.kOff);
@@ -56,6 +56,8 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         latestResult = camera.getLatestResult();
+
+        SmartDashboard.putBoolean("Camera Connected", camera.isConnected());
 
         if (latestResult.hasTargets()) {
             SmartDashboard.putNumber("TAG ID", latestResult.getBestTarget().getFiducialId());

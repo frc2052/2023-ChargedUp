@@ -71,7 +71,7 @@ public final class Constants {
         public static final int INTAKE_MOTOR_ID = 13;
 
         // Minimum allowable amps
-        public static final double INTAKE_CRUISE_CURRENT_AMPS = 2.0;
+        public static final double INTAKE_CRUISE_CURRENT_AMPS = 3.0;
         public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 8.0;
         public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.25;
     }
@@ -81,9 +81,8 @@ public final class Constants {
         public final static double BALANCE_I = 0.0;
         public final static double BALANCE_D = 0.0;
     
-
-        public final static double BALANCE_TOLERANCE_DEGREES = 14.0;
-        public static final double MAX_SPEED_METERS_PER_SECOND = 0.05;
+        public final static double BALANCE_TOLERANCE_DEGREES = 12;
+        public static final double MAX_SPEED_METERS_PER_SECOND = 0.1;
     }
 
     public static final class Camera {
@@ -121,6 +120,7 @@ public final class Constants {
 
         public static final double COMMUNITY_WIDTH_METERS = Units.feetToMeters(18); //SKD: Verified
         public static final double COMMUNITY_DEPTH_METERS = Units.inchesToMeters(193.25);  //SKD: 139 inches
+        public static final double LOADING_ZONE_WIDTH = Units.inchesToMeters(99);
 
         public static final double DISTANCE_GRID_TO_CHARGE_STATION_METERS = Units.inchesToMeters(60.5625);
         public static final double DISTANCE_GRID_TO_GAME_PIECES_METERS = Units.inchesToMeters(224);

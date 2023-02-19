@@ -29,7 +29,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final NeoSwerverModule backRightModule;
 
     // Representation of our robots swerve module positions relative to the center of the wheels.
-    private final SwerveDriveKinematics kinematics;
+    private static final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+        // Front left
+        new Translation2d(Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+        // Front right
+        new Translation2d(Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+        // Back left
+        new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+        // Back right
+        new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0)
+    );
 
     private final AHRS navx;
 
@@ -69,17 +78,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
             Constants.Drivetrain.BACK_RIGHT_MODULE_STEER_MOTOR,
             Constants.Drivetrain.BACK_RIGHT_MODULE_STEER_ENCODER,
             new Rotation2d(Constants.Drivetrain.BACK_RIGHT_MODULE_STEER_OFFSET_RADIANS)
-        );
-
-        kinematics = new SwerveDriveKinematics(
-            // Front left
-            new Translation2d(Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Front right
-            new Translation2d(Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Back left
-            new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Back right
-            new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0)
         );
 
         navx = new AHRS(SPI.Port.kMXP, (byte) 200);
@@ -153,6 +151,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return navx;
     }
 
+    public void xWheels() {
+        System.out.println("wheels x-ing");
+        
+        frontLeftModule.setState(0, Rotation2d.fromDegrees(45));
+        frontRightModule.setState(0, Rotation2d.fromDegrees(-45));
+        backLeftModule.setState(0, Rotation2d.fromDegrees(-45));
+        backRightModule.setState(0, Rotation2d.fromDegrees(45));
+    }
+
     public void setModuleStates(SwerveModuleState[] swerveModuleStates) {
         // Check if the wheels don't have a drive velocity to maintain the current wheel orientation.
         boolean hasVelocity = swerveModuleStates[0].speedMetersPerSecond != 0
@@ -197,7 +204,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         navx.reset();
     }
 
-    public SwerveDriveKinematics getKinematics() {
+    public static SwerveDriveKinematics getKinematics() {
         return kinematics;
     }
 
@@ -209,11 +216,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
        return navx.getRotation2d();
     }
 
-    public double getMaxVelocityMetersPerSecond() {
+    public static double getMaxVelocityMetersPerSecond() {
         return NeoSwerverModule.getMaxVelocityMetersPerSecond(ModuleConfiguration.MK4I_L2);
     }
 
-    public double getMaxAngularVelocityRadiansPerSecond() {
+    public static double getMaxAngularVelocityRadiansPerSecond() {
         /*
          * Find the theoretical maximum angular velocity of the robot in radians per second 
          * (a measure of how fast the robot can rotate in place).
