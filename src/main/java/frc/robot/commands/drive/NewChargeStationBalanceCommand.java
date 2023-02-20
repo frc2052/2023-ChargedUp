@@ -6,7 +6,6 @@ package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.io.Dashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -54,24 +53,24 @@ public class NewChargeStationBalanceCommand extends CommandBase {
   public void execute(){
     previousPitch = currentPitch;
     currentPitch = drivetrain.getNavx().getPitch();
-    boolean isDropping = (Math.abs(previousPitch) - Math.abs(currentPitch)) > 0.75;
+    boolean isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.6;
 
       if (!isDropping && !holding) {
         drivetrain.drive(
-            Math.copySign(0.075, (double) -(drivetrain.getNavx().getPitch())),
+            Math.copySign(0.07, (double) -(drivetrain.getNavx().getPitch())),
             0,
             0, 
             false
         );
       } else {
           //if balance timer has gone for 2 seconds, x the wheels
-          if (balanceTimer.hasElapsed(2)){
+          if (balanceTimer.hasElapsed(1)){
               drivetrain.xWheels();
               holding = true;
-          //if the balance timer has NOT started and the pitch is above the tolerance start the balance timer
+          //if the balance timer has NOT started and the bot is dropping, start timer
           } else if (!(balanceTimer.hasElapsed(0.1)) && isDropping){
               balanceTimer.start();
-          } else if (!balanceTimer.hasElapsed(2)){
+          } else if (!balanceTimer.hasElapsed(1)){
             //do nothing still dropping
           //if the pitch changes to greater than the tolerance, stop and reset the balance timer
           } else if ((Math.abs(drivetrain.getNavx().getPitch())) > Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES){

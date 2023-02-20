@@ -13,6 +13,7 @@ public class DumbBalanceCommand extends CommandBase {
   private boolean isDriving = false;
   private Timer driveTimer = new Timer();
   private Timer pauseTimer = new Timer();
+  private Timer reverseTimer = new Timer();
   private boolean isPaused = false;
   private double maxSpeed = .1;
   private double minSpeed = .075;
@@ -59,7 +60,8 @@ public class DumbBalanceCommand extends CommandBase {
         System.out.println("I'm already dropping **************************************");
         pauseTimer.stop();
         pauseTimer.reset();
-        drivetrain.xWheels();
+        reverseTimer.start();
+        
       }
       else if (!driveTimer.hasElapsed(.5)) //drive fast for first X seconds
       {
