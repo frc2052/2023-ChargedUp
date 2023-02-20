@@ -152,8 +152,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void xWheels() {
-        System.out.println("wheels x-ing");
-        
         frontLeftModule.setState(0, Rotation2d.fromDegrees(45));
         frontRightModule.setState(0, Rotation2d.fromDegrees(-45));
         backLeftModule.setState(0, Rotation2d.fromDegrees(-45));
