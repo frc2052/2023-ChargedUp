@@ -81,7 +81,7 @@ public final class Constants {
         public final static double BALANCE_I = 0.0;
         public final static double BALANCE_D = 0.0;
     
-        public final static double BALANCE_TOLERANCE_DEGREES = 12;
+        public final static double BALANCE_TOLERANCE_DEGREES = 13;
         public static final double MAX_SPEED_METERS_PER_SECOND = 0.1;
     }
 

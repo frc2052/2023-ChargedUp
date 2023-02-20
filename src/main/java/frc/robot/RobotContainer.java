@@ -106,7 +106,7 @@ public class RobotContainer {
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
         JoystickButton autoBalance = new JoystickButton(controlPanel, 9);
-        autoBalance.whileTrue(new NewChargeStationBalanceCommand());
+        autoBalance.whileTrue(new NewChargeStationBalanceCommand(drivetrain));
 
         // JoystickButton aprilTagDriveButton = new JoystickButton(driveJoystick, 1);
         // aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));

@@ -16,8 +16,16 @@ public class NewChargeStationBalanceCommand extends CommandBase {
   private boolean holding;
   private Timer balanceTimer;
 
+  private double previousPitch;
+  private double currentPitch;
+
   /** Creates a new NewChargeStationAutoBalance. */
-  public NewChargeStationBalanceCommand() {
+  public NewChargeStationBalanceCommand(
+    DrivetrainSubsystem drivetrain
+  ) {
+
+    balanceTimer = new Timer();
+    this.drivetrain = drivetrain;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drivetrain);
   }
@@ -26,19 +34,18 @@ public class NewChargeStationBalanceCommand extends CommandBase {
   @Override
   public void initialize() {
     holding = false;
+    previousPitch = 0;
+    currentPitch = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
 
   @Override
   public void execute(){
+    previousPitch = currentPitch;
+    currentPitch = drivetrain.getNavx().getPitch();
 
-      Dashboard.getInstance().putData(
-        "Pitch of Robot",
-        drivetrain.getNavx().getPitch()
-      );
-
-      if (Math.abs(drivetrain.getNavx().getPitch()) > Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES && !holding) {
+      if (!holding) {
         drivetrain.drive(
             Math.copySign(0.1, (double) -(drivetrain.getNavx().getPitch())),
             0,
