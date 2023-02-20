@@ -33,10 +33,10 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.auto.DynamicAutoConfiguration;
-import frc.robot.auto.DynamicAutoFactory;
-import frc.robot.auto.RedLeftScoreOneBalanceAuto;
-import frc.robot.auto.RedLeftScoreTwoBalanceAuto;
+import frc.robot.auto.field.DynamicAutoConfiguration;
+import frc.robot.auto.field.DynamicAutoFactory;
+import frc.robot.auto.robot.RedLeftScoreOneBalanceAuto;
+import frc.robot.auto.robot.RedLeftScoreTwoBalanceAuto;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
