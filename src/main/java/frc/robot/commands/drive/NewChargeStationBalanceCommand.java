@@ -21,13 +21,23 @@ public class NewChargeStationBalanceCommand extends CommandBase {
 
   /** Creates a new NewChargeStationAutoBalance. */
   public NewChargeStationBalanceCommand(
-    DrivetrainSubsystem drivetrain
-  ) {
+    DrivetrainSubsystem drivetrain) {
+
+        System.out.println("NEW NewChargeStationBalanceCommand ************************* ");
+
 
     balanceTimer = new Timer();
     this.drivetrain = drivetrain;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drivetrain);
+  }
+
+  public void reset() {
+    holding = false;
+    previousPitch = 0;
+    currentPitch = 0;
+    balanceTimer.stop();
+    balanceTimer.reset();
   }
 
   // Called when the command is initially scheduled.
@@ -44,10 +54,11 @@ public class NewChargeStationBalanceCommand extends CommandBase {
   public void execute(){
     previousPitch = currentPitch;
     currentPitch = drivetrain.getNavx().getPitch();
+    boolean isDropping = (Math.abs(previousPitch) - Math.abs(currentPitch)) > 0.75;
 
-      if (!holding) {
+      if (!isDropping && !holding) {
         drivetrain.drive(
-            Math.copySign(0.1, (double) -(drivetrain.getNavx().getPitch())),
+            Math.copySign(0.075, (double) -(drivetrain.getNavx().getPitch())),
             0,
             0, 
             false
@@ -58,13 +69,16 @@ public class NewChargeStationBalanceCommand extends CommandBase {
               drivetrain.xWheels();
               holding = true;
           //if the balance timer has NOT started and the pitch is above the tolerance start the balance timer
-          } else if ((!(balanceTimer.hasElapsed(0.1)) && (Math.abs(drivetrain.getNavx().getPitch())) < Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES)){
+          } else if (!(balanceTimer.hasElapsed(0.1)) && isDropping){
               balanceTimer.start();
+          } else if (!balanceTimer.hasElapsed(2)){
+            //do nothing still dropping
           //if the pitch changes to greater than the tolerance, stop and reset the balance timer
           } else if ((Math.abs(drivetrain.getNavx().getPitch())) > Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES){
               balanceTimer.stop();
               balanceTimer.reset();
               holding = false;
+              isDropping = false;
         }
         }
   }
