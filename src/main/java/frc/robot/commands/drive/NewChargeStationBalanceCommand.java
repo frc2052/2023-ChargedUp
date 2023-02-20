@@ -10,15 +10,16 @@ import frc.robot.io.Dashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-public class NewChargeStationAutoBalance extends CommandBase {
+public class NewChargeStationBalanceCommand extends CommandBase {
 
   private DrivetrainSubsystem drivetrain;
   private boolean holding;
   private Timer balanceTimer;
 
   /** Creates a new NewChargeStationAutoBalance. */
-  public NewChargeStationAutoBalance() {
+  public NewChargeStationBalanceCommand() {
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(drivetrain);
   }
 
   // Called when the command is initially scheduled.
@@ -50,12 +51,13 @@ public class NewChargeStationAutoBalance extends CommandBase {
               drivetrain.xWheels();
               holding = true;
           //if the balance timer has NOT started and the pitch is above the tolerance start the balance timer
-          } else if ((!(balanceTimer.hasElapsed(0.1)) && drivetrain.getNavx().getPitch() < Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES)){
+          } else if ((!(balanceTimer.hasElapsed(0.1)) && (Math.abs(drivetrain.getNavx().getPitch())) < Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES)){
               balanceTimer.start();
           //if the pitch changes to greater than the tolerance, stop and reset the balance timer
-          } else if (drivetrain.getNavx().getPitch() > Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES){
+          } else if ((Math.abs(drivetrain.getNavx().getPitch())) > Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES){
               balanceTimer.stop();
               balanceTimer.reset();
+              holding = false;
         }
         }
   }
