@@ -6,6 +6,8 @@ package frc.robot;
 
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.commands.score.MidScoreCommand;
+import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
@@ -138,22 +140,10 @@ public class RobotContainer {
          * Score button bindings
          */
         JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 3);
-        elevatorMidScoreButton.whileTrue(new ParallelCommandGroup(
-            new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator),
-            new SequentialCommandGroup(
-                new WaitCommand(0.75),
-                new ArmOutCommand(arm)
-            )
-        ));
+        elevatorMidScoreButton.whileTrue(new MidScoreCommand(elevator, arm));
 
         JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
-        elevatorTopScoreButton.whileTrue(new ParallelCommandGroup(
-            new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator),
-            new SequentialCommandGroup(
-                new WaitCommand(1),
-                new ArmOutCommand(arm)
-            )
-        ));
+        elevatorTopScoreButton.whileTrue(new TopScoreCommand(elevator, arm));
 
         JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
         scoreButton.whileTrue(new IntakeOutCommand(intake));

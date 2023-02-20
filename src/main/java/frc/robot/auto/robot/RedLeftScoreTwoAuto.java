@@ -29,104 +29,94 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/**
+ * Score gamepiece, move and rotate to gamepiece, move and rotate (strafe) to grid, 
+ * shoot gamepiece (w/o stopping), go to chargestation 
+ */
 public class RedLeftScoreTwoAuto extends AutoBase{
+    public RedLeftScoreTwoAuto(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
+        super(drivetrain, elevator, intake, arm);
+    }
+        
+    @Override
+    public void init() {
+        // scoring the first game piece 
+        this.addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator));
+        this.addCommands(new ArmOutCommand(this.arm));
+        this.addCommands(new WaitCommand(1.5));
+        this.addCommands(new IntakeOutCommand(this.intake).withTimeout(1));
+        
+        drivetrain.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(180)));
 
-/*Score gamepiece, move and rotate to gamepiece, move and rotate (strafe) to grid, 
-shoot gamepiece (w/o stopping), go to chargestation */
+        //first score
+        Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+        Pose2d endPose = new Pose2d(Units.inchesToMeters(36), 0, Rotation2d.fromDegrees(0));
+        SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.slowTrajectoryConfig, 
+            startPose, 
+            endPose,
+            createRotation(0)
+        );
 
-  /** Creates a new scoretwoandbalence. */
-  public RedLeftScoreTwoAuto(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
-    super(drivetrain, elevator, intake, arm);
+        //retract arm while driving
+        ParallelCommandGroup retract = new ParallelCommandGroup(
+            backupPath,
+            new ArmInCommand(this.arm),
+            new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator).beforeStarting(new WaitCommand(0.5)),
+            new IntakeStopCommand(this.intake)
+        );
+        addCommands(retract);
 
-  
-    // scoring the first game piece 
-     this.addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator));
-    this.addCommands(new ArmOutCommand(this.arm));
-    this.addCommands(new WaitCommand(1.5));
-    this.addCommands(new IntakeOutCommand(this.intake).withTimeout(1));
+        //drive to pickup cone
+        startPose = endPose;
+        endPose = new Pose2d(Units.inchesToMeters(190), Units.inchesToMeters(-8), Rotation2d.fromDegrees(0));
+        SwerveControllerCommand pickupPath = createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.slowTrajectoryConfig, 
+            startPose, 
+            endPose,
+            createRotation(0)
+        );
+
+        //driving back to grid
+        startPose = endPose;
+        List<Translation2d> midpoint = List.of(new Translation2d(Units.inchesToMeters(40),Units.inchesToMeters(-5)));
+        endPose = new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(-44), Rotation2d.fromDegrees(90));
+        SwerveControllerCommand driveBackPath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
     
-  drivetrain.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(180)));
-    //first score
-    Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
-    Pose2d endPose = new Pose2d(Units.inchesToMeters(36), 0, Rotation2d.fromDegrees(0));
-    SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
-        AutoTrajectoryConfig.slowTrajectoryConfig, 
-        startPose, 
-        endPose,
-        createRotation(0)
-    );
-    //retract arm while driving
-    ParallelCommandGroup retract = new ParallelCommandGroup(
-        backupPath,
-        new ArmInCommand(this.arm),
-        new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator).beforeStarting(new WaitCommand(0.5)),
-        new IntakeStopCommand(this.intake)
-    );
-    
-    addCommands(retract);
-
-    //drive to pickup cone
-    startPose = endPose;
-    endPose = new Pose2d(Units.inchesToMeters(190), Units.inchesToMeters(-8), Rotation2d.fromDegrees(0));
-    SwerveControllerCommand pickupPath = createSwerveTrajectoryCommand(
-        AutoTrajectoryConfig.slowTrajectoryConfig, 
-        startPose, 
-        endPose,
-        createRotation(0)
-    );
-    //driving back to grid
-    startPose = endPose;
-    List<Translation2d> midpoint = List.of(new Translation2d(Units.inchesToMeters(40),Units.inchesToMeters(-5)));
-    endPose = new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(-44), Rotation2d.fromDegrees(90));
-    SwerveControllerCommand driveBackPath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
- 
-    ParallelDeadlineGroup pickupAndCarryGroup = new ParallelDeadlineGroup(
-        new SequentialCommandGroup(
-            // Drive back
-            new ParallelCommandGroup(
-                pickupPath, //deadline
-                new ArmOutCommand(arm)
+        //pick up cone
+        ParallelDeadlineGroup pickupAndCarryGroup = new ParallelDeadlineGroup(
+            new SequentialCommandGroup(
+                // Drive back
+                new ParallelCommandGroup(
+                    pickupPath, //deadline
+                    new ArmOutCommand(arm)
+                ),
+                // drive back
+                new ParallelCommandGroup(
+                    driveBackPath, //deadline
+                    new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator)
+                )
             ),
-            // drive back
-            new ParallelCommandGroup(
-                driveBackPath, //deadline
-                new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator)
-            )
-        ),
-        new IntakeInCommand(intake).beforeStarting(new WaitCommand(3))
-    );
+            new IntakeInCommand(intake).beforeStarting(new WaitCommand(3))
+        );
+        this.addCommands(pickupAndCarryGroup);
 
-    //pick up cone
-    this.addCommands(pickupAndCarryGroup);
+        //stop picking up
+        ParallelDeadlineGroup carryGroup = new ParallelDeadlineGroup(
+            driveBackPath, //deadline
+            new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator),
+            new ArmInCommand(this.arm),
+            new IntakeStopCommand(this.intake)
+        );
+        this.addCommands(carryGroup);
 
-    //stop picking up
-    ParallelDeadlineGroup carryGroup = new ParallelDeadlineGroup(
-        driveBackPath, //deadline
-        new ElevatorPositionCommand(ElevatorPosition.STARTING, this.elevator),
-        new ArmInCommand(this.arm),
-        new IntakeStopCommand(this.intake)
-    );
-    this.addCommands(carryGroup);
-    //score the cone
-     this.addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator));
-    this.addCommands(new ArmOutCommand(this.arm));
-    this.addCommands(new WaitCommand(1.5));
-    this.addCommands(new IntakeOutCommand(this.intake).withTimeout(1));
+        //score the cone
+        this.addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator));
+        this.addCommands(new ArmOutCommand(this.arm));
+        this.addCommands(new WaitCommand(1.5));
+        this.addCommands(new IntakeOutCommand(this.intake).withTimeout(1));
 
-    this.addCommands (new ArmInCommand(this.arm));
-  }
-    
-
-
-
-
-  @Override
-  public void init() {
-    // TODO Auto-generated method stub
-    
-  }
+        this.addCommands (new ArmInCommand(this.arm));
+    }
 }
 

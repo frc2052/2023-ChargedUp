@@ -21,6 +21,7 @@ import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -48,11 +49,11 @@ public class RedLeftScoreOneBalanceAuto extends AutoBase{
 
     @Override
     public void init() {
+
         // Score first time
-        addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator));
-        addCommands(new ArmOutCommand(arm));
-        addCommands(new WaitCommand(1.5));
-        addCommands(new IntakeOutCommand(intake).withTimeout(1));
+        addCommands(new TopScoreCommand(elevator, arm));
+        addCommands(new WaitCommand(0.5));
+        addCommands(new IntakeOutCommand(intake).withTimeout(0.5));
 
         drivetrain.resetOdometry(new Pose2d(0, getLeftStartingYOffset(startNode), Rotation2d.fromDegrees(180)));
 
