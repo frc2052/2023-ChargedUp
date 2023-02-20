@@ -89,14 +89,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         return currentPosition;
     }
 
-    public double getPercentToPosition() {
-        if (currentPosition.getPositionTicks() == 0) {
-
-        }
-
-        return beltMotor.getSelectedSensorPosition() / currentPosition.getPositionTicks();
-    }
-
     public boolean atPosition() {
         return Math.abs(
             currentPosition.getPositionTicks() - beltMotor.getSelectedSensorPosition()

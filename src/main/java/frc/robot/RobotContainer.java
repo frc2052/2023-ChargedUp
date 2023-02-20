@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
@@ -25,10 +26,11 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.DynamicAutoConfiguration;
@@ -136,12 +138,28 @@ public class RobotContainer {
          * Score button bindings
          */
         JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 3);
-        elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator));
+        elevatorMidScoreButton.whileTrue(new ParallelCommandGroup(
+            new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator),
+            new SequentialCommandGroup(
+                new WaitCommand(0.75),
+                new ArmOutCommand(arm)
+            )
+        ));
 
         JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
-        elevatorTopScoreButton.onTrue(new ParallelCommandGroup(
+        elevatorTopScoreButton.whileTrue(new ParallelCommandGroup(
             new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator),
-            new ConditionalCommand(, new ArmOutCommand(arm))
+            new SequentialCommandGroup(
+                new WaitCommand(1),
+                new ArmOutCommand(arm)
+            )
+        ));
+
+        JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
+        scoreButton.whileTrue(new IntakeOutCommand(intake));
+        scoreButton.onFalse(new ParallelCommandGroup(
+            new ArmInCommand(arm),
+            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator)
         ));
 
         /*
@@ -197,11 +215,9 @@ public class RobotContainer {
                 );
             
             case RED_LEFT_SCORE_ONE_BALANCE:
-                //return new TestAuto(drivetrain, elevator, intake, arm);
-                return new RedLeftScoreOneBalanceAuto(drivetrain, elevator, intake, arm);
+                return new RedLeftScoreOneBalanceAuto(Dashboard.getInstance().getNode(), drivetrain, elevator, intake, arm);
 
-                case RED_LEFT_SCORE_TWO_BALANCE:
-                //return new TestAuto(drivetrain, elevator, intake, arm);
+            case RED_LEFT_SCORE_TWO_BALANCE:
                 return new RedLeftScoreTwoBalanceAuto(drivetrain, elevator, intake, arm);
 
             default:

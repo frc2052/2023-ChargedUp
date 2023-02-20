@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.commands.IntakeStopCommand;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
@@ -19,6 +20,7 @@ import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -29,10 +31,20 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
  * Score gamepiece, move and rotate to pick up gamepiece, & go to chargestation.
  */
 public class RedLeftScoreOneBalanceAuto extends AutoBase{
-    public RedLeftScoreOneBalanceAuto(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
+    private final Node startNode;
+    
+    public RedLeftScoreOneBalanceAuto(
+        Node startNode,
+        DrivetrainSubsystem drivetrain, 
+        ElevatorSubsystem elevator, 
+        IntakeSubsystem intake, 
+        ArmSubsystem arm
+    ) {
         super(drivetrain, elevator, intake, arm);
+
+        this.startNode = startNode;
     }
- 
+
     @Override
     public void init() {
         // Score first time
@@ -41,9 +53,9 @@ public class RedLeftScoreOneBalanceAuto extends AutoBase{
         addCommands(new WaitCommand(1.5));
         addCommands(new IntakeOutCommand(intake).withTimeout(1));
 
-        drivetrain.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(180)));
+        drivetrain.resetOdometry(new Pose2d(0, getLeftStartingYOffset(startNode), Rotation2d.fromDegrees(180)));
 
-        Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+        Pose2d startPose = new Pose2d(0, getLeftStartingYOffset(startNode), Rotation2d.fromDegrees(0));
         Pose2d endPose = new Pose2d(Units.inchesToMeters(36), 0, Rotation2d.fromDegrees(0));
         SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
             AutoTrajectoryConfig.slowTrajectoryConfig, 

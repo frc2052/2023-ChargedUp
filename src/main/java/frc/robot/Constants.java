@@ -113,6 +113,9 @@ public final class Constants {
     public static final class Auto {
         public static final double ROBOT_LENGTH_METERS = Units.inchesToMeters(28.5);
 
+        public static final double NODE_WIDTH_METERS = Units.inchesToMeters(18.5);
+        public static final double NODE_DIVIDER_WIDTH_METERS = Units.inchesToMeters(3);
+
         public static final double CHANNEL_WIDTH_METERS = Units.inchesToMeters(59.375);
 
         public static final double CHARGE_STATION_DEPTH = Units.inchesToMeters(76.125);
