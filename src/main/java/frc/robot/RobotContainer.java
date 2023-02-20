@@ -8,6 +8,7 @@ import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.commands.drive.AprilTagDriveCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
+import frc.robot.commands.drive.NewChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
@@ -105,7 +106,7 @@ public class RobotContainer {
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
         JoystickButton autoBalance = new JoystickButton(controlPanel, 9);
-        autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
+        autoBalance.whileTrue(new NewChargeStationBalanceCommand());
 
         // JoystickButton aprilTagDriveButton = new JoystickButton(driveJoystick, 1);
         // aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
