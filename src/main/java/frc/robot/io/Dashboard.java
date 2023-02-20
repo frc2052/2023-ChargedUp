@@ -34,9 +34,8 @@ public class Dashboard {
     private Dashboard() {
         //Creates options for different choosers
         driveModeChooser = new SendableChooser<DriveMode>();
-        for (DriveMode driveMode : DriveMode.values()){
-            driveModeChooser.addOption(driveMode.name(), driveMode);
-        }
+        driveModeChooser.addOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
+        driveModeChooser.addOption(DriveMode.ROBOT_CENTRIC.name(), DriveMode.ROBOT_CENTRIC);
         driveModeChooser.setDefaultOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
         SmartDashboard.putData(Constants.Dashboard.DRIVE_MODE_KEY, driveModeChooser);
 

@@ -6,7 +6,6 @@ package frc.robot;
 
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
-import frc.robot.commands.drive.AprilTagDriveCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
@@ -19,7 +18,6 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PhotonVisionSubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
@@ -34,7 +32,6 @@ import frc.robot.auto.DynamicAutoConfiguration;
 import frc.robot.auto.DynamicAutoFactory;
 import frc.robot.auto.RedLeftScoreOneBalanceAuto;
 import frc.robot.auto.RedLeftScoreTwoBalanceAuto;
-import frc.robot.auto.TestAuto;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
