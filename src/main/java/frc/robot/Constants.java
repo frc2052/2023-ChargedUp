@@ -71,17 +71,17 @@ public final class Constants {
         public static final int INTAKE_MOTOR_ID = 13;
 
         // Minimum allowable amps
-        public static final double INTAKE_CRUISE_CURRENT_AMPS = 3.0;
+        public static final double INTAKE_CRUISE_CURRENT_AMPS = 1.0;
         public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 8.0;
-        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.25;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.20;
     }
     
     public static final class AutoBalance {
-        public final static double BALANCE_P = 0.01;
-        public final static double BALANCE_I = 0.0;
-        public final static double BALANCE_D = 0.0;
+        public static final double BALANCE_P = 0.01;
+        public static final double BALANCE_I = 0.0;
+        public static final double BALANCE_D = 0.0;
     
-        public final static double BALANCE_TOLERANCE_DEGREES = 12;
+        public static final double BALANCE_TOLERANCE_DEGREES = 12;
         public static final double MAX_SPEED_METERS_PER_SECOND = 0.1;
     }
 
@@ -94,7 +94,6 @@ public final class Constants {
             new Translation3d(0.5, 0.0, 0.5), 
             new Rotation3d(0, 0, 0)
         );
-
 
         public static final double APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(8);
         public static final double COMMUNITY_GROUND_TO_APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(14.25);
