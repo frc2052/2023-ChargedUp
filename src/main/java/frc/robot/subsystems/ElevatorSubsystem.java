@@ -61,7 +61,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         );
 
         // Limit switch returns true by default.
-        if (!limitSwitch.get() || beltMotor.getSelectedSensorPosition() < 0) {
+        if (elevatorZeroed() || beltMotor.getSelectedSensorPosition() < 0) {
             zeroEncoder();
 
             // If the elevator is traveling downwards stop the belt motor and end the current command.
@@ -89,10 +89,22 @@ public class ElevatorSubsystem extends SubsystemBase {
         return currentPosition;
     }
 
+    public double getPercentToPosition() {
+        if (currentPosition.getPositionTicks() == 0) {
+
+        }
+
+        return beltMotor.getSelectedSensorPosition() / currentPosition.getPositionTicks();
+    }
+
     public boolean atPosition() {
         return Math.abs(
             currentPosition.getPositionTicks() - beltMotor.getSelectedSensorPosition()
         ) <= Constants.Elevator.BELT_MOTOR_DEAD_ZONE_TICKS;
+    }
+
+    public boolean elevatorZeroed() {
+        return !limitSwitch.get();
     }
 
     public void zeroEncoder() {
@@ -110,7 +122,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void manualDown() {
-        if (limitSwitch.get()) {
+        if (!elevatorZeroed()) {
             beltMotor.set(TalonFXControlMode.PercentOutput, -0.075);
         }
     }

@@ -12,9 +12,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
+import frc.robot.commands.elevator.ZeroElevator;
 import frc.robot.io.Dashboard.Grid;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
@@ -39,6 +41,10 @@ public abstract class AutoBase extends SequentialCommandGroup {
         this.elevator = elevator;
         this.intake = intake;
         this.arm = arm;
+
+        if (!this.elevator.elevatorZeroed()) {
+            addCommands(new ZeroElevator(this.elevator));
+        }
 
         init();
     }
