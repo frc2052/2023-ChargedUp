@@ -36,10 +36,7 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 public class RedLeftScoreTwoAuto extends AutoBase{
     public RedLeftScoreTwoAuto(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
         super(drivetrain, elevator, intake, arm);
-    }
-        
-    @Override
-    public void init() {
+
         // scoring the first game piece 
         this.addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator));
         this.addCommands(new ArmOutCommand(this.arm));

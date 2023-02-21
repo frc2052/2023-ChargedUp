@@ -135,10 +135,4 @@ shoot gamepiece (w/o stopping), go to chargestation */
     this.addCommands(onChargeGroup);
     this.addCommands(new ChargeStationBalanceCommand(this.drivetrain));
   }
- 
-  @Override
-  public void init() {
-    // TODO Auto-generated method stub
-    
-  }
 }

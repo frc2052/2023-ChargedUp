@@ -9,7 +9,6 @@ import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.commands.arm.ArmInCommand;
-import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
@@ -31,12 +30,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.auto.field.DynamicAutoConfiguration;
-import frc.robot.auto.field.DynamicAutoFactory;
 import frc.robot.auto.robot.RedLeftScoreOneBalanceAuto;
 import frc.robot.auto.robot.RedLeftScoreTwoBalanceAuto;
 
@@ -140,10 +135,10 @@ public class RobotContainer {
          * Score button bindings
          */
         JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 3);
-        elevatorMidScoreButton.whileTrue(new MidScoreCommand(elevator, arm));
+        elevatorMidScoreButton.onTrue(new MidScoreCommand(elevator, arm));
 
         JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
-        elevatorTopScoreButton.whileTrue(new TopScoreCommand(elevator, arm));
+        elevatorTopScoreButton.onTrue(new TopScoreCommand(elevator, arm));
 
         JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
         scoreButton.whileTrue(new IntakeOutCommand(intake));
@@ -189,20 +184,20 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         switch (Dashboard.getInstance().getAuto()) {
-            case DYNAMIC_AUTO_FACTORY:
-                return new DynamicAutoFactory(drivetrain, elevator, intake, arm).getAuto(
-                    new DynamicAutoConfiguration(
-                        Dashboard.getInstance().getGrid(), 
-                        Dashboard.getInstance().getNode(),
-                        Dashboard.getInstance().getExitChannel(),
-                        Dashboard.getInstance().getGamePiece(), 
-                        Dashboard.getInstance().getScoreGamePiece(), 
-                        Dashboard.getInstance().getScoreGrid(), 
-                        Dashboard.getInstance().getScoreNode(), 
-                        Dashboard.getInstance().getEnterChannel(), 
-                        false
-                    )
-                );
+            // case DYNAMIC_AUTO_FACTORY:
+            //     return new DynamicAutoFactory(drivetrain, elevator, intake, arm).getAuto(
+            //         new DynamicAutoConfiguration(
+            //             Dashboard.getInstance().getGrid(), 
+            //             Dashboard.getInstance().getNode(),
+            //             Dashboard.getInstance().getExitChannel(),
+            //             Dashboard.getInstance().getGamePiece(), 
+            //             Dashboard.getInstance().getScoreGamePiece(), 
+            //             Dashboard.getInstance().getScoreGrid(), 
+            //             Dashboard.getInstance().getScoreNode(), 
+            //             Dashboard.getInstance().getEnterChannel(), 
+            //             false
+            //         )
+            //     );
             
             case RED_LEFT_SCORE_ONE_BALANCE:
                 return new RedLeftScoreOneBalanceAuto(Dashboard.getInstance().getNode(), drivetrain, elevator, intake, arm);

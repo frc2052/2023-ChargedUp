@@ -34,12 +34,14 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
  * shoot gamepiece (w/o stopping), & go to chargestation.
  */
 public class RedLeftScoreTwoBalanceAuto extends AutoBase{
-    public RedLeftScoreTwoBalanceAuto(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
+    public RedLeftScoreTwoBalanceAuto(
+        DrivetrainSubsystem drivetrain, 
+        ElevatorSubsystem elevator, 
+        IntakeSubsystem intake, 
+        ArmSubsystem arm
+    ) {
         super(drivetrain, elevator, intake, arm);
-    }
-    
-    @Override
-    public void init() {
+
         // Score first time
         addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator));
         addCommands(new ArmOutCommand(arm));
@@ -132,17 +134,17 @@ public class RedLeftScoreTwoBalanceAuto extends AutoBase{
 
         this.addCommands(spinGroup);
 
-    //     //going on charge station
-    //     startPose = endPose;
-    //     endPose = new Pose2d(Units.inchesToMeters(100), Units.inchesToMeters(-67), Rotation2d.fromDegrees(0));
-    //    SwerveControllerCommand onChargePath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
-    
-    //         ParallelDeadlineGroup onChargeGroup = new ParallelDeadlineGroup(
-    //                 onChargePath, //deadline
-    //                 new IntakeStopCommand(this.intake)
-                    
-    //                 );  
-    //     this.addCommands(onChargeGroup);
-    //     this.addCommands(new ChargeStationBalanceCommand(this.drivetrain));
+        //     //going on charge station
+        //     startPose = endPose;
+        //     endPose = new Pose2d(Units.inchesToMeters(100), Units.inchesToMeters(-67), Rotation2d.fromDegrees(0));
+        //    SwerveControllerCommand onChargePath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
+        
+        //         ParallelDeadlineGroup onChargeGroup = new ParallelDeadlineGroup(
+        //                 onChargePath, //deadline
+        //                 new IntakeStopCommand(this.intake)
+                        
+        //                 );  
+        //     this.addCommands(onChargeGroup);
+        //     this.addCommands(new ChargeStationBalanceCommand(this.drivetrain));
     }
 }

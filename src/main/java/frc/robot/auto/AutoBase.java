@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
@@ -44,21 +45,14 @@ public abstract class AutoBase extends SequentialCommandGroup {
         if (!this.elevator.elevatorZeroed()) {
             addCommands(new ZeroElevator(this.elevator));
         }
-
-        init();
     }
-
-    /**
-     * Add commands to auto sequence from this method.
-     */
-    public abstract void init();
 
     public Pose2d getLastEndingPose() {
         return lastEndingPose;
     }
 
-    public double getLeftStartingYOffset(Node startNode) {
-        return startNode.ordinal() * (Constants.Auto.NODE_WIDTH_METERS + Constants.Auto.NODE_DIVIDER_WIDTH_METERS);
+    public double getLeftStartingYOffsetMeters(Node startNode) {
+        return -startNode.ordinal() * (Constants.Auto.NODE_WIDTH_METERS + Constants.Auto.NODE_DIVIDER_WIDTH_METERS);
     }
 
     public Pose2d getStartingPose(Grid grid, Node node) {

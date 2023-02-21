@@ -35,10 +35,4 @@ shoot gamepiece (w/o stopping), go to chargestation */
     this.addCommands(commandOne);
 
   }
-
-  @Override
-  public void init() {
-    // TODO Auto-generated method stub
-    
-  }
 }
