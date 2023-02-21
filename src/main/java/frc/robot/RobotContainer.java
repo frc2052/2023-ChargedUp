@@ -19,7 +19,9 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
+import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
@@ -51,6 +53,7 @@ public class RobotContainer {
     private final ArmSubsystem arm;
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
+    private final LEDSubsystem leds;
     //private final PhotonVisionSubsystem vision;
 
     private final Compressor compressor;
@@ -67,6 +70,7 @@ public class RobotContainer {
         arm = new ArmSubsystem();
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
+        leds = LEDSubsystem.getInstance();
         //vision = new PhotonVisionSubsystem();
 
         compressor = new Compressor(Constants.Compressor.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH);
@@ -113,6 +117,16 @@ public class RobotContainer {
 
         autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
+        /*
+         * LED button bindings
+         */
+        Trigger LEDOffButton = new Trigger(() -> controlPanel.getY() > 0.5);
+        Trigger LEDConeButton = new Trigger(() -> controlPanel.getX() > 0.5);
+        Trigger LEDCubeButton = new Trigger (() -> controlPanel.getX() < -0.5);
+
+        LEDOffButton.onTrue(new InstantCommand(() -> leds.setLEDStatusMode(LEDStatusMode.OFF)));
+        LEDConeButton.onTrue(new InstantCommand(() -> leds.setLEDStatusMode(LEDStatusMode.CONE)));
+        LEDCubeButton.onTrue(new InstantCommand(() -> leds.setLEDStatusMode(LEDStatusMode.CUBE)));
         /*
          * Elevator button bindings
          */

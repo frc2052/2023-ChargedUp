@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.io.Dashboard;
+import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -64,6 +66,7 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
+        LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.DISABLED);
     }
 
     @Override
