@@ -14,7 +14,6 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 public class MidScoreCommand extends ParallelCommandGroup {
-    /** Creates a new TopScoreCommand. */
     public MidScoreCommand(ElevatorSubsystem elevator, ArmSubsystem arm) {
         addCommands(
             new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator),

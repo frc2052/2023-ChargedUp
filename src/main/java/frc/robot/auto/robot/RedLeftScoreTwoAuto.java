@@ -17,12 +17,12 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auto.AutoBase;
 import frc.robot.auto.AutoTrajectoryConfig;
-import frc.robot.commands.IntakeStopCommand;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -38,10 +38,10 @@ public class RedLeftScoreTwoAuto extends AutoBase{
         super(drivetrain, elevator, intake, arm);
 
         // scoring the first game piece 
-        this.addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, this.elevator));
-        this.addCommands(new ArmOutCommand(this.arm));
-        this.addCommands(new WaitCommand(1.5));
-        this.addCommands(new IntakeOutCommand(this.intake).withTimeout(1));
+        addCommands(new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator));
+        addCommands(new ArmOutCommand(arm));
+        addCommands(new WaitCommand(1.5));
+        addCommands(new IntakeOutCommand(intake).withTimeout(1));
         
         drivetrain.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(180)));
 

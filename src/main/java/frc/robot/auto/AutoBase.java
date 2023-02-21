@@ -51,12 +51,19 @@ public abstract class AutoBase extends SequentialCommandGroup {
         return lastEndingPose;
     }
 
-    public double getLeftStartingYOffsetMeters(Node startNode) {
-        return -startNode.ordinal() * (Constants.Auto.NODE_WIDTH_METERS + Constants.Auto.NODE_DIVIDER_WIDTH_METERS);
+    public Pose2d createPose2dInches(double xInches, double yInches, double rotationDegrees) {
+        return new Pose2d(Units.inchesToMeters(xInches), Units.inchesToMeters(yInches), Rotation2d.fromDegrees(rotationDegrees));
+    }
+
+    public Translation2d createTranslation2dInches(double xInches, double yInches) {
+        return new Translation2d(Units.inchesToMeters(xInches), Units.inchesToMeters(yInches));
+    }
+
+    public double getLeftStartingYOffsetInches(Node startNode) {
+        return Units.metersToInches(-startNode.ordinal() * (Constants.Auto.NODE_WIDTH_METERS + Constants.Auto.NODE_DIVIDER_WIDTH_METERS));
     }
 
     public Pose2d getStartingPose(Grid grid, Node node) {
-        
         double distanceToFirstPipeInches = 3.5 + 16.5;
         double scoringElementWidthInches = 18.5 + 13.5;
 

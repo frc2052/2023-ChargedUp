@@ -98,9 +98,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Dashboard.getInstance().putData("Odometry X", odometry.getPoseMeters().getX());
-        Dashboard.getInstance().putData("Odometry Y", odometry.getPoseMeters().getY());
-
         debug();
     }
 
@@ -241,6 +238,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * be the offsets for each SwerveModule respectively.
      */
     public void debug() {
+        Dashboard.getInstance().putData("Odometry X", odometry.getPoseMeters().getX());
+        Dashboard.getInstance().putData("Odometry Y", odometry.getPoseMeters().getY());
+
         frontLeftModule.debug();
         frontRightModule.debug();   
         backLeftModule.debug();

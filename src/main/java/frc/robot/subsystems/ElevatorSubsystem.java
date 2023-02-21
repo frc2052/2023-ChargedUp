@@ -60,7 +60,6 @@ public class ElevatorSubsystem extends SubsystemBase {
             beltMotor.getSelectedSensorPosition()
         );
 
-        // Limit switch returns true by default.
         if (elevatorZeroed() || beltMotor.getSelectedSensorPosition() < 0) {
             zeroEncoder();
 
@@ -93,6 +92,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean elevatorZeroed() {
+        // Limit switch returns true by default.
         return !limitSwitch.get();
     }
 
@@ -124,7 +124,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         STARTING(0),
         FLOOR_CUBE(7200),
         FLOOR_CONE(20000),
-        HYBRID_SCORE(20000),
         BABY_BIRD(13000),
         MID_SCORE(92000),
         TOP_SCORE(125000);

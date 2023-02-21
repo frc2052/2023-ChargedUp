@@ -25,7 +25,7 @@ public class ArmSubsystem extends SubsystemBase {
     
     public void toggleArm() {
         if (intakeSolenoid.get() == Value.kOff) {
-            armIn();
+            armOut();
         } else {
             intakeSolenoid.toggle();
         }
