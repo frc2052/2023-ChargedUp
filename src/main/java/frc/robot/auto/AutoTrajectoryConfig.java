@@ -8,13 +8,25 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class AutoTrajectoryConfig {
     public static final AutoTrajectoryConfig slowTrajectoryConfig = new AutoTrajectoryConfig(
-        new TrajectoryConfig(2.5 / 2, 1.5 / 2).setKinematics(DrivetrainSubsystem.getKinematics()),
+        new TrajectoryConfig(2.5, 1.5).setKinematics(DrivetrainSubsystem.getKinematics()),
         new PIDController(1, 0, 0),
         new ProfiledPIDController(
-            2, 0, 0,
+            3, 0, 0,
             new TrapezoidProfile.Constraints(
-                DrivetrainSubsystem.getMaxAngularVelocityRadiansPerSecond(), 
-                Math.PI
+                2 * Math.PI, 
+                2 * Math.PI
+            )
+        )
+    );
+
+    public static final AutoTrajectoryConfig fastTurnSlowDriveTrajectoryConfig = new AutoTrajectoryConfig(
+        new TrajectoryConfig(2.5, 1.5).setKinematics(DrivetrainSubsystem.getKinematics()),
+        new PIDController(1, 0, 0),
+        new ProfiledPIDController(
+            4, 0, 0,
+            new TrapezoidProfile.Constraints(
+                2 * Math.PI, 
+                2 * Math.PI
             )
         )
     );
@@ -25,28 +37,12 @@ public class AutoTrajectoryConfig {
         new ProfiledPIDController(
             2, 0, 0,
             new TrapezoidProfile.Constraints(
-                DrivetrainSubsystem.getMaxAngularVelocityRadiansPerSecond(), 
+                Math.PI, 
                 Math.PI
             )
         )
     );
 
-    public static final AutoTrajectoryConfig fastTurnTrajectoryConfig = new AutoTrajectoryConfig(
-        new TrajectoryConfig(2.5 / 2, 1.5 / 2).setKinematics(DrivetrainSubsystem.getKinematics()),
-        new PIDController(1, 0, 0),
-        new ProfiledPIDController(
-            4, 0, 0,
-            new TrapezoidProfile.Constraints(
-                4 * DrivetrainSubsystem.getMaxAngularVelocityRadiansPerSecond(), 
-                4 * Math.PI
-            )
-        )
-    );
-    public static final AutoTrajectoryConfig fastTurnSlowDriveTrajectoryConfig = new AutoTrajectoryConfig(
-        new TrajectoryConfig(2, 1.5).setKinematics(DrivetrainSubsystem.getKinematics()), 
-        new PIDController(0.25, 0, 0),
-        new ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(4 * Math.PI, 3 * Math.PI))
-    );
     public static final AutoTrajectoryConfig speedDriveTrajectoryConfig = new AutoTrajectoryConfig(
         new TrajectoryConfig(4.5, 3.5).setKinematics(DrivetrainSubsystem.getKinematics()), 
         new PIDController(1, 0, 0),
@@ -119,15 +115,27 @@ public class AutoTrajectoryConfig {
     }
 
     public AutoTrajectoryConfig withStartVelocity(double startVelocityMPS) {
-        return new AutoTrajectoryConfig(trajectoryConfig.setStartVelocity(startVelocityMPS), XYController, thetaController);
+        return new AutoTrajectoryConfig(
+            trajectoryConfig.setStartVelocity(startVelocityMPS).setEndVelocity(0), 
+            XYController, 
+            thetaController
+        );
     }
 
     public AutoTrajectoryConfig withEndVelocity(double endVelocityMPS) {
-        return new AutoTrajectoryConfig(trajectoryConfig.setEndVelocity(endVelocityMPS), XYController, thetaController);
+        return new AutoTrajectoryConfig(
+            trajectoryConfig.setStartVelocity(0).setEndVelocity(endVelocityMPS), 
+            XYController, 
+            thetaController
+        );
     }
 
     public AutoTrajectoryConfig withStartAndEndVelocity(double startVelocityMPS, double endVelocityMPS) {
-        return new AutoTrajectoryConfig(trajectoryConfig.setStartVelocity(startVelocityMPS).setEndVelocity(endVelocityMPS), XYController, thetaController);
+        return new AutoTrajectoryConfig(
+            trajectoryConfig.setStartVelocity(startVelocityMPS).setEndVelocity(endVelocityMPS), 
+            XYController, 
+            thetaController
+        );
     }
 
     public TrajectoryConfig getTrajectoryConfig() {

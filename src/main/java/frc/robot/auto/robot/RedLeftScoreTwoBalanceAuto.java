@@ -120,7 +120,7 @@ public class RedLeftScoreTwoBalanceAuto extends AutoBase{
         startPose = endPose;
         endPose = new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(-67), Rotation2d.fromDegrees(0));
         SwerveControllerCommand spinPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnTrajectoryConfig,
+            AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig,
             startPose, 
             endPose, 
             createRotation(0)

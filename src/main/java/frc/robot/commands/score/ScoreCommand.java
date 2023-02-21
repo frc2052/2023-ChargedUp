@@ -15,17 +15,29 @@ public class ScoreCommand extends CommandBase {
     private final ArmSubsystem arm;
     private final ElevatorSubsystem elevator;
 
+    private final boolean inverted;
+
     public ScoreCommand(IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator) {
+        this(intake, arm, elevator, false);
+    }
+
+    public ScoreCommand(IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator, boolean inverted) {
         this.intake = intake;
         this.arm = arm;
         this.elevator = elevator;
+
+        this.inverted = inverted;
 
         addRequirements(this.intake, this.arm, this.elevator);
     }
 
     @Override
     public void initialize() {
-        intake.intakeOut();
+        if (!inverted) {
+            intake.intakeOut();
+        } else {
+            intake.intakeIn();
+        }
     }
 
     @Override
