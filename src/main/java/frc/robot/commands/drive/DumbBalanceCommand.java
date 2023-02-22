@@ -82,7 +82,7 @@ public class DumbBalanceCommand extends CommandBase {
             }
             else {
                 System.out.println("pausing... **************************************");
-                drivetrain.xWheels();
+                drivetrain.stop();
             }
             isPaused = !isPaused;
             pauseTimer.stop();

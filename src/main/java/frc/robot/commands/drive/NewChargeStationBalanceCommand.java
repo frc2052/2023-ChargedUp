@@ -53,11 +53,11 @@ public class NewChargeStationBalanceCommand extends CommandBase {
   public void execute(){
     previousPitch = currentPitch;
     currentPitch = drivetrain.getNavx().getPitch();
-    boolean isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.6;
+    boolean isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.5;
 
       if (!isDropping && !holding) {
         drivetrain.drive(
-            Math.copySign(0.07, (double) -(drivetrain.getNavx().getPitch())),
+            Math.copySign(0.09, (double) -(drivetrain.getNavx().getPitch())),
             0,
             0, 
             false

@@ -99,7 +99,7 @@ public class Dashboard {
 
     // updates dashboard with needed information
     public void updateDashboard() {
-        SmartDashboard.putString("Auto Description", getAuto().description);
+        // SmartDashboard.putString("Auto Description", getAuto().description);
         SmartDashboard.putBoolean("DA: Score Game Piece", false);
         SmartDashboard.putBoolean("DA: End Charge Station", false);
     }
