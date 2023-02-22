@@ -2,14 +2,16 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.auto;
+package frc.robot.auto.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import frc.robot.Constants.Drivetrain;
+import frc.robot.auto.AutoBase;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -20,23 +22,17 @@ public class ScoreTwoBalance extends AutoBase{
 shoot gamepiece (w/o stopping), go to chargestation */
 
   /** Creates a new scoretwoandbalence. */
-  public ScoreTwoBalance(DrivetrainSubsystem drivetrain) {
-    super(drivetrain);
+  public ScoreTwoBalance(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
+    super(drivetrain, elevator, intake, arm);
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     Rotation2d rotation = null;
     Pose2d endPose = null;
     Pose2d startPose = null;
-    SwerveControllerCommand commandOne = super.createSwerveCommand(startPose, endPose, rotation);
+    SwerveControllerCommand commandOne = super.createSwerveCommand(startPose, endPose, createRotation(0));
     
     this.addCommands(commandOne);
 
-  }
-
-  @Override
-  protected void init() {
-    // TODO Auto-generated method stub
-    
   }
 }

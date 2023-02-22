@@ -51,10 +51,9 @@ public class Falcon500SwerveModule extends SwerveModule {
         driveMotorConfiguration.supplyCurrLimit.enable = true;
 
         driveMotor = new TalonFX(driveMotorChannel);
-        checkError(
-            "Failed to configure drive motor",
-            driveMotor.configAllSettings(driveMotorConfiguration)
-        );
+        checkError("Failed to resotre drive motor factory defaults", driveMotor.configFactoryDefault());
+        checkError("Failed to configure drive motor", driveMotor.configAllSettings(driveMotorConfiguration));
+
         driveMotor.enableVoltageCompensation(true);
         driveMotor.setSensorPhase(true);
         driveMotor.setInverted(moduleConfiguration.isDriveInverted());
@@ -88,10 +87,8 @@ public class Falcon500SwerveModule extends SwerveModule {
         steerMotorConfiguration.supplyCurrLimit.enable = true;
 
         steerMotor = new TalonFX(steerMotorChannel);
-        checkError(
-            "Failed to configure steer motor",
-            steerMotor.configAllSettings(steerMotorConfiguration)
-        );
+        checkError("Failed to resotre steer motor factory defaults", steerMotor.configFactoryDefault());
+        checkError("Failed to configure steer motor", steerMotor.configAllSettings(steerMotorConfiguration));
 
         steerMotor.enableVoltageCompensation(true);
 

@@ -17,33 +17,35 @@ import frc.robot.io.Dashboard;
 public class ElevatorSubsystem extends SubsystemBase {
     private final TalonFX beltMotor;
     
+    private final DigitalInput limitSwitch;
+
     private ElevatorPosition previousPosition;
     private ElevatorPosition currentPosition;
 
-    private DigitalInput limitSwitch;
     public ElevatorSubsystem() {
         ErrorCode error;
         
-        limitSwitch = new DigitalInput(Constants.Elevator.LIMIT_SWITCH_DIO_CHANNEL);
+        TalonFXConfiguration beltMotorConfiguration = new TalonFXConfiguration();
+        beltMotorConfiguration.slot0.kP = Constants.Elevator.BELT_MOTOR_P;
+        beltMotorConfiguration.slot0.kI = Constants.Elevator.BELT_MOTOR_I;
+        beltMotorConfiguration.slot0.kD = Constants.Elevator.BELT_MOTOR_D;
         
-        TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration();
-        steerMotorConfiguration.slot0.kP = Constants.Elevator.BELT_MOTOR_P;
-        steerMotorConfiguration.slot0.kI = Constants.Elevator.BELT_MOTOR_I;
-        steerMotorConfiguration.slot0.kD = Constants.Elevator.BELT_MOTOR_D;
-        
-        steerMotorConfiguration.motionCruiseVelocity = Constants.Elevator.BELT_MOTOR_CRUISE_VELOCITY;
-        steerMotorConfiguration.motionAcceleration = Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION;
+        // Set motion magic cruise velocity and max acceleration.
+        beltMotorConfiguration.motionCruiseVelocity = Constants.Elevator.BELT_MOTOR_CRUISE_VELOCITY;
+        beltMotorConfiguration.motionAcceleration = Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION;
 
         beltMotor = new TalonFX(Constants.Elevator.BELT_MOTOR);
         beltMotor.configFactoryDefault();
 
-        if ((error = beltMotor.configAllSettings(steerMotorConfiguration)) != ErrorCode.OK) {
+        if ((error = beltMotor.configAllSettings(beltMotorConfiguration)) != ErrorCode.OK) {
             DriverStation.reportError("Failed to configure belt motor: " + error.toString(), false);
         }
         
         beltMotor.setNeutralMode(NeutralMode.Brake);
         beltMotor.setInverted(true);
 
+        limitSwitch = new DigitalInput(Constants.Elevator.LIMIT_SWITCH_DIO_CHANNEL);
+        
         previousPosition = ElevatorPosition.STARTING;
         currentPosition = ElevatorPosition.STARTING;
 
@@ -58,12 +60,12 @@ public class ElevatorSubsystem extends SubsystemBase {
             beltMotor.getSelectedSensorPosition()
         );
 
-        if (!limitSwitch.get()) {
+        if (elevatorZeroed() || beltMotor.getSelectedSensorPosition() < 0) {
             zeroEncoder();
 
+            // If the elevator is traveling downwards stop the belt motor and end the current command.
             if (currentPosition.getPositionTicks() < previousPosition.getPositionTicks()) {
                 stop();
-                getCurrentCommand().cancel();
             }
         }
     }
@@ -79,15 +81,23 @@ public class ElevatorSubsystem extends SubsystemBase {
         );
     }
 
+    public ElevatorPosition getPosition() {
+        return currentPosition;
+    }
+
     public boolean atPosition() {
         return Math.abs(
             currentPosition.getPositionTicks() - beltMotor.getSelectedSensorPosition()
         ) <= Constants.Elevator.BELT_MOTOR_DEAD_ZONE_TICKS;
     }
 
+    public boolean elevatorZeroed() {
+        // Limit switch returns true by default.
+        return !limitSwitch.get();
+    }
+
     public void zeroEncoder() {
         ErrorCode error;
-
         if ((error = beltMotor.setSelectedSensorPosition(0.0)) != ErrorCode.OK) {
             DriverStation.reportError(
                 "Failed to set belt motor encoder position: " + error.toString(), 
@@ -101,7 +111,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void manualDown() {
-        if (limitSwitch.get()) {
+        if (!elevatorZeroed()) {
             beltMotor.set(TalonFXControlMode.PercentOutput, -0.075);
         }
     }
@@ -112,11 +122,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public static enum ElevatorPosition {
         STARTING(0),
-        FLOORCUBE(10000),
-        FLOORCONE(20155),
-        BABYBIRD(23963),
-        MIDSCORE(86590),
-        TOPSCORE(117875);
+        FLOOR_CUBE(7200),
+        FLOOR_CONE(20000),
+        BABY_BIRD(13000),
+        MID_SCORE(92000),
+        TOP_SCORE(125000);
 
         private final int positionTicks;
 

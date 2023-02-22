@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -54,9 +57,9 @@ public final class Constants {
         public static final double BELT_MOTOR_D = 0;
 
         private static final int FALCON500_TICKS_PER_ROTATION = 2048;
-        public static final double BELT_MOTOR_CRUISE_VELOCITY = 2.0 * FALCON500_TICKS_PER_ROTATION;
-        public static final double BELT_MOTOR_MAX_ACCELERATION = 2.0 * FALCON500_TICKS_PER_ROTATION;
-        public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 250;
+        public static final double BELT_MOTOR_CRUISE_VELOCITY = 4.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final double BELT_MOTOR_MAX_ACCELERATION = 4.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 500;
     }
 
     public static final class Arm {
@@ -68,15 +71,29 @@ public final class Constants {
         public static final int INTAKE_MOTOR_ID = 13;
 
         // Minimum allowable amps
-        public static final double INTAKE_CRUISE_CURRENT_AMPS = 1.5;
-        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 8;
-        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.25;
+        public static final double INTAKE_CRUISE_CURRENT_AMPS = 1.0;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 8.0;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.20;
     }
     
+    public static final class AutoBalance {
+        public static final double BALANCE_P = 0.01;
+        public static final double BALANCE_I = 0.0;
+        public static final double BALANCE_D = 0.0;
+    
+        public static final double BALANCE_TOLERANCE_DEGREES = 12;
+        public static final double MAX_SPEED_METERS_PER_SECOND = 0.1;
+    }
+
     public static final class Camera {
-        public static final String CAMERA_NAME = "2052April";
+        public static final String CAMERA_NAME = "2052_Cicada";
         public static final double CAMERA_HEIGHT_METERS = 0;
         public static final double CAMERA_PITCH_RADIANS = 0;
+
+        public static final Transform3d cameraPosition = new Transform3d(
+            new Translation3d(0.5, 0.0, 0.5), 
+            new Rotation3d(0, 0, 0)
+        );
 
         public static final double APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(8);
         public static final double COMMUNITY_GROUND_TO_APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(14.25);
@@ -89,12 +106,15 @@ public final class Constants {
 
     public static final class Dashboard {
         public static final String DRIVE_MODE_KEY = "Drive Mode";
-
-        public static final String ELEVATOR_POSITION_KEY = "Elevator position";
+        public static final String ELEVATOR_POSITION_KEY = "Elevator Position";
+        public static final String INTAKE_CURRENT_KEY = "Intake Current";
     }
 
     public static final class Auto {
         public static final double ROBOT_LENGTH_METERS = Units.inchesToMeters(28.5);
+
+        public static final double NODE_WIDTH_METERS = Units.inchesToMeters(18.5);
+        public static final double NODE_DIVIDER_WIDTH_METERS = Units.inchesToMeters(3);
 
         public static final double CHANNEL_WIDTH_METERS = Units.inchesToMeters(59.375);
 
@@ -102,6 +122,7 @@ public final class Constants {
 
         public static final double COMMUNITY_WIDTH_METERS = Units.feetToMeters(18); //SKD: Verified
         public static final double COMMUNITY_DEPTH_METERS = Units.inchesToMeters(193.25);  //SKD: 139 inches
+        public static final double LOADING_ZONE_WIDTH = Units.inchesToMeters(99);
 
         public static final double DISTANCE_GRID_TO_CHARGE_STATION_METERS = Units.inchesToMeters(60.5625);
         public static final double DISTANCE_GRID_TO_GAME_PIECES_METERS = Units.inchesToMeters(224);

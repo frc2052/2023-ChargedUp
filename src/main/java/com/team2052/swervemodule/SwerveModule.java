@@ -69,7 +69,7 @@ public abstract class SwerveModule {
     }
 
     public void debug() {
-        SmartDashboard.putNumber(debugName + " Offset Radians", canCoder.getAbsolutePosition());
+        SmartDashboard.putNumber(debugName + " Offset Degrees", canCoder.getAbsolutePosition());
     }
 
     public abstract SwerveModuleState getState();

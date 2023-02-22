@@ -5,6 +5,8 @@
 
 package frc.robot.io;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 //import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,9 +34,8 @@ public class Dashboard {
     private Dashboard() {
         //Creates options for different choosers
         driveModeChooser = new SendableChooser<DriveMode>();
-        for (DriveMode driveMode : DriveMode.values()){
-            driveModeChooser.addOption(driveMode.name(), driveMode);
-        }
+        driveModeChooser.addOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
+        driveModeChooser.addOption(DriveMode.ROBOT_CENTRIC.name(), DriveMode.ROBOT_CENTRIC);
         driveModeChooser.setDefaultOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
         SmartDashboard.putData(Constants.Dashboard.DRIVE_MODE_KEY, driveModeChooser);
 
@@ -42,7 +43,7 @@ public class Dashboard {
         for (Autos auto : Autos.values()) {
             autoChooser.addOption(auto.name, auto);
         }
-        autoChooser.setDefaultOption(Autos.values()[0].name, Autos.values()[0]);
+        autoChooser.setDefaultOption(Autos.NO_AUTO.name, Autos.NO_AUTO);
         SmartDashboard.putData("Auto", autoChooser);
 
         nodeChooser = new SendableChooser<Node>();
@@ -111,12 +112,16 @@ public class Dashboard {
     }
 
     public <V> void putData(String key, V value) {
-        if (value instanceof Number) {
+        if (value instanceof Float) {
+            SmartDashboard.putNumber(key, (Float) value);
+        } else if (value instanceof Number) {
             SmartDashboard.putNumber(key, (Double) value);
         } else if (value instanceof String) {
             SmartDashboard.putString(key, (String) value);
         } else if (value instanceof Boolean) {
             SmartDashboard.putBoolean(key, (Boolean) value);
+        } else if (value instanceof Sendable) {
+            Shuffleboard.getTab("main").add(key, (Sendable) value);
         }
     }
 
@@ -124,7 +129,6 @@ public class Dashboard {
         return driveModeChooser.getSelected();      
     }
 
-    // creates getSelected command
     public Autos getAuto() {
         return autoChooser.getSelected();
     }
@@ -137,7 +141,7 @@ public class Dashboard {
         return gridChooser.getSelected();
     }
 
-    public Channel getChannel() {
+    public Channel getExitChannel() {
         return exitChannelChooser.getSelected();
     }
 
@@ -172,7 +176,11 @@ public class Dashboard {
     }
 
     public static enum Autos {
-        DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description");
+        NO_AUTO("NO AUTO", "Description"),
+        DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description"),
+        RED_LEFT_SCORE_ONE_BALANCE("Red Left Score One Balance", "Description"),
+        RED_LEFT_SCORE_TWO_BALANCE("Red Left Score Two Balance", "Description");
+
 
         private final String name;
         private final String description;
@@ -203,6 +211,11 @@ public class Dashboard {
         RIGHT_CONE;
     }
 
+    public static enum Row {
+        HYBRID,
+        MIDDLE,
+        HIGH
+    }
     // Path around the charge station either on the left or right side
     public static enum Channel {
         LEFT_CHANNEL,

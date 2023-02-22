@@ -34,7 +34,7 @@ public class GridAlignmentCommand extends DriveCommand {
     protected void drive() {
         try {
             drivetrain.drive(
-                horizontalController.calculate(PhotonVisionSubsystem.getHorizontalOffsetMeters(vision.getTarget()), 0),
+                horizontalController.calculate(PhotonVisionSubsystem.getHorizontalOffsetDegrees(vision.getTarget()), 0),
                 0,
                 0,
                 false
