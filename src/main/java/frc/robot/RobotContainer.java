@@ -200,8 +200,9 @@ public class RobotContainer {
                 return new RedLeftScoreOneBalanceAuto(Dashboard.getInstance().getNode(), drivetrain, elevator, intake, arm);
 
             case RED_LEFT_SCORE_TWO_BALANCE:
-                return new RedLeftScoreTwoBalanceAuto(drivetrain, elevator, intake, arm);
+                return new RedLeftScoreTwoBalanceAuto(Dashboard.getInstance().getNode(), drivetrain, elevator, intake, arm);
 
+            case NO_AUTO:
             default:
                 return null;
         }
