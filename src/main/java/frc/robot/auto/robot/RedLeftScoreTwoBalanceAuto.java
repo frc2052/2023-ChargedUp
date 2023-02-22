@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -48,12 +49,13 @@ public class RedLeftScoreTwoBalanceAuto extends AutoBase{
         super(drivetrain, elevator, intake, arm);
 
         Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startNode), 0);
-        Translation2d chargeStationMidpoint = createTranslation2dInches(24, -6);
+        Translation2d chargeStationMidpoint = createTranslation2dInches(24, -2);
         Pose2d startPickUpPose = createPose2dInches(64, -4, 0);
-        Pose2d approachPickUpPose = createPose2dInches(180, -12, 0);
+        Pose2d approachPickUpPose = createPose2dInches(180, -8, 0);
         Pose2d pickUpPose = createPose2dInches(195, -12, 180);
-        Pose2d lineUpPose = createPose2dInches(12, -66, 180);
-        Pose2d chargeStationPose = createPose2dInches(80, -66, 180);
+        Translation2d scorePathMidpoint = createTranslation2dInches(108, -2);
+        Pose2d lineUpPose = createPose2dInches(24, -66, 270);
+        Pose2d chargeStationPose = createPose2dInches(100, -66, 180);
        
         drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
 
@@ -108,23 +110,34 @@ public class RedLeftScoreTwoBalanceAuto extends AutoBase{
 
         addCommands(pickUpPath);
 
+        addCommands(new ArmInCommand(arm));
+
         // Driving back to grid
         SwerveControllerCommand driveBackPath = createSwerveCommand(
             getLastEndingPose(), 
-            List.of(chargeStationMidpoint), 
+            List.of(scorePathMidpoint, chargeStationMidpoint), 
             lineUpPose, 
             createRotation(180)
         );
 
         addCommands(
             new ParallelDeadlineGroup(
-                driveBackPath, 
-                new ArmInCommand(arm),
-                new IntakeOutCommand(intake).beforeStarting(new WaitCommand(2.5))
+                driveBackPath,
+                new IntakeOutCommand(intake).beforeStarting(new WaitCommand(2.75))
             )
         );
 
         addCommands(new IntakeStopCommand(intake));
+
+        SwerveControllerCommand balancePath = createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.chargeStationTrajectoryConfig,
+            getLastEndingPose(), 
+            chargeStationPose, 
+            createRotation(180)
+        );
+
+        addCommands(balancePath);
+        addCommands(new RunCommand(() -> drivetrain.xWheels(), drivetrain));
 
         // // In front of grid
         // Pose2d endPose = new Pose2d(Units.inchesToMeters(16), Units.inchesToMeters(-67), Rotation2d.fromDegrees(0));
