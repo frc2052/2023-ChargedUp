@@ -51,11 +51,12 @@ shoot gamepiece (w/o stopping), go to chargestation */
     super(drivetrain, elevator, intake, arm);
 
     Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startNode), 0);
-    Translation2d chargeStationMidpoint = createTranslation2dInches(36, -4);
-    Pose2d startPickUpPose = createPose2dInches(60, -8, 0);
-    Pose2d pickUpPose = createPose2dInches(190, -8, 0);
-    Pose2d lineUpPose = createPose2dInches(152, -66, 180);
-    Pose2d chargeStationPose = createPose2dInches(80, -66, 180);
+    Translation2d chargeStationMidpoint = createTranslation2dInches(24, -12);
+    Pose2d startPickUpPose = createPose2dInches(64, -4, 0);
+    Pose2d approachPickUpPose = createPose2dInches(180, -12, 0);
+    Pose2d pickUpPose = createPose2dInches(195, -12, 0);
+    Pose2d lineUpPose = createPose2dInches(170, -66, 180);
+    Pose2d chargeStationPose = createPose2dInches(60, -66, 180);
 
     drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
 
@@ -83,22 +84,30 @@ shoot gamepiece (w/o stopping), go to chargestation */
     
     addCommands(retract);
 
-    // Drive to pickup cone
-    SwerveControllerCommand pickupPath = createSwerveTrajectoryCommand(
-        AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig.withStartVelocity(2), 
+    // Drive to approach cone
+    SwerveControllerCommand approachPickupPath = createSwerveTrajectoryCommand(
+        AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig.withStartAndEndVelocity(2, 0.5), 
         getLastEndingPose(), 
-        pickUpPose,
+        approachPickUpPose,
         createRotation(0)
     );
 
     addCommands(new ParallelDeadlineGroup(
-        pickupPath,
+        approachPickupPath,
         new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator),
         new ArmOutCommand(arm),
         new IntakeInCommand(intake)
     ));
 
-    addCommands(new WaitCommand(0.25));
+    // Drive to pickup cone
+    SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
+        AutoTrajectoryConfig.slowTrajectoryConfig.withStartVelocity(0.5), 
+        getLastEndingPose(), 
+        pickUpPose,
+        createRotation(0)
+    );
+
+    addCommands(pickUpPath);
 
     // Drive to lineup w/ charge station
     SwerveControllerCommand lineupPath = createSwerveTrajectoryCommand(
@@ -110,8 +119,7 @@ shoot gamepiece (w/o stopping), go to chargestation */
 
     addCommands(new ParallelDeadlineGroup(
         lineupPath, 
-        new ArmInCommand(arm),
-        new IntakeStopCommand(intake).beforeStarting(new WaitCommand(2))
+        new ArmInCommand(arm)
     ));
 
     //going on charge station
@@ -122,8 +130,10 @@ shoot gamepiece (w/o stopping), go to chargestation */
         createRotation(180)
     );
 
-    this.addCommands(onChargePath);
-    this.addCommands(new RunCommand(() -> drivetrain.xWheels(), drivetrain));
+    addCommands(onChargePath);
+    addCommands(new IntakeStopCommand(intake));
+    addCommands(new RunCommand(() -> drivetrain.xWheels(), drivetrain));
+
     // this.addCommands(new ChargeStationBalanceCommand(this.drivetrain));
 
     // // Score first time
