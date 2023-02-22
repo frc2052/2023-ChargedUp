@@ -20,16 +20,12 @@ public class LEDSubsystem extends SubsystemBase {
     private boolean disableLEDs;
     private boolean robotDisabled;
 
-    private Timer timer;
-
     private LEDSubsystem() {
         codeChannel1 = new DigitalOutput(Constants.LEDs.CHANNEL_1_PIN);    // DIO outputs
         codeChannel2 = new DigitalOutput(Constants.LEDs.CHANNEL_2_PIN);
         codeChannel3 = new DigitalOutput(Constants.LEDs.CHANNEL_3_PIN);
         codeChannel4 = new DigitalOutput(Constants.LEDs.CHANNEL_4_PIN);
         codeChannel5 = new DigitalOutput(Constants.LEDs.CHANNEL_5_PIN);
-
-        timer = new Timer();
 
         robotDisabled = true;
 
@@ -48,7 +44,8 @@ public class LEDSubsystem extends SubsystemBase {
         CONE(1),
         CUBE(2),
         DISABLED_RED_PULSE(3),
-        DISABLED_BLUE_PULSE(4);
+        DISABLED_BLUE_PULSE(4),
+        NO_AUTO(5);
 
 
         private final int code;
