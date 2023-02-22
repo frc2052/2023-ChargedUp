@@ -18,6 +18,7 @@ public class LEDSubsystem extends SubsystemBase {
     private LEDStatusMode currentDefaultStatusMode;
 
     private boolean disableLEDs;
+    private boolean robotDisabled;
 
     private Timer timer;
 
@@ -30,7 +31,7 @@ public class LEDSubsystem extends SubsystemBase {
 
         timer = new Timer();
 
-        currentStatusMode = LEDStatusMode.DISABLED;
+        robotDisabled = true;
 
         // SmartDashboard.putNumber("LED CODE", 0); // For manually inputting code to encode to DIO pins
     }
@@ -46,9 +47,8 @@ public class LEDSubsystem extends SubsystemBase {
         OFF(0),
         CONE(1),
         CUBE(2),
-        DISABLED(3),
-        DISABLED_RED_PULSE(4),
-        DISABLED_BLUE_PULSE(5);
+        DISABLED_RED_PULSE(3),
+        DISABLED_BLUE_PULSE(4);
 
 
         private final int code;
@@ -68,13 +68,13 @@ public class LEDSubsystem extends SubsystemBase {
 
         if(!disableLEDs) {
                 if (currentStatusMode == null) {
-                    if (currentDefaultStatusMode == LEDStatusMode.DISABLED) {   // If disabled, finds gets the alliance color from the driver station and pulses that. Only pulses color if connected to station or FMS, else pulses default disabled color (Firefl status mode)
+                    if (robotDisabled) {   // If disabled, finds gets the alliance color from the driver station and pulses that. Only pulses color if connected to station or FMS, else pulses default disabled color (Firefl status mode)
                         if (DriverStation.getAlliance() == Alliance.Red) {
                             currentStatusMode = LEDStatusMode.DISABLED_RED_PULSE;
                         } else if (DriverStation.getAlliance() == Alliance.Blue) {
                             currentStatusMode = LEDStatusMode.DISABLED_BLUE_PULSE;
                         } else {
-                            currentStatusMode = LEDStatusMode.DISABLED; // Reaches here if DriverStation.getAlliance returns Invalid, which just means it can't determine our alliance and we do cool default effect
+                            currentStatusMode = LEDStatusMode.OFF; // Reaches here if DriverStation.getAlliance returns Invalid, which just means it can't determine our alliance and we do cool default effect
                         }
                     } else {
                         currentStatusMode = currentDefaultStatusMode;
@@ -123,5 +123,13 @@ public class LEDSubsystem extends SubsystemBase {
     // Enables LEDs (turns them on)
     public void enable() {
         disableLEDs = false;
+    }
+
+    public void robotDisabled(){
+        robotDisabled = true;
+    }
+
+    public void robotEnabled(){
+        robotDisabled = false;
     }
 }
