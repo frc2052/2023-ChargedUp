@@ -76,6 +76,9 @@ public class Robot extends TimedRobot {
         if (selected == Autos.NO_AUTO){
             LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.NO_AUTO);;
         }
+        else {
+            LEDSubsystem.getInstance().robotDisabled();
+        }
     }
 
     /**
@@ -110,6 +113,8 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+
+        LEDSubsystem.getInstance().clearStatusMode();
     }
 
     /** This function is called periodically during operator control. */

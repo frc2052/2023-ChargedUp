@@ -4,11 +4,14 @@
 #include "pulse.h"
 #include "warningPulse.h"
 
-int PIN_ONE = 32;
-int PIN_TWO = 33;
-int PIN_FOUR = 25;
+int PIN_ONE = 12;
+int PIN_TWO = 14;
+int PIN_FOUR = 27;
 int PIN_EIGHT = 26;
-int PIN_SIXTEEN = 27;
+int PIN_SIXTEEN = 25;
+int PIN_THIRTY_TWO = 33;
+int PIN_SIXTY_FOUR = 32;
+int PIN_ONE_HUNDRED_TWENTY_EIGHT = 35;
 
 CRGB g_leds[NUM_LEDS]; //create our LED array object for all our LEDs
 Pulse pulse = Pulse();
@@ -56,23 +59,35 @@ void loop() {
   int code = 0;
   if (digitalRead(PIN_ONE))
   {
-    code = code + 1;
+    code += 1;
   }
   if (digitalRead(PIN_TWO))
   {
-    code = code + 2;
+    code += 2;
   }
   if (digitalRead(PIN_FOUR))
   {
-    code = code + 4;
+    code += 4;
   }
   if (digitalRead(PIN_EIGHT))
   {
-    code = code + 8;
+    code += 8;
   }
   if (digitalRead(PIN_SIXTEEN))
   {
-    code = code + 16;
+    code += 16;
+  }
+  if (digitalRead(PIN_THIRTY_TWO))
+  {
+    code += 32;
+  }
+  if (digitalRead(PIN_SIXTY_FOUR))
+  {
+    code += 64;
+  }
+  if (digitalRead(PIN_ONE_HUNDRED_TWENTY_EIGHT))
+  {
+    code += 128;
   }
 
   switch (code) {
