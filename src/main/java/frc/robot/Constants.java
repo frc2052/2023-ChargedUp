@@ -131,4 +131,14 @@ public final class Constants {
         public static final double DISTANCE_WALL_TO_GAME_PIECE_METERS = Units.inchesToMeters(36.25);
         public static final double FIELD_WIDTH = Units.feetToMeters(26.291667);
     }
+
+    public static final class LEDs {
+        // For binary arduino code output
+        public static final int CHANNEL_1_PIN = 1; // 2^0
+        public static final int CHANNEL_2_PIN = 2; // 2^1
+        public static final int CHANNEL_3_PIN = 3; // 2^2
+        public static final int CHANNEL_4_PIN = 4; // 2^3
+        public static final int CHANNEL_5_PIN = 5; // 2^4
+
+    }
 }

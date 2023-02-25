@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.io.Dashboard;
+import frc.robot.io.Dashboard.Autos;
+import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -64,10 +67,18 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
+        LEDSubsystem.getInstance().robotDisabled();
     }
 
     @Override
     public void disabledPeriodic() {
+        Autos selected = Dashboard.getInstance().getAuto();
+        if (selected == Autos.NO_AUTO){
+            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.NO_AUTO);;
+        }
+        else {
+            LEDSubsystem.getInstance().robotDisabled();
+        }
     }
 
     /**
@@ -102,6 +113,8 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+
+        LEDSubsystem.getInstance().clearStatusMode();
     }
 
     /** This function is called periodically during operator control. */

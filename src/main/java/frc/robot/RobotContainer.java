@@ -24,9 +24,11 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonVisionSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
+import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -56,6 +58,7 @@ public class RobotContainer {
     private final ArmSubsystem arm;
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
+    private final LEDSubsystem leds;
     private final PhotonVisionSubsystem vision;
 
     /**
@@ -70,6 +73,7 @@ public class RobotContainer {
         arm = new ArmSubsystem();
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
+        leds = LEDSubsystem.getInstance();
         vision = new PhotonVisionSubsystem();
 
         new PneumaticsSubsystem();
@@ -111,6 +115,22 @@ public class RobotContainer {
         JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
         aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
 
+        // JoystickButton aprilTagDriveButton = new JoystickButton(driveJoystick, 1);
+        // aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
+
+        JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
+        aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
+
+        /*
+         * LED button bindings
+         */
+        Trigger LEDOffButton = new Trigger(() -> controlPanel.getY() > 0.5);
+        Trigger LEDConeButton = new Trigger(() -> controlPanel.getX() > 0.5);
+        Trigger LEDCubeButton = new Trigger (() -> controlPanel.getX() < -0.5);
+
+        LEDOffButton.onTrue(new InstantCommand(() -> leds.setLEDStatusMode(LEDStatusMode.OFF)));
+        LEDConeButton.onTrue(new InstantCommand(() -> leds.setLEDStatusMode(LEDStatusMode.CONE)));
+        LEDCubeButton.onTrue(new InstantCommand(() -> leds.setLEDStatusMode(LEDStatusMode.CUBE)));
         /*
          * Elevator button bindings
          */
