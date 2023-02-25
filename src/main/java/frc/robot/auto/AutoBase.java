@@ -34,7 +34,7 @@ public abstract class AutoBase extends SequentialCommandGroup {
     protected final ArmSubsystem arm;
 
     private Pose2d lastEndingPose;
-    
+
     /** Creates a new Auto. */
     public AutoBase(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
         this.drivetrain = drivetrain;

@@ -18,6 +18,7 @@ import frc.robot.auto.AutoBase;
 import frc.robot.auto.AutoTrajectoryConfig;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
+import frc.robot.commands.drive.NewChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeStopCommand;
@@ -55,8 +56,8 @@ shoot gamepiece (w/o stopping), go to chargestation */
         Pose2d startPickUpPose = createPose2dInches(64, -4, 0);
         Pose2d approachPickUpPose = createPose2dInches(180, -12, 0);
         Pose2d pickUpPose = createPose2dInches(195, -12, 0);
-        Pose2d lineUpPose = createPose2dInches(170, -66, 180);
-        Pose2d chargeStationPose = createPose2dInches(60, -66, 180);
+        Pose2d lineUpPose = createPose2dInches(170, -74, 180);
+        Pose2d chargeStationPose = createPose2dInches(60, -74, 180);
 
         drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
 
@@ -131,7 +132,7 @@ shoot gamepiece (w/o stopping), go to chargestation */
         
             addCommands(onChargePath);
             addCommands(new IntakeStopCommand(intake));
-            addCommands(new RunCommand(() -> drivetrain.xWheels(), drivetrain));
+            addCommands(new NewChargeStationBalanceCommand(drivetrain));
         }
     }
 }

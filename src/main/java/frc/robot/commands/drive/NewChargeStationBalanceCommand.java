@@ -58,7 +58,7 @@ public class NewChargeStationBalanceCommand extends CommandBase {
 
       if (!isDropping && !holding  && !isLevel) {
         drivetrain.drive(
-            Math.copySign(0.25, (double) -(drivetrain.getNavx().getPitch())),
+            Math.copySign(0.2, (double) -(drivetrain.getNavx().getPitch())),
             0,
             0, 
             false
