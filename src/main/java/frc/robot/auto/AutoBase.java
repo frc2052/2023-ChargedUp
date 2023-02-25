@@ -12,9 +12,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
+import frc.robot.commands.elevator.ZeroElevator;
 import frc.robot.io.Dashboard.Grid;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
@@ -40,20 +42,28 @@ public abstract class AutoBase extends SequentialCommandGroup {
         this.intake = intake;
         this.arm = arm;
 
-        init();
+        if (!this.elevator.elevatorZeroed()) {
+            addCommands(new ZeroElevator(this.elevator));
+        }
     }
-
-    /**
-     * Add commands to auto sequence from this method.
-     */
-    public abstract void init();
 
     public Pose2d getLastEndingPose() {
         return lastEndingPose;
     }
 
+    public Pose2d createPose2dInches(double xInches, double yInches, double rotationDegrees) {
+        return new Pose2d(Units.inchesToMeters(xInches), Units.inchesToMeters(yInches), Rotation2d.fromDegrees(rotationDegrees));
+    }
+
+    public Translation2d createTranslation2dInches(double xInches, double yInches) {
+        return new Translation2d(Units.inchesToMeters(xInches), Units.inchesToMeters(yInches));
+    }
+
+    public double getLeftStartingYOffsetInches(Node startNode) {
+        return Units.metersToInches(-startNode.ordinal() * (Constants.Auto.NODE_WIDTH_METERS + Constants.Auto.NODE_DIVIDER_WIDTH_METERS));
+    }
+
     public Pose2d getStartingPose(Grid grid, Node node) {
-        
         double distanceToFirstPipeInches = 3.5 + 16.5;
         double scoringElementWidthInches = 18.5 + 13.5;
 

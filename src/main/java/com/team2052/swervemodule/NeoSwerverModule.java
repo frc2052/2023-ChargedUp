@@ -35,7 +35,8 @@ public class NeoSwerverModule extends SwerveModule {
          * Drive Motor Initialization
          */
         driveMotor = new CANSparkMax(driveMotorChannel, CANSparkMaxLowLevel.MotorType.kBrushless);
-        
+        checkError("Failed to resotre drive motor factory defaults", driveMotor.restoreFactoryDefaults());
+
         // Reduce CAN status frame rates
         checkError(
             "Failed to set drive motor periodic status frame rate",
@@ -60,7 +61,7 @@ public class NeoSwerverModule extends SwerveModule {
         );
 
         // Drive Motor encoder initialization
-        RelativeEncoder encoder = driveMotor.getEncoder();
+        RelativeEncoder driveEncoder = driveMotor.getEncoder();
 
         // Conversion factor for switching between ticks and meters in terms of meters per tick
         double drivePositionConversionFactor = Math.PI * moduleConfiguration.getWheelDiameter() * 
@@ -69,15 +70,16 @@ public class NeoSwerverModule extends SwerveModule {
         checkError(
             "Failed to set drive motor encoder conversion factors",
             // Set the position conversion factor so the encoder will automatically convert ticks to meters
-            encoder.setPositionConversionFactor(drivePositionConversionFactor),
+            driveEncoder.setPositionConversionFactor(drivePositionConversionFactor),
             // Velocity of the encoder in meters per second
-            encoder.setVelocityConversionFactor(drivePositionConversionFactor / 60.0)
+            driveEncoder.setVelocityConversionFactor(drivePositionConversionFactor / 60.0)
         );
 
         /*
          * Steer Motor Initialization
          */
         steerMotor = new CANSparkMax(steerMotorChannel, CANSparkMaxLowLevel.MotorType.kBrushless);
+        checkError("Failed to resotre steer motor factory defaults", steerMotor.restoreFactoryDefaults());
 
         // Reduce CAN status frame rates
         checkError(
@@ -104,7 +106,7 @@ public class NeoSwerverModule extends SwerveModule {
         );
 
         // Steer Motor encoder initialization
-        RelativeEncoder integratedEncoder = steerMotor.getEncoder();
+        RelativeEncoder steerEncoder = steerMotor.getEncoder();
 
         // Conversion factor for switching between ticks and radians in terms of radians per tick
         double steerPositionConversionFactor = 2.0 * Math.PI * moduleConfiguration.getSteerReduction();
@@ -112,31 +114,31 @@ public class NeoSwerverModule extends SwerveModule {
         checkError(
             "Failed to set drive motor encoder conversion factors",
             // Set the position conversion factor so the encoder will automatically convert ticks to radians
-            integratedEncoder.setPositionConversionFactor(steerPositionConversionFactor),
+            steerEncoder.setPositionConversionFactor(steerPositionConversionFactor),
             // Velocity of the encoder in radians per second
-            integratedEncoder.setVelocityConversionFactor(steerPositionConversionFactor / 60.0)
+            steerEncoder.setVelocityConversionFactor(steerPositionConversionFactor / 60.0)
         );
 
         // Sets the steer motor encoder to the absolute position of the CANCoder for startup orientation
         checkError(
             "Failed to set steer motor encoder position",
-            integratedEncoder.setPosition(Math.toRadians(canCoder.getAbsolutePosition()))
+            steerEncoder.setPosition(Math.toRadians(canCoder.getAbsolutePosition()))
         );
 
-        SparkMaxPIDController controller = steerMotor.getPIDController();
+        SparkMaxPIDController steerController = steerMotor.getPIDController();
         checkError(
-            "Failed to set steer motor PID",
-            controller.setP(SwerveConstants.NeoSwerveModule.STEER_MOTOR_P),
-            controller.setI(SwerveConstants.NeoSwerveModule.STEER_MOTOR_I),
-            controller.setD(SwerveConstants.NeoSwerveModule.STEER_MOTOR_D),
-            controller.setPositionPIDWrappingEnabled(true),
-            controller.setPositionPIDWrappingMinInput(-Math.PI),
-            controller.setPositionPIDWrappingMaxInput(Math.PI)
+            "Failed to configure steer motor PID",
+            steerController.setP(SwerveConstants.NeoSwerveModule.STEER_MOTOR_P),
+            steerController.setI(SwerveConstants.NeoSwerveModule.STEER_MOTOR_I),
+            steerController.setD(SwerveConstants.NeoSwerveModule.STEER_MOTOR_D),
+            steerController.setPositionPIDWrappingMinInput(-Math.PI),
+            steerController.setPositionPIDWrappingMaxInput(Math.PI),
+            steerController.setPositionPIDWrappingEnabled(true)
         );
 
         checkError(
             "Failed to set steer motor PID feedback device",
-            controller.setFeedbackDevice(integratedEncoder)
+            steerController.setFeedbackDevice(steerEncoder)
         );
     }
 

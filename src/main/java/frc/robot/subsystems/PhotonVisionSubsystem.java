@@ -19,6 +19,9 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,19 +32,21 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     private final PhotonCamera camera;
     private PhotonPoseEstimator poseEstimator;
 
+    private AprilTagFieldLayout fieldLayout;
+
     private PhotonPipelineResult latestResult;
     
     public PhotonVisionSubsystem() {
         camera = new PhotonCamera(Constants.Camera.CAMERA_NAME);
 
         try {
-            AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+            fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
 
             poseEstimator = new PhotonPoseEstimator(
                 fieldLayout,
                 PoseStrategy.AVERAGE_BEST_TARGETS, 
-                camera, 
-                Constants.Camera.cameraPosition
+                camera,
+                Constants.Camera.CAMERA_POSITION_METERS
             );
         } catch (IOException e) {
             DriverStation.reportError(e.getMessage(), e.getStackTrace());
@@ -60,7 +65,14 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Camera Connected", camera.isConnected());
 
         if (latestResult.hasTargets()) {
-            SmartDashboard.putNumber("TAG ID", latestResult.getBestTarget().getFiducialId());
+            //SmartDashboard.putNumber("TAG ID", latestResult.getBestTarget().getFiducialId());
+            
+            try {
+                System.out.println(getTranslationRobotToTag(latestResult.getBestTarget()));
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
@@ -81,7 +93,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
             return Optional.empty();
         }
         
-        poseEstimator.setReferencePose(previousEstimatedRobotPose);
+            poseEstimator.setReferencePose(previousEstimatedRobotPose);
         return poseEstimator.update();
     }
 
@@ -113,6 +125,37 @@ public class PhotonVisionSubsystem extends SubsystemBase {
             getTargetHeightFromGroundMeters(target), 
             Constants.Camera.CAMERA_PITCH_RADIANS,
             Units.degreesToRadians(target.getPitch())
+        );
+    }
+
+    public static Pose3d getPose3d(PhotonTrackedTarget target) throws IOException {
+        AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+
+        return PhotonUtils.estimateFieldToRobotAprilTag(
+            target.getBestCameraToTarget(), 
+            fieldLayout.getTagPose(target.getFiducialId()).get(), 
+            Constants.Camera.CAMERA_POSITION_METERS
+        );
+    }
+
+    public static Translation2d getTranslationRobotToTag(PhotonTrackedTarget target) throws IOException {
+        AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+        
+        System.out.println(PhotonUtils.calculateDistanceToTargetMeters(
+            Constants.Camera.CAMERA_POSITION_METERS.getZ(),
+            fieldLayout.getTagPose(target.getFiducialId()).get().getZ(),
+            Constants.Camera.CAMERA_POSITION_METERS.getRotation().getY(),
+            Units.degreesToRadians(target.getPitch())
+        ));
+
+        return PhotonUtils.estimateCameraToTargetTranslation(
+            PhotonUtils.calculateDistanceToTargetMeters(
+                Constants.Camera.CAMERA_POSITION_METERS.getZ(),
+                fieldLayout.getTagPose(target.getFiducialId()).get().getZ(),
+                Constants.Camera.CAMERA_POSITION_METERS.getRotation().getY(),
+                Units.degreesToRadians(target.getPitch())
+            ),
+            Rotation2d.fromDegrees(-target.getYaw())
         );
     }
 

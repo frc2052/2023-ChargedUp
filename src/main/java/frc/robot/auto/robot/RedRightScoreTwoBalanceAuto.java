@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.auto;
+package frc.robot.auto.robot;
 
 import java.util.List;
 
@@ -15,13 +15,15 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.IntakeStopCommand;
+import frc.robot.auto.AutoBase;
+import frc.robot.auto.AutoTrajectoryConfig;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -132,11 +134,5 @@ shoot gamepiece (w/o stopping), go to chargestation */
                 );  
     this.addCommands(onChargeGroup);
     this.addCommands(new ChargeStationBalanceCommand(this.drivetrain));
-  }
- 
-  @Override
-  public void init() {
-    // TODO Auto-generated method stub
-    
   }
 }

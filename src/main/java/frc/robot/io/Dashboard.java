@@ -34,9 +34,8 @@ public class Dashboard {
     private Dashboard() {
         //Creates options for different choosers
         driveModeChooser = new SendableChooser<DriveMode>();
-        for (DriveMode driveMode : DriveMode.values()){
-            driveModeChooser.addOption(driveMode.name(), driveMode);
-        }
+        driveModeChooser.addOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
+        driveModeChooser.addOption(DriveMode.ROBOT_CENTRIC.name(), DriveMode.ROBOT_CENTRIC);
         driveModeChooser.setDefaultOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
         SmartDashboard.putData(Constants.Dashboard.DRIVE_MODE_KEY, driveModeChooser);
 
@@ -44,7 +43,7 @@ public class Dashboard {
         for (Autos auto : Autos.values()) {
             autoChooser.addOption(auto.name, auto);
         }
-        autoChooser.setDefaultOption(Autos.values()[0].name, Autos.values()[0]);
+        autoChooser.setDefaultOption(Autos.NO_AUTO.name, Autos.NO_AUTO);
         SmartDashboard.putData("Auto", autoChooser);
 
         nodeChooser = new SendableChooser<Node>();
@@ -177,8 +176,11 @@ public class Dashboard {
     }
 
     public static enum Autos {
+        NO_AUTO("NO AUTO", "Description"),
         DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description"),
-        RED_LEFT_SCORE_ONE_BALANCE("Red Left Score One Balance", "Description");
+        RED_LEFT_SCORE_ONE_BALANCE("Red Left Score One Balance", "Description"),
+        RED_LEFT_SCORE_TWO_BALANCE("Red Left Score Two Balance", "Description");
+
 
         private final String name;
         private final String description;
