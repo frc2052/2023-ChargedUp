@@ -30,7 +30,7 @@ public class AprilTagDriveCommand extends DriveCommand {
             drivetrain.drive(
                 0,
                 forwardController.calculate(
-                    PhotonVisionSubsystem.getPose3d(vision.getTarget()).getX(), 
+                    PhotonVisionSubsystem.getTranslationRobotToTag(vision.getTarget()).getY(), 
                     0
                 ), 
                 0, 

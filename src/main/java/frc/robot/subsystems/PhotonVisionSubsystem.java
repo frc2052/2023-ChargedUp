@@ -140,15 +140,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
 
     public static Translation2d getTranslationRobotToTag(PhotonTrackedTarget target) throws IOException {
         AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-        
-        System.out.println(PhotonUtils.calculateDistanceToTargetMeters(
-            Constants.Camera.CAMERA_POSITION_METERS.getZ(),
-            fieldLayout.getTagPose(target.getFiducialId()).get().getZ(),
-            Constants.Camera.CAMERA_POSITION_METERS.getRotation().getY(),
-            Units.degreesToRadians(target.getPitch())
-        ));
-
-        return PhotonUtils.estimateCameraToTargetTranslation(
+        Translation2d translation = PhotonUtils.estimateCameraToTargetTranslation(
             PhotonUtils.calculateDistanceToTargetMeters(
                 Constants.Camera.CAMERA_POSITION_METERS.getZ(),
                 fieldLayout.getTagPose(target.getFiducialId()).get().getZ(),
@@ -156,6 +148,10 @@ public class PhotonVisionSubsystem extends SubsystemBase {
                 Units.degreesToRadians(target.getPitch())
             ),
             Rotation2d.fromDegrees(-target.getYaw())
+        );
+        return new Translation2d(
+            translation.getX() + Constants.Camera.CAMERA_POSITION_METERS.getX(),
+            translation.getY() + Constants.Camera.CAMERA_POSITION_METERS.getY()
         );
     }
 
