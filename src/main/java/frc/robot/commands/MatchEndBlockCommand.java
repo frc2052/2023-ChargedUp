@@ -14,6 +14,6 @@ public class MatchEndBlockCommand extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return DriverStation.getMatchTime() < 0.1;
+        return DriverStation.getMatchTime() < 0.25;
     }
 }

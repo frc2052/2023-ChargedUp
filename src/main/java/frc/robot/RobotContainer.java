@@ -115,12 +115,6 @@ public class RobotContainer {
         JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
         aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
 
-        // JoystickButton aprilTagDriveButton = new JoystickButton(driveJoystick, 1);
-        // aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
-
-        JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
-        aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
-
         /*
          * LED button bindings
          */

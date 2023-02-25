@@ -104,7 +104,8 @@ public class LeftScoreTwoBalanceAuto extends AutoBase{
         addCommands(new ArmInCommand(arm));
 
         // Driving back to grid
-        SwerveControllerCommand driveBackPath = createSwerveCommand(
+        SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.slowTrajectoryConfig.withEndVelocity(2),
             getLastEndingPose(), 
             List.of(scorePathMidpoint, chargeStationMidpoint), 
             lineUpPose, 
@@ -122,7 +123,7 @@ public class LeftScoreTwoBalanceAuto extends AutoBase{
 
         if (endChargeStation) {
             SwerveControllerCommand balancePath = createSwerveTrajectoryCommand(
-                AutoTrajectoryConfig.chargeStationTrajectoryConfig,
+                AutoTrajectoryConfig.chargeStationTrajectoryConfig.withStartVelocity(2),
                 getLastEndingPose(), 
                 chargeStationPose, 
                 createRotation(180)
