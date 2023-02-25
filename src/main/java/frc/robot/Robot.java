@@ -73,13 +73,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
-        Autos selected = Dashboard.getInstance().getAuto();
-        if (selected == Autos.NO_AUTO){
-            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.NO_AUTO);;
-        }
-        else {
-            LEDSubsystem.getInstance().robotDisabled();
-        }
+        LEDSubsystem.getInstance().robotDisabled();
     }
 
     /**

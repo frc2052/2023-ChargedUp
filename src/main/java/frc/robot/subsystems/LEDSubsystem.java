@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.io.Dashboard;
+import frc.robot.io.Dashboard.Autos;
 
 /**
  * Subsystem to control the robot's LEDs, by determining what number should be encoded to DIO pins and
@@ -13,8 +15,7 @@ import frc.robot.Constants;
 public class LEDSubsystem extends SubsystemBase {
     private DigitalOutput codeChannel1, codeChannel2, codeChannel3, codeChannel4, codeChannel5, codeChannel6, codeChannel7, codeChannel8;
 
-    private LEDStatusMode currentStatusMode;
-    private LEDStatusMode currentDefaultStatusMode;
+    private LEDStatusMode currentStatusMode = LEDStatusMode.OFF;
 
     private boolean disableLEDs;
     private boolean robotDisabled;
@@ -63,38 +64,31 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         int code = 0;
-        System.out.println("Alliance" + DriverStation.getAlliance() + "*******************");
-
         if(!disableLEDs) {
-                if (currentStatusMode == null) {
-                    if (robotDisabled) {   // If disabled, finds gets the alliance color from the driver station and pulses that. Only pulses color if connected to station or FMS, else pulses default disabled color (Firefl status mode)
-                        if (DriverStation.getAlliance() == Alliance.Red) {
-                            currentStatusMode = LEDStatusMode.DISABLED_RED_PULSE;
-                        } else if (DriverStation.getAlliance() == Alliance.Blue) {
-                            currentStatusMode = LEDStatusMode.DISABLED_BLUE_PULSE;
-                        } else {
-                            currentStatusMode = LEDStatusMode.OFF; // Reaches here if DriverStation.getAlliance returns Invalid, which just means it can't determine our alliance and we do cool default effect
-                        }
+                if (robotDisabled) {   // If disabled, finds gets the alliance color from the driver station and pulses that. Only pulses color if connected to station or FMS, else pulses default disabled color (Firefl status mode)
+
+                    Autos selected = Dashboard.getInstance().getAuto();
+                    if (selected == Autos.NO_AUTO){
+                        currentStatusMode = LEDStatusMode.NO_AUTO;
+                    }
+                    else if (DriverStation.getAlliance() == Alliance.Red) {
+                        currentStatusMode = LEDStatusMode.DISABLED_RED_PULSE;
+                    } else if (DriverStation.getAlliance() == Alliance.Blue) {
+                        currentStatusMode = LEDStatusMode.DISABLED_BLUE_PULSE;
                     } else {
-                        currentStatusMode = currentDefaultStatusMode;
+                        currentStatusMode = LEDStatusMode.OFF; // Reaches here if DriverStation.getAlliance returns Invalid, which just means it can't determine our alliance and we do cool default effect
                     }
                 }
 
                 code = currentStatusMode.code;
+
         } else {
+            //LEDs are disabled
             code = 0;
         }
-        
-        // code = (int) SmartDashboard.getNumber("LED CODE", 0); // For manually inputting code to encode to DIO pins
-
-        // SmartDashboard.putBoolean("channel1", (code & 1) > 0);
-        // SmartDashboard.putBoolean("channel2", (code & 2) > 0);
-        // SmartDashboard.putBoolean("channel3", (code & 4) > 0);
-        // SmartDashboard.putBoolean("channel4", (code & 8) > 0);
-        // SmartDashboard.putBoolean("channel5", (code & 16) > 0);
 
         // Code for encoding the code to binary on the digitalOutput pins
-        System.out.println("Sending LED Code" + code + "************************");
+        //System.out.println("Sending LED Code" + code + "************************");
         codeChannel1.set((code & 1) > 0);   // 2^0
         codeChannel2.set((code & 2) > 0);   // 2^1
         codeChannel3.set((code & 4) > 0);   // 2^2
