@@ -9,11 +9,9 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auto.AutoBase;
@@ -38,9 +36,10 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
  * Score gamepiece, move and rotate to pick up gamepiece, move and rotate (strafe) to grid, 
  * shoot gamepiece (w/o stopping), & go to chargestation.
  */
-public class RedLeftScoreTwoBalanceAuto extends AutoBase{
-    public RedLeftScoreTwoBalanceAuto(
+public class LeftScoreTwoBalanceAuto extends AutoBase{
+    public LeftScoreTwoBalanceAuto(
         Node startNode,
+        boolean endChargeStation,
         DrivetrainSubsystem drivetrain, 
         ElevatorSubsystem elevator, 
         IntakeSubsystem intake, 
@@ -129,59 +128,16 @@ public class RedLeftScoreTwoBalanceAuto extends AutoBase{
 
         addCommands(new IntakeStopCommand(intake));
 
-        SwerveControllerCommand balancePath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.chargeStationTrajectoryConfig,
-            getLastEndingPose(), 
-            chargeStationPose, 
-            createRotation(180)
-        );
-
-        addCommands(balancePath);
-        addCommands(new RunCommand(() -> drivetrain.xWheels(), drivetrain));
-
-        // // In front of grid
-        // Pose2d endPose = new Pose2d(Units.inchesToMeters(16), Units.inchesToMeters(-67), Rotation2d.fromDegrees(0));
-        // SwerveControllerCommand scorePath = super.createSwerveCommand(
-        //     getLastEndingPose(), 
-        //     endPose, 
-        //     createRotation(180)
-        // );
-
-        // ParallelDeadlineGroup shootGroup = new ParallelDeadlineGroup(
-        //     scorePath, //deadline
-        //     new IntakeOutCommand(intake)
-        // );
-        
-        // addCommands(shootGroup);
-
-        // // turn to 0
-        // Pose2d endPose = new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(-67), Rotation2d.fromDegrees(0));
-        // SwerveControllerCommand spinPath = createSwerveTrajectoryCommand(
-        //     AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig,
-        //     getLastEndingPose(), 
-        //     endPose, 
-        //     createRotation(0)
-        // );
-
-        // ParallelDeadlineGroup spinGroup = new ParallelDeadlineGroup(
-        //     spinPath, //deadline
-        //     new ArmOutCommand(this.arm),
-        //     new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, this.elevator)
-        // );
-
-        // this.addCommands(spinGroup);
-
-        //     //going on charge station
-        //     startPose = endPose;
-        //     endPose = new Pose2d(Units.inchesToMeters(100), Units.inchesToMeters(-67), Rotation2d.fromDegrees(0));
-        //    SwerveControllerCommand onChargePath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
-        
-        //         ParallelDeadlineGroup onChargeGroup = new ParallelDeadlineGroup(
-        //                 onChargePath, //deadline
-        //                 new IntakeStopCommand(this.intake)
-                        
-        //                 );  
-        //     this.addCommands(onChargeGroup);
-        //     this.addCommands(new ChargeStationBalanceCommand(this.drivetrain));
+        if (endChargeStation) {
+            SwerveControllerCommand balancePath = createSwerveTrajectoryCommand(
+                AutoTrajectoryConfig.chargeStationTrajectoryConfig,
+                getLastEndingPose(), 
+                chargeStationPose, 
+                createRotation(180)
+            );
+    
+            addCommands(balancePath);
+            addCommands(new RunCommand(() -> drivetrain.xWheels(), drivetrain));
+        }
     }
 }

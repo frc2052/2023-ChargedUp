@@ -90,9 +90,9 @@ public final class Constants {
         public static final double CAMERA_HEIGHT_METERS = 0;
         public static final double CAMERA_PITCH_RADIANS = 0;
 
-        public static final Transform3d cameraPosition = new Transform3d(
-            new Translation3d(0.5, 0.0, 0.5), 
-            new Rotation3d(0, 0, 0)
+        public static final Transform3d CAMERA_POSITION_METERS = new Transform3d(
+            new Translation3d(Units.inchesToMeters(6), Units.inchesToMeters(3.675), Units.inchesToMeters(41.75)), 
+            new Rotation3d(0, Units.degreesToRadians(-5), 0)
         );
 
         public static final double APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(8);
