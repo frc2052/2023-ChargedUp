@@ -98,6 +98,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        Dashboard.getInstance().putData(
+            "Pitch of Robot",
+            navx.getPitch()
+        );
+
         debug();
     }
 

@@ -72,8 +72,8 @@ public final class Constants {
 
         // Minimum allowable amps
         public static final double INTAKE_CRUISE_CURRENT_AMPS = 2.0;
-        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 8.0;
-        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.20;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 10.0;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.25;
     }
     
     public static final class AutoBalance {
@@ -90,9 +90,9 @@ public final class Constants {
         public static final double CAMERA_HEIGHT_METERS = 0;
         public static final double CAMERA_PITCH_RADIANS = 0;
 
-        public static final Transform3d cameraPosition = new Transform3d(
-            new Translation3d(0.5, 0.0, 0.5), 
-            new Rotation3d(0, 0, 0)
+        public static final Transform3d CAMERA_POSITION_METERS = new Transform3d(
+            new Translation3d(Units.inchesToMeters(6), Units.inchesToMeters(3.675), Units.inchesToMeters(41.75)), 
+            new Rotation3d(0, Units.degreesToRadians(-5), 0)
         );
 
         public static final double APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(8);
@@ -130,5 +130,18 @@ public final class Constants {
         public static final double DISTANCE_BETWEEN_GAME_PIECES_METERS = Units.feetToMeters(4);
         public static final double DISTANCE_WALL_TO_GAME_PIECE_METERS = Units.inchesToMeters(36.25);
         public static final double FIELD_WIDTH = Units.feetToMeters(26.291667);
+    }
+
+    public static final class LEDs {
+        // For binary arduino code output
+        public static final int CHANNEL_1_PIN = 1; // 2^0
+        public static final int CHANNEL_2_PIN = 2; // 2^1
+        public static final int CHANNEL_3_PIN = 3; // 2^2
+        public static final int CHANNEL_4_PIN = 4; // 2^3
+        public static final int CHANNEL_5_PIN = 5; // 2^4
+        public static final int CHANNEL_6_PIN = 6; // 2^4
+        public static final int CHANNEL_7_PIN = 7; // 2^4
+        public static final int CHANNEL_8_PIN = 8; // 2^4
+
     }
 }

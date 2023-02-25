@@ -3,7 +3,6 @@ package frc.robot.commands.drive;
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PhotonVisionSubsystem;
-import frc.robot.subsystems.PhotonVisionSubsystem.TargetNotFoundException;
 
 public class AprilTagDriveCommand extends DriveCommand {
     private final PhotonVisionSubsystem vision;
@@ -16,6 +15,7 @@ public class AprilTagDriveCommand extends DriveCommand {
    
     public AprilTagDriveCommand(DrivetrainSubsystem drivetrain, PhotonVisionSubsystem vision) {
         super(drivetrain);
+        
         this.vision = vision;
 
         forwardController = new PIDController(LINEAR_P, LINEAR_I, LINEAR_D);
@@ -29,11 +29,14 @@ public class AprilTagDriveCommand extends DriveCommand {
         try {
             drivetrain.drive(
                 0,
-                forwardController.calculate(PhotonVisionSubsystem.getHorizontalOffsetDegrees(vision.getTarget()), 0), 
+                forwardController.calculate(
+                    PhotonVisionSubsystem.getPose3d(vision.getTarget()).getX(), 
+                    0
+                ), 
                 0, 
                 false
             );
-        } catch (TargetNotFoundException e) {
+        } catch (Exception e) {
             end(true);
 
             e.printStackTrace();
@@ -43,8 +46,5 @@ public class AprilTagDriveCommand extends DriveCommand {
     @Override
     public boolean isFinished(){
         return forwardController.atSetpoint();
-        
     }
-
-    
 }

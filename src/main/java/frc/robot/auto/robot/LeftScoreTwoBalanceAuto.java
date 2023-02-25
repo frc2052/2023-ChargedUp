@@ -9,17 +9,18 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auto.AutoBase;
 import frc.robot.auto.AutoTrajectoryConfig;
+import frc.robot.commands.MatchEndBlockCommand;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
+import frc.robot.commands.drive.NewChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
@@ -38,9 +39,10 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
  * Score gamepiece, move and rotate to pick up gamepiece, move and rotate (strafe) to grid, 
  * shoot gamepiece (w/o stopping), & go to chargestation.
  */
-public class RedLeftScoreTwoBalanceAuto extends AutoBase{
-    public RedLeftScoreTwoBalanceAuto(
+public class LeftScoreTwoBalanceAuto extends AutoBase{
+    public LeftScoreTwoBalanceAuto(
         Node startNode,
+        boolean endChargeStation,
         DrivetrainSubsystem drivetrain, 
         ElevatorSubsystem elevator, 
         IntakeSubsystem intake, 
@@ -51,11 +53,10 @@ public class RedLeftScoreTwoBalanceAuto extends AutoBase{
         Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startNode), 0);
         Translation2d chargeStationMidpoint = createTranslation2dInches(24, -2);
         Pose2d startPickUpPose = createPose2dInches(64, -4, 0);
-        Pose2d approachPickUpPose = createPose2dInches(180, -8, 0);
-        Pose2d pickUpPose = createPose2dInches(195, -12, 180);
+        Pose2d pickUpPose = createPose2dInches(194, -16, 0);
         Translation2d scorePathMidpoint = createTranslation2dInches(108, -2);
-        Pose2d lineUpPose = createPose2dInches(24, -66, 270);
-        Pose2d chargeStationPose = createPose2dInches(100, -66, 180);
+        Pose2d lineUpPose = createPose2dInches(24, -80, 270);
+        Pose2d chargeStationPose = createPose2dInches(100, -80, 180);
        
         drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
 
@@ -78,42 +79,33 @@ public class RedLeftScoreTwoBalanceAuto extends AutoBase{
             new ScoreCommand(intake, arm, elevator, startNode == Node.MIDDLE_CUBE).withTimeout(
                 startNode == Node.MIDDLE_CUBE ? 0 : 0.5
             ),
-            backupPath.beforeStarting(new WaitCommand(0.5))
+            backupPath.beforeStarting(new WaitCommand(startNode == Node.MIDDLE_CUBE ? 0 : 0.5))
         );
         
         addCommands(retract);
 
         // Drive to approach cone
-        SwerveControllerCommand approachPickupPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig.withStartAndEndVelocity(2, 0.5), 
+        SwerveControllerCommand pickupPath = createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig.withStartVelocity(2), 
             getLastEndingPose(), 
-            approachPickUpPose,
+            pickUpPose,
             createRotation(0)
         );
 
         addCommands(
             new ParallelDeadlineGroup(
-                approachPickupPath,
+                pickupPath,
                 new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator),
                 new ArmOutCommand(arm),
                 new IntakeInCommand(intake)
             )
         );
 
-        // Drive to pickup cone
-        SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.slowTrajectoryConfig.withStartVelocity(0.5), 
-            getLastEndingPose(), 
-            pickUpPose,
-            createRotation(0)
-        );
-
-        addCommands(pickUpPath);
-
         addCommands(new ArmInCommand(arm));
 
         // Driving back to grid
-        SwerveControllerCommand driveBackPath = createSwerveCommand(
+        SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.slowTrajectoryConfig.withEndVelocity(2),
             getLastEndingPose(), 
             List.of(scorePathMidpoint, chargeStationMidpoint), 
             lineUpPose, 
@@ -123,65 +115,30 @@ public class RedLeftScoreTwoBalanceAuto extends AutoBase{
         addCommands(
             new ParallelDeadlineGroup(
                 driveBackPath,
-                new IntakeOutCommand(intake).beforeStarting(new WaitCommand(2.75))
+                new IntakeOutCommand(intake).beforeStarting(new WaitCommand(4))
             )
         );
 
         addCommands(new IntakeStopCommand(intake));
 
-        SwerveControllerCommand balancePath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.chargeStationTrajectoryConfig,
-            getLastEndingPose(), 
-            chargeStationPose, 
-            createRotation(180)
-        );
+        if (endChargeStation) {
+            SwerveControllerCommand balancePath = createSwerveTrajectoryCommand(
+                AutoTrajectoryConfig.chargeStationTrajectoryConfig.withStartVelocity(2),
+                getLastEndingPose(), 
+                chargeStationPose, 
+                createRotation(180)
+            );
+    
+            addCommands(balancePath);
 
-        addCommands(balancePath);
-        addCommands(new RunCommand(() -> drivetrain.xWheels(), drivetrain));
+            addCommands(
+                new ParallelDeadlineGroup(
+                    new MatchEndBlockCommand(),
+                    new NewChargeStationBalanceCommand(drivetrain)
+                )
+            );
 
-        // // In front of grid
-        // Pose2d endPose = new Pose2d(Units.inchesToMeters(16), Units.inchesToMeters(-67), Rotation2d.fromDegrees(0));
-        // SwerveControllerCommand scorePath = super.createSwerveCommand(
-        //     getLastEndingPose(), 
-        //     endPose, 
-        //     createRotation(180)
-        // );
-
-        // ParallelDeadlineGroup shootGroup = new ParallelDeadlineGroup(
-        //     scorePath, //deadline
-        //     new IntakeOutCommand(intake)
-        // );
-        
-        // addCommands(shootGroup);
-
-        // // turn to 0
-        // Pose2d endPose = new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(-67), Rotation2d.fromDegrees(0));
-        // SwerveControllerCommand spinPath = createSwerveTrajectoryCommand(
-        //     AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig,
-        //     getLastEndingPose(), 
-        //     endPose, 
-        //     createRotation(0)
-        // );
-
-        // ParallelDeadlineGroup spinGroup = new ParallelDeadlineGroup(
-        //     spinPath, //deadline
-        //     new ArmOutCommand(this.arm),
-        //     new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, this.elevator)
-        // );
-
-        // this.addCommands(spinGroup);
-
-        //     //going on charge station
-        //     startPose = endPose;
-        //     endPose = new Pose2d(Units.inchesToMeters(100), Units.inchesToMeters(-67), Rotation2d.fromDegrees(0));
-        //    SwerveControllerCommand onChargePath = super.createSwerveCommand(startPose, midpoint, endPose, createRotation(180));
-        
-        //         ParallelDeadlineGroup onChargeGroup = new ParallelDeadlineGroup(
-        //                 onChargePath, //deadline
-        //                 new IntakeStopCommand(this.intake)
-                        
-        //                 );  
-        //     this.addCommands(onChargeGroup);
-        //     this.addCommands(new ChargeStationBalanceCommand(this.drivetrain));
+            addCommands(new RunCommand(() -> { drivetrain.xWheels(); }, drivetrain));
+        }
     }
 }
