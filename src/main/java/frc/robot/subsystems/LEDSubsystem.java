@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -12,7 +11,7 @@ import frc.robot.Constants;
  * sent to the Arduino we used for controlling the patterns and colors
  */
 public class LEDSubsystem extends SubsystemBase {
-    private DigitalOutput codeChannel1, codeChannel2, codeChannel3, codeChannel4, codeChannel5;
+    private DigitalOutput codeChannel1, codeChannel2, codeChannel3, codeChannel4, codeChannel5, codeChannel6, codeChannel7, codeChannel8;
 
     private LEDStatusMode currentStatusMode;
     private LEDStatusMode currentDefaultStatusMode;
@@ -26,7 +25,9 @@ public class LEDSubsystem extends SubsystemBase {
         codeChannel3 = new DigitalOutput(Constants.LEDs.CHANNEL_3_PIN);
         codeChannel4 = new DigitalOutput(Constants.LEDs.CHANNEL_4_PIN);
         codeChannel5 = new DigitalOutput(Constants.LEDs.CHANNEL_5_PIN);
-
+        codeChannel6 = new DigitalOutput(Constants.LEDs.CHANNEL_6_PIN);
+        codeChannel7 = new DigitalOutput(Constants.LEDs.CHANNEL_7_PIN);
+        codeChannel8 = new DigitalOutput(Constants.LEDs.CHANNEL_8_PIN);
         robotDisabled = true;
 
         // SmartDashboard.putNumber("LED CODE", 0); // For manually inputting code to encode to DIO pins
@@ -62,6 +63,7 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         int code = 0;
+        System.out.println("Alliance" + DriverStation.getAlliance() + "*******************");
 
         if(!disableLEDs) {
                 if (currentStatusMode == null) {
@@ -92,14 +94,15 @@ public class LEDSubsystem extends SubsystemBase {
         // SmartDashboard.putBoolean("channel5", (code & 16) > 0);
 
         // Code for encoding the code to binary on the digitalOutput pins
+        System.out.println("Sending LED Code" + code + "************************");
         codeChannel1.set((code & 1) > 0);   // 2^0
         codeChannel2.set((code & 2) > 0);   // 2^1
         codeChannel3.set((code & 4) > 0);   // 2^2
         codeChannel4.set((code & 8) > 0);   // 2^3
         codeChannel5.set((code & 16) > 0);  // 2^4
-
-        clearStatusMode(); // Clears status mode after every loop to make sure high priority status modes 
-        // don't stick around forever and everything trying to use it has to be activley setting the status mode
+        codeChannel6.set((code & 32) > 0);
+        codeChannel7.set((code & 64) > 0); 
+        codeChannel8.set((code & 128) > 0);       
     }
 
     public void setLEDStatusMode(LEDStatusMode statusMode) {
@@ -113,12 +116,12 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     // Disables LEDs (turns them off)
-    public void disable() {
+    public void disableLEDs() {
         disableLEDs = true;
     }
 
     // Enables LEDs (turns them on)
-    public void enable() {
+    public void enableLEDs() {
         disableLEDs = false;
     }
 

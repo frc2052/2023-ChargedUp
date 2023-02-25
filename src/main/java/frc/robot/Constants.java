@@ -139,6 +139,9 @@ public final class Constants {
         public static final int CHANNEL_3_PIN = 3; // 2^2
         public static final int CHANNEL_4_PIN = 4; // 2^3
         public static final int CHANNEL_5_PIN = 5; // 2^4
+        public static final int CHANNEL_6_PIN = 6; // 2^4
+        public static final int CHANNEL_7_PIN = 7; // 2^4
+        public static final int CHANNEL_8_PIN = 8; // 2^4
 
     }
 }

@@ -67,6 +67,7 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
+        LEDSubsystem.getInstance().enableLEDs();
         LEDSubsystem.getInstance().robotDisabled();
     }
 
@@ -95,6 +96,8 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.schedule();
         }
+
+        LEDSubsystem.getInstance().robotEnabled();
     }
 
     /** This function is called periodically during autonomous. */
@@ -114,6 +117,7 @@ public class Robot extends TimedRobot {
             autonomousCommand.cancel();
         }
 
+        LEDSubsystem.getInstance().robotEnabled();
         LEDSubsystem.getInstance().clearStatusMode();
     }
 

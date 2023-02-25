@@ -118,9 +118,9 @@ public class RobotContainer {
         /*
          * LED button bindings
          */
-        Trigger LEDOffButton = new Trigger(() -> controlPanel.getY() > 0.5);
-        Trigger LEDConeButton = new Trigger(() -> controlPanel.getX() > 0.5);
-        Trigger LEDCubeButton = new Trigger (() -> controlPanel.getX() < -0.5);
+        JoystickButton LEDOffButton = new JoystickButton(controlPanel, 9);
+        JoystickButton LEDConeButton = new JoystickButton(controlPanel, 1);
+        JoystickButton LEDCubeButton = new JoystickButton (controlPanel, 6);
 
         LEDOffButton.onTrue(new InstantCommand(() -> leds.setLEDStatusMode(LEDStatusMode.OFF)));
         LEDConeButton.onTrue(new InstantCommand(() -> leds.setLEDStatusMode(LEDStatusMode.CONE)));
