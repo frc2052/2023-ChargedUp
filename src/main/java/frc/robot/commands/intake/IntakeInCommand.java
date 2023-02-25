@@ -4,14 +4,23 @@
 
 package frc.robot.commands.intake;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeInCommand extends CommandBase {
+    private final BooleanSupplier armState;
+
     private final IntakeSubsystem intake;
 
-    /** Creates a new ReverseIntake. */
     public IntakeInCommand(IntakeSubsystem intake) {
+        this(() -> true, intake);
+    }
+
+    public IntakeInCommand(BooleanSupplier armState, IntakeSubsystem intake) {
+        this.armState = armState;
+       
         this.intake = intake;
 
         addRequirements(this.intake);
@@ -20,7 +29,11 @@ public class IntakeInCommand extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void execute() {
-        intake.intakeIn();
+        if (armState.getAsBoolean()) {
+            intake.intakeIn();
+        } else {
+            intake.slowIntakeIn();
+        }
     }
 
     @Override

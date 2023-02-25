@@ -514,7 +514,46 @@
         "showGrid": true,
         "hgap": 16.0,
         "vgap": 16.0,
-        "tiles": {}
+        "tiles": {
+          "3,0": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://photonvision_Port_1181_MJPEG_Server",
+              "_title": "photonvision_Port_1181_MJPEG_Server",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": 0,
+              "imageHeight": 0
+            }
+          },
+          "3,2": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://photonvision_Port_1182_MJPEG_Server",
+              "_title": "photonvision_Port_1182_MJPEG_Server",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": 0,
+              "imageHeight": 0
+            }
+          }
+        }
       }
     },
     {
@@ -549,7 +588,7 @@
               "_title": "SmartDashboard/Elevator Position"
             }
           },
-          "1,1": {
+          "5,3": {
             "size": [
               1,
               1
@@ -562,7 +601,7 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "5,3": {
+          "1,0": {
             "size": [
               2,
               1
@@ -630,9 +669,9 @@
               "_title": "/SmartDashboard/Pitch of Robot"
             }
           },
-          "2,0": {
+          "1,1": {
             "size": [
-              1,
+              2,
               1
             ],
             "content": {
@@ -641,29 +680,7 @@
               "_title": "SmartDashboard/DA: Node"
             }
           },
-          "1,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Odometry X",
-              "_title": "SmartDashboard/Odometry X"
-            }
-          },
-          "2,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Odometry Y",
-              "_title": "SmartDashboard/Odometry Y"
-            }
-          },
-          "1,0": {
+          "0,0": {
             "size": [
               1,
               1
@@ -677,9 +694,9 @@
               "Visuals/Show value": true
             }
           },
-          "2,1": {
+          "1,2": {
             "size": [
-              1,
+              2,
               1
             ],
             "content": {

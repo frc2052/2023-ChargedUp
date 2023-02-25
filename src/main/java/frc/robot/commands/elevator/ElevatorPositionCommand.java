@@ -31,6 +31,11 @@ public class ElevatorPositionCommand extends CommandBase {
         elevator.setPosition(position);
     }
 
+    @Override
+    public void end(boolean interupted) {
+        elevator.stop();
+    }
+
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {

@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.auto.robot;
+package frc.robot.auto.robot.blue;
 
 import java.util.List;
 
@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auto.AutoBase;
@@ -35,13 +34,13 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class LeftScoreOneBalanceAuto extends AutoBase {
+public class BlueLeftScoreOneBalanceAuto extends AutoBase {
 
 /*Score gamepiece, move and rotate to gamepiece, move and rotate (strafe) to grid, 
 shoot gamepiece (w/o stopping), go to chargestation */
 
   /** Creates a new scoretwoandbalence. */
-  public LeftScoreOneBalanceAuto(
+  public BlueLeftScoreOneBalanceAuto(
         Node startNode,
         boolean endChargeStation,
         DrivetrainSubsystem drivetrain, 

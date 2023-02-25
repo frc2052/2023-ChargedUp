@@ -10,7 +10,9 @@ import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
-import frc.robot.commands.drive.AprilTagDriveCommand;
+import frc.robot.auto.robot.MiddleScoreOneBalance;
+import frc.robot.auto.robot.red.RedLeftScoreOneBalanceAuto;
+import frc.robot.auto.robot.red.RedLeftScoreTwoBalanceAuto;
 import frc.robot.commands.drive.NewChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
@@ -23,8 +25,8 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PhotonVisionSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.PhotonVisionSubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
@@ -33,11 +35,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.auto.robot.LeftScoreOneBalanceAuto;
-import frc.robot.auto.robot.LeftScoreTwoBalanceAuto;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -90,7 +89,6 @@ public class RobotContainer {
                 drivetrain
             )
         );
-        elevator.setDefaultCommand(new RunCommand(() -> elevator.stop(), elevator));
 
         // Configure the trigger bindings
         configureBindings();
@@ -112,8 +110,8 @@ public class RobotContainer {
         Trigger autoBalance = new Trigger(() -> controlPanel.getY() > 0.5);
         autoBalance.whileTrue(new NewChargeStationBalanceCommand(drivetrain));
 
-        JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
-        aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
+        // JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
+        // aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
 
         /*
          * LED button bindings
@@ -131,10 +129,10 @@ public class RobotContainer {
         Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getX() < -0.5);
         elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator));
 
-        JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 11);
+        JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 12);
         elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
 
-        JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 12);
+        JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 10);
         elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
 
         JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 5);
@@ -145,7 +143,7 @@ public class RobotContainer {
 
         JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 4);
         manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
-        
+
         /*
          * Score button bindings
          */
@@ -161,8 +159,8 @@ public class RobotContainer {
         /*
          * Arm button bindings
          */
-        JoystickButton controlPanelIntakeArmToggle = new JoystickButton(controlPanel, 10);
-        JoystickButton driverIntakeArmToggle = new JoystickButton(driveJoystick, 1);
+        JoystickButton controlPanelIntakeArmToggle = new JoystickButton(controlPanel, 11);
+        JoystickButton driverIntakeArmToggle = new JoystickButton(driveJoystick, 6);
         driverIntakeArmToggle.or(controlPanelIntakeArmToggle).onTrue(new InstantCommand(() -> arm.toggleArm(), arm));
 
         /*
@@ -170,7 +168,7 @@ public class RobotContainer {
          */
         Trigger controlPanelIntakeInButton = new Trigger(() -> controlPanel.getX() > 0.5);
         JoystickButton driverIntakeInButton = new JoystickButton(driveJoystick, 3);
-        driverIntakeInButton.or(controlPanelIntakeInButton).whileTrue(new IntakeInCommand(intake));
+        driverIntakeInButton.or(controlPanelIntakeInButton).whileTrue(new IntakeInCommand(arm::isArmOut, intake));
         driverIntakeInButton.or(controlPanelIntakeInButton).onFalse(new IntakeStopCommand(intake));
         
         Trigger controlPanelIntakeOutButton = new Trigger(() -> controlPanel.getY() < -0.5);
@@ -211,7 +209,7 @@ public class RobotContainer {
             //     );
             
             case RED_LEFT_SCORE_ONE_BALANCE:
-                return new LeftScoreOneBalanceAuto(
+                return new RedLeftScoreOneBalanceAuto(
                     Dashboard.getInstance().getNode(), 
                     Dashboard.getInstance().endChargeStation(),
                     drivetrain, 
@@ -221,8 +219,17 @@ public class RobotContainer {
                 );
 
             case RED_LEFT_SCORE_TWO_BALANCE:
-                return new LeftScoreTwoBalanceAuto(
+                return new RedLeftScoreTwoBalanceAuto(
                     Dashboard.getInstance().getNode(),
+                    Dashboard.getInstance().endChargeStation(),
+                    drivetrain, 
+                    elevator, 
+                    intake, 
+                    arm
+                );
+
+            case MIDDLE_SCORE_ONE_BALANCE:
+                return new MiddleScoreOneBalance(
                     Dashboard.getInstance().endChargeStation(),
                     drivetrain, 
                     elevator, 

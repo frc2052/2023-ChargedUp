@@ -10,7 +10,6 @@ import frc.robot.subsystems.ElevatorSubsystem;
 public class ZeroElevator extends CommandBase {
     private final ElevatorSubsystem elevator;
 
-    /** Creates a new ZeroElevator. */
     public ZeroElevator(ElevatorSubsystem elevator) {
         this.elevator = elevator;
     }

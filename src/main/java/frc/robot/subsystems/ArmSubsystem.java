@@ -22,7 +22,7 @@ public class ArmSubsystem extends SubsystemBase {
             Constants.Arm.ARM_SOLENOID_IN_CHANNEL
         );
     }
-    
+
     public void toggleArm() {
         if (intakeSolenoid.get() == Value.kOff) {
             armOut();
@@ -37,5 +37,9 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void armOut() {
         intakeSolenoid.set(Value.kReverse);
+    }
+
+    public boolean isArmOut() {
+        return intakeSolenoid.get() == Value.kReverse;
     }
 }

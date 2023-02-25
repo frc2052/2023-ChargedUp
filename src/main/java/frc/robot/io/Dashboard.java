@@ -180,7 +180,8 @@ public class Dashboard {
         NO_AUTO("NO AUTO", "Description"),
         DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description"),
         RED_LEFT_SCORE_ONE_BALANCE("Red Left Score One Balance", "Description"),
-        RED_LEFT_SCORE_TWO_BALANCE("Red Left Score Two Balance", "Description");
+        RED_LEFT_SCORE_TWO_BALANCE("Red Left Score Two Balance", "Description"),
+        MIDDLE_SCORE_ONE_BALANCE("Middle Score One Bwe=alance", "Description");
 
 
         private final String name;

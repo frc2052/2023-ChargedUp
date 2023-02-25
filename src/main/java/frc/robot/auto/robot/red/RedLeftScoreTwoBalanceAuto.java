@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.auto.robot;
+package frc.robot.auto.robot.red;
 
 import java.util.List;
 
@@ -39,8 +39,8 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
  * Score gamepiece, move and rotate to pick up gamepiece, move and rotate (strafe) to grid, 
  * shoot gamepiece (w/o stopping), & go to chargestation.
  */
-public class LeftScoreTwoBalanceAuto extends AutoBase{
-    public LeftScoreTwoBalanceAuto(
+public class RedLeftScoreTwoBalanceAuto extends AutoBase{
+    public RedLeftScoreTwoBalanceAuto(
         Node startNode,
         boolean endChargeStation,
         DrivetrainSubsystem drivetrain, 
@@ -51,7 +51,7 @@ public class LeftScoreTwoBalanceAuto extends AutoBase{
         super(drivetrain, elevator, intake, arm);
 
         Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startNode), 0);
-        Translation2d chargeStationMidpoint = createTranslation2dInches(24, -2);
+        Translation2d chargeStationMidpoint = createTranslation2dInches(18, -6);
         Pose2d startPickUpPose = createPose2dInches(64, -4, 0);
         Pose2d pickUpPose = createPose2dInches(194, -16, 0);
         Translation2d scorePathMidpoint = createTranslation2dInches(108, -2);
@@ -102,7 +102,7 @@ public class LeftScoreTwoBalanceAuto extends AutoBase{
         );
 
         addCommands(new ArmInCommand(arm));
-
+        
         // Driving back to grid
         SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
             AutoTrajectoryConfig.slowTrajectoryConfig.withEndVelocity(2),

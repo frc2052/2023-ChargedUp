@@ -57,8 +57,8 @@ public final class Constants {
         public static final double BELT_MOTOR_D = 0;
 
         private static final int FALCON500_TICKS_PER_ROTATION = 2048;
-        public static final double BELT_MOTOR_CRUISE_VELOCITY = 4.0 * FALCON500_TICKS_PER_ROTATION;
-        public static final double BELT_MOTOR_MAX_ACCELERATION = 4.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final double BELT_MOTOR_CRUISE_VELOCITY = 5.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final double BELT_MOTOR_MAX_ACCELERATION = 5.0 * FALCON500_TICKS_PER_ROTATION;
         public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 500;
     }
 
@@ -69,6 +69,11 @@ public final class Constants {
 
     public static final class Intake {
         public static final int INTAKE_MOTOR_ID = 13;
+
+        public static final double INTAKE_IN_SPEED = 1.0;
+        public static final double INTAKE_IN_SLOW_SPEED = 0.3;
+        public static final double INTAKE_OUT_SPEED = -0.5;
+
 
         // Minimum allowable amps
         public static final double INTAKE_CRUISE_CURRENT_AMPS = 2.0;
