@@ -53,11 +53,12 @@ public class NewChargeStationBalanceCommand extends CommandBase {
   public void execute(){
     previousPitch = currentPitch;
     currentPitch = drivetrain.getNavx().getPitch();
-    boolean isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.3;
+    boolean isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.125;
+    boolean isLevel = Math.abs(drivetrain.getNavx().getPitch()) < 3;
 
-      if (!isDropping && !holding) {
+      if (!isDropping && !holding  && !isLevel) {
         drivetrain.drive(
-            Math.copySign(0.09, (double) -(drivetrain.getNavx().getPitch())),
+            Math.copySign(0.25, (double) -(drivetrain.getNavx().getPitch())),
             0,
             0, 
             false
@@ -67,6 +68,7 @@ public class NewChargeStationBalanceCommand extends CommandBase {
           if (balanceTimer.hasElapsed(1)){
               drivetrain.xWheels();
               holding = true;
+              isLevel = true;
           //if the balance timer has NOT started and the bot is dropping, start timer
           } else if (!(balanceTimer.hasElapsed(0.1)) && isDropping){
               balanceTimer.start();
@@ -78,6 +80,7 @@ public class NewChargeStationBalanceCommand extends CommandBase {
               balanceTimer.reset();
               holding = false;
               isDropping = false;
+              isLevel = false;
         }
         }
   }
