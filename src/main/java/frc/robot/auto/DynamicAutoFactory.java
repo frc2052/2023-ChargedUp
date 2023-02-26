@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
@@ -18,6 +19,7 @@ import frc.robot.Constants;
 import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.intake.IntakeInCommand;
+import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
@@ -29,6 +31,8 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PhotonVisionSubsystem;
+import frc.robot.subsystems.PhotonVisionSubsystem.TargetNotFoundException;
 
 /**
  * Generates auto path: score gamepiece, drive to pick up gamepiece, drive to grid, 
@@ -42,12 +46,14 @@ public class DynamicAutoFactory {
     private final ElevatorSubsystem elevator;
     private final IntakeSubsystem intake;
     private final ArmSubsystem arm;
+    private final PhotonVisionSubsystem vision;
 
-    public DynamicAutoFactory(DrivetrainSubsystem drivetrain,ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
+    public DynamicAutoFactory(DrivetrainSubsystem drivetrain,ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm, PhotonVisionSubsystem vision) {
         this.drivetrain = drivetrain;
         this.elevator = elevator;
         this.intake = intake;
         this.arm = arm;
+        this.vision = vision;
     }
 
     public SequentialCommandGroup getAuto(DynamicAutoConfiguration configuration) {
@@ -101,13 +107,13 @@ public class DynamicAutoFactory {
                     createRotation(0)
                 );
 
-                ParallelCommandGroup scoreAndBackUp = new ParallelCommandGroup(
+                ParallelCommandGroup scoreAndBackUpGroup = new ParallelCommandGroup(
                     initialToLaunchCommand,
                     new ScoreCommand(intake, arm, elevator).withTimeout(
                         configuration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5
                     )
                 );
-                addCommands(scoreAndBackUp);
+                addCommands(scoreAndBackUpGroup);
 
                 // Check to pick up another game piece as the first option from launch point.
                 if (configuration.getGamePiece() != GamePiece.NO_GAME_PIECE) {
@@ -138,6 +144,7 @@ public class DynamicAutoFactory {
                             0
                         );
 
+                        // Drive to score gamepiece
                         SwerveControllerCommand gamePiecetoScoreCommand = createSwerveCommand(
                             getLastEndingPose(),
                             List.of(
@@ -147,17 +154,22 @@ public class DynamicAutoFactory {
                             scorePose,
                             createRotation(180)
                         );
-                        addCommands(gamePiecetoScoreCommand);
+                        
+                        // When in range of the target eject the gamepiece into hybrid nodes
+                        ParallelDeadlineGroup gamePieceAndScoreGroup = new ParallelDeadlineGroup(
+                            gamePiecetoScoreCommand, 
+                            new RunCommand(() -> {
+                                try {
+                                    // Outtake within 1.0 meters of distance to grid
+                                    if (PhotonVisionSubsystem.getDistanceToTargetMeters(vision.getTarget()) < 1.0) {
+                                        intake.intakeOut();
+                                    }
+                                } catch (TargetNotFoundException e) { }
+                            }, intake, vision)
+                        );
+                        addCommands(gamePieceAndScoreGroup);
 
-                        if (configuration.getScoreNode() == Node.MIDDLE_CUBE) {
-                            addCommands(new MidScoreCommand(elevator, arm));
-                        } else {
-                            addCommands(new TopScoreCommand(elevator, arm));
-                        }
-
-                        addCommands(new ScoreCommand(intake, arm, elevator).withTimeout(
-                            configuration.getScoreNode() == Node.MIDDLE_CUBE ? 0 : 0.5
-                        ));
+                        addCommands(new IntakeStopCommand(intake));
 
                         if (configuration.endChargeStation()) {
                             Pose2d chargeStationNearLineUpPose = createPose2dInches(

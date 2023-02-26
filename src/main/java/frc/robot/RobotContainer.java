@@ -82,7 +82,7 @@ public class RobotContainer {
 
         new PneumaticsSubsystem();
 
-        autoFactory = new DynamicAutoFactory(drivetrain, elevator, intake, arm);
+        autoFactory = new DynamicAutoFactory(drivetrain, elevator, intake, arm, vision);
 
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
