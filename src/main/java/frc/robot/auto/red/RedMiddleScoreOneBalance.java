@@ -13,18 +13,21 @@ import frc.robot.auto.AutoTrajectoryConfig;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
+import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/**
+ * Middle score gamepiece, drive to chargestation, and balance.
+ */
 public class RedMiddleScoreOneBalance extends AutoBase {
+    private final Node startingNode;
     private final boolean endChargeStation;
 
     public RedMiddleScoreOneBalance(
+        Node startingNode,
         boolean endChargeStation,
         DrivetrainSubsystem drivetrain, 
         ElevatorSubsystem elevator, 
@@ -33,15 +36,26 @@ public class RedMiddleScoreOneBalance extends AutoBase {
     ) {
         super(drivetrain, elevator, intake, arm);
 
+        this.startingNode = startingNode;
         this.endChargeStation = endChargeStation;
     }
     
     public void init() {
-        Pose2d initialPose = createPose2dInches(Constants.Auto.ROBOT_LENGTH_INCHES / 2, 0, 0);
-        Pose2d lineUpPose = createPose2dInches(Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_INCHES / 2, 0, 0);
+        Pose2d initialPose = createPose2dInches(
+            Constants.Auto.ROBOT_LENGTH_INCHES / 2, 
+            // Recenter offset to zero is the middle node
+            getLeftStartingYOffsetInches(startingNode) - (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES), 
+            0
+        );
+        Pose2d lineUpPose = createPose2dInches(
+            Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_INCHES / 2, 
+            0, 
+            0
+        );
         Pose2d chargeStationPose = createPose2dInches(
             Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_INCHES + (Constants.Auto.CHARGE_STATION_DEPTH_INCHES / 2), 
-            0, 0
+            0, 
+            0
         );
 
         drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(0)));
