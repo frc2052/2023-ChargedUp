@@ -14,6 +14,7 @@ import frc.robot.auto.robot.MiddleScoreOneBalance;
 import frc.robot.auto.robot.red.RedLeftScoreOneBalanceAuto;
 import frc.robot.auto.robot.red.RedLeftScoreTwoBalanceAuto;
 import frc.robot.commands.drive.NewChargeStationBalanceCommand;
+import frc.robot.commands.drive.AprilTagAlignCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
@@ -57,7 +58,6 @@ public class RobotContainer {
     private final ArmSubsystem arm;
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
-    private final LEDSubsystem leds;
     private final PhotonVisionSubsystem vision;
 
     /**
@@ -72,7 +72,6 @@ public class RobotContainer {
         arm = new ArmSubsystem();
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
-        leds = LEDSubsystem.getInstance();
         vision = new PhotonVisionSubsystem();
 
         new PneumaticsSubsystem();
@@ -110,8 +109,8 @@ public class RobotContainer {
         Trigger autoBalance = new Trigger(() -> controlPanel.getY() > 0.5);
         autoBalance.whileTrue(new NewChargeStationBalanceCommand(drivetrain));
 
-        // JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
-        // aprilTagDriveButton.whileTrue(new AprilTagDriveCommand(drivetrain, vision));
+        JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
+        aprilTagDriveButton.whileTrue(new AprilTagAlignCommand(drivetrain, vision));
 
         /*
          * LED button bindings
@@ -120,47 +119,46 @@ public class RobotContainer {
         JoystickButton LEDConeButton = new JoystickButton(controlPanel, 1);
         JoystickButton LEDCubeButton = new JoystickButton (controlPanel, 6);
 
-        LEDOffButton.onTrue(new InstantCommand(() -> leds.setLEDStatusMode(LEDStatusMode.OFF)));
-        LEDConeButton.onTrue(new InstantCommand(() -> leds.setLEDStatusMode(LEDStatusMode.CONE)));
-        LEDCubeButton.onTrue(new InstantCommand(() -> leds.setLEDStatusMode(LEDStatusMode.CUBE)));
+        LEDOffButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
+        LEDConeButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CONE)));
+        LEDCubeButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CUBE)));
+
         /*
          * Elevator button bindings
          */
         Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getX() < -0.5);
-        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator));
-
         JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 12);
-        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
-
         JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 10);
-        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
-
         JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 5);
+        
+        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator));
+        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
+        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
         elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
 
         JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 3);
-        manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
-
         JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 4);
+
+        manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
         manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
 
         /*
          * Score button bindings
          */
         JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 7);
-        elevatorMidScoreButton.onTrue(new MidScoreCommand(elevator, arm));
-
         JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 8);
-        elevatorTopScoreButton.onTrue(new TopScoreCommand(elevator, arm));
-
         JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
+        
         scoreButton.whileTrue(new ScoreCommand(intake, arm, elevator));
+        elevatorMidScoreButton.onTrue(new MidScoreCommand(elevator, arm));
+        elevatorTopScoreButton.onTrue(new TopScoreCommand(elevator, arm));
 
         /*
          * Arm button bindings
          */
         JoystickButton controlPanelIntakeArmToggle = new JoystickButton(controlPanel, 11);
         JoystickButton driverIntakeArmToggle = new JoystickButton(driveJoystick, 6);
+
         driverIntakeArmToggle.or(controlPanelIntakeArmToggle).onTrue(new InstantCommand(() -> arm.toggleArm(), arm));
 
         /*
@@ -168,17 +166,15 @@ public class RobotContainer {
          */
         Trigger controlPanelIntakeInButton = new Trigger(() -> controlPanel.getX() > 0.5);
         JoystickButton driverIntakeInButton = new JoystickButton(driveJoystick, 3);
+
         driverIntakeInButton.or(controlPanelIntakeInButton).whileTrue(new IntakeInCommand(arm::isArmOut, intake));
         driverIntakeInButton.or(controlPanelIntakeInButton).onFalse(new IntakeStopCommand(intake));
         
         Trigger controlPanelIntakeOutButton = new Trigger(() -> controlPanel.getY() < -0.5);
         JoystickButton driverIntakeOutButton = new JoystickButton(driveJoystick, 2);
+
         driverIntakeOutButton.or(controlPanelIntakeOutButton).whileTrue(new IntakeOutCommand(intake));
         driverIntakeOutButton.or(controlPanelIntakeOutButton).onFalse(new IntakeStopCommand(intake));
-
-        /*
-         * 
-         */
     }
 
     public void zeroOdometry() {

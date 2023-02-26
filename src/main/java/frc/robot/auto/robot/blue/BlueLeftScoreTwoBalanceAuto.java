@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auto.AutoBase;
 import frc.robot.auto.AutoTrajectoryConfig;
-import frc.robot.commands.MatchEndBlockCommand;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.drive.NewChargeStationBalanceCommand;
@@ -130,13 +129,7 @@ public class BlueLeftScoreTwoBalanceAuto extends AutoBase{
     
             addCommands(balancePath);
 
-            addCommands(
-                new ParallelDeadlineGroup(
-                    new MatchEndBlockCommand(),
-                    new NewChargeStationBalanceCommand(drivetrain)
-                )
-            );
-
+            addCommands(new NewChargeStationBalanceCommand(drivetrain));
             addCommands(new RunCommand(() -> { drivetrain.xWheels(); }, drivetrain));
         }
     }
