@@ -170,6 +170,7 @@ public class Dashboard {
     public static enum Autos {
         NO_AUTO("NO AUTO", "NO AUTO"),
         DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description"),
+        TEST_LEFT_SCORE_ONE_BALANCE("Test Score One Balance", ""),
         RED_LEFT_SCORE_ONE_BALANCE("Red Left Score One Balance", "Description"),
         RED_LEFT_SCORE_TWO_BALANCE("Red Left Score Two Balance", "Description"),
         MIDDLE_SCORE_ONE_BALANCE("Middle Score One Bwe=alance", "Description");

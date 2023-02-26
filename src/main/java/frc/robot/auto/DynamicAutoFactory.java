@@ -6,6 +6,7 @@ package frc.robot.auto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -85,18 +86,28 @@ public class DynamicAutoFactory {
 
                 drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
 
-                addCommands(new TopScoreCommand(elevator, arm));
-                addCommands(new ScoreCommand(intake, arm, elevator).withTimeout(1));
+                if (configuration.getStartingNode() == Node.MIDDLE_CUBE) {
+                    addCommands(new MidScoreCommand(elevator, arm));
+                } else {
+                    addCommands(new TopScoreCommand(elevator, arm));
+                }
 
                 // Drive to launch point where other commands can be carried out.
                 SwerveControllerCommand initialToLaunchCommand = createSwerveTrajectoryCommand(
                     AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(2), 
                     initialPose, 
-                    List.of(nearChargeStationInterpolationPoint),
+                    List.of(nearChargeStationInterpolationPoint, farChargeStationInterpolationPoint),
                     launchPose, 
                     createRotation(0)
                 );
-                addCommands(initialToLaunchCommand);
+
+                ParallelCommandGroup scoreAndBackUp = new ParallelCommandGroup(
+                    initialToLaunchCommand,
+                    new ScoreCommand(intake, arm, elevator).withTimeout(
+                        configuration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5
+                    )
+                );
+                addCommands(scoreAndBackUp);
 
                 // Check to pick up another game piece as the first option from launch point.
                 if (configuration.getGamePiece() != GamePiece.NO_GAME_PIECE) {
@@ -138,8 +149,15 @@ public class DynamicAutoFactory {
                         );
                         addCommands(gamePiecetoScoreCommand);
 
-                        addCommands(new MidScoreCommand(elevator, arm));
-                        addCommands(new ScoreCommand(intake, arm, elevator).withTimeout(1));
+                        if (configuration.getScoreNode() == Node.MIDDLE_CUBE) {
+                            addCommands(new MidScoreCommand(elevator, arm));
+                        } else {
+                            addCommands(new TopScoreCommand(elevator, arm));
+                        }
+
+                        addCommands(new ScoreCommand(intake, arm, elevator).withTimeout(
+                            configuration.getScoreNode() == Node.MIDDLE_CUBE ? 0 : 0.5
+                        ));
 
                         if (configuration.endChargeStation()) {
                             Pose2d chargeStationNearLineUpPose = createPose2dInches(

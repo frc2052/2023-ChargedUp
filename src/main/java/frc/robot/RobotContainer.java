@@ -23,7 +23,10 @@ import frc.robot.commands.elevator.ElevatorManualUpCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
+import frc.robot.io.Dashboard.Channel;
 import frc.robot.io.Dashboard.DriveMode;
+import frc.robot.io.Dashboard.GamePiece;
+import frc.robot.io.Dashboard.Grid;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -61,6 +64,8 @@ public class RobotContainer {
     private final ElevatorSubsystem elevator;
     private final PhotonVisionSubsystem vision;
 
+    private final DynamicAutoFactory autoFactory;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -76,6 +81,8 @@ public class RobotContainer {
         vision = new PhotonVisionSubsystem();
 
         new PneumaticsSubsystem();
+
+        autoFactory = new DynamicAutoFactory(drivetrain, elevator, intake, arm);
 
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
@@ -191,7 +198,7 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         switch (Dashboard.getInstance().getAuto()) {
             case DYNAMIC_AUTO_FACTORY:
-                return new DynamicAutoFactory(drivetrain, elevator, intake, arm).getAuto(
+                return autoFactory.getAuto(
                     new DynamicAutoConfiguration(
                         Dashboard.getInstance().getStartingGrid(), 
                         Dashboard.getInstance().getStartingNode(),
@@ -204,6 +211,20 @@ public class RobotContainer {
                     )
                 );
             
+            case TEST_LEFT_SCORE_ONE_BALANCE:
+                return autoFactory.getAuto(
+                    new DynamicAutoConfiguration(
+                        Grid.LEFT_GRID, 
+                        Dashboard.getInstance().getStartingNode(),
+                        Channel.LEFT_CHANNEL,
+                        GamePiece.FAR_LEFT_GAME_PIECE, 
+                        false, 
+                        null, 
+                        null,
+                        Dashboard.getInstance().endChargeStation()
+                    )
+                );
+
             case RED_LEFT_SCORE_ONE_BALANCE:
                 return new RedLeftScoreOneBalanceAuto(
                     Dashboard.getInstance().getStartingNode(), 
