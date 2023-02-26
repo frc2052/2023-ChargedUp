@@ -13,7 +13,7 @@ import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.auto.DynamicAutoConfiguration;
 import frc.robot.auto.DynamicAutoFactory;
 import frc.robot.auto.red.RedMiddleScoreOneBalance;
-import frc.robot.auto.red.RedLeftScoreOneBalanceAuto;
+import frc.robot.auto.red.RedScoreOneBalanceAuto;
 import frc.robot.auto.red.RedLeftScoreTwoBalanceAuto;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.AprilTagAlignCommand;
@@ -226,7 +226,8 @@ public class RobotContainer {
                 );
 
             case RED_LEFT_SCORE_ONE_BALANCE:
-                return new RedLeftScoreOneBalanceAuto(
+                return new RedScoreOneBalanceAuto(
+                    Dashboard.getInstance().getStartingGrid(), 
                     Dashboard.getInstance().getStartingNode(), 
                     Dashboard.getInstance().endChargeStation(),
                     drivetrain, 
@@ -237,6 +238,7 @@ public class RobotContainer {
 
             case RED_LEFT_SCORE_TWO_BALANCE:
                 return new RedLeftScoreTwoBalanceAuto(
+                    Dashboard.getInstance().getStartingGrid(), 
                     Dashboard.getInstance().getStartingNode(),
                     Dashboard.getInstance().endChargeStation(),
                     drivetrain, 

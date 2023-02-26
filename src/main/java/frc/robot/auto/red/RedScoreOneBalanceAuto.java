@@ -24,6 +24,7 @@ import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
+import frc.robot.io.Dashboard.Grid;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -32,14 +33,16 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 /**
- * Right side score gamepiece, drive to pick up gamepiece, drive to chargestation, and balance.
+ * Left side score gamepiece, drive to pick up gamepiece, drive to chargestation, and balance.
  */
-public class RedRightScoreOneBalanceAuto extends AutoBase {
+public class RedScoreOneBalanceAuto extends AutoBase {
+    private final Grid startGrid;
     private final Node startNode;
     private final boolean endChargeStation;
 
     /** Creates a new scoretwoandbalence. */
-    public RedRightScoreOneBalanceAuto(
+    public RedScoreOneBalanceAuto(
+        Grid startGrid,
         Node startNode,
         boolean endChargeStation,
         DrivetrainSubsystem drivetrain, 
@@ -49,19 +52,20 @@ public class RedRightScoreOneBalanceAuto extends AutoBase {
     ) {
         super(drivetrain, elevator, intake, arm);
 
+        this.startGrid = startGrid;
         this.startNode = startNode;
         this.endChargeStation = endChargeStation;
     }
 
     public void init() {
-        Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startNode), 0);
-        Translation2d chargeStationMidpoint = createTranslation2dInches(18, 6);
-        Pose2d startPickUpPose = createPose2dInches(64, 4, 0);
-        Pose2d approachPickUpPose = createPose2dInches(180, 12, 0);
-        Pose2d pickUpPose = createPose2dInches(195, 12, 0);
-        
-        Pose2d lineUpPose = createPose2dInches(170, 74, 180);
-        Pose2d chargeStationPose = createPose2dInches(60, 74, 180);
+        double flip = startGrid == Grid.LEFT_GRID ? -1.0 : 1.0;
+
+        Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startNode) * flip, 0);
+        Translation2d chargeStationMidpoint = createTranslation2dInches(18, 6 * flip);
+        Pose2d startPickUpPose = createPose2dInches(64, 4 * flip, 0);
+        Pose2d pickUpPose = createPose2dInches(194, 16 * flip, 0);
+        Pose2d lineUpPose = createPose2dInches(170, 74 * flip, 180);
+        Pose2d chargeStationPose = createPose2dInches(60, 74 * flip, 180);
 
         drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
 
@@ -80,39 +84,29 @@ public class RedRightScoreOneBalanceAuto extends AutoBase {
             createRotation(0)
         );
 
-        ParallelCommandGroup retract = new ParallelCommandGroup(
+        ParallelCommandGroup retractGroup = new ParallelCommandGroup(
             new ScoreCommand(intake, arm, elevator, startNode == Node.MIDDLE_CUBE).withTimeout(
                 startNode == Node.MIDDLE_CUBE ? 0 : 0.5
             ),
             backupPath.beforeStarting(new WaitCommand(0.5))
         );
-        
-        addCommands(retract);
+        addCommands(retractGroup);
 
         // Drive to approach cone
-        SwerveControllerCommand approachPickupPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig.withStartAndEndVelocity(2, 0.5), 
-            getLastEndingPose(), 
-            approachPickUpPose,
-            createRotation(0)
-        );
-
-        addCommands(new ParallelDeadlineGroup(
-            approachPickupPath,
-            new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator),
-            new ArmOutCommand(arm),
-            new IntakeInCommand(intake)
-        ));
-
-        // Drive to pickup cone
-        SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.defaultTrajectoryConfig.withStartVelocity(0.5), 
+        SwerveControllerCommand pickupPath = createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig.withStartVelocity(2), 
             getLastEndingPose(), 
             pickUpPose,
             createRotation(0)
         );
 
-        addCommands(pickUpPath);
+        ParallelDeadlineGroup pickUpGroup = new ParallelDeadlineGroup(
+            pickupPath,
+            new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator),
+            new ArmOutCommand(arm),
+            new IntakeInCommand(intake)
+        );
+        addCommands(pickUpGroup);
         addCommands(new ArmInCommand(arm));
 
         if (endChargeStation) {
@@ -135,6 +129,7 @@ public class RedRightScoreOneBalanceAuto extends AutoBase {
             );
         
             addCommands(onChargePath);
+            
             addCommands(new IntakeStopCommand(intake));
             addCommands(new ChargeStationBalanceCommand(drivetrain));
         }
