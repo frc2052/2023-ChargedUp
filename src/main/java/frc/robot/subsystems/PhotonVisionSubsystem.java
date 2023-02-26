@@ -67,12 +67,11 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         if (latestResult.hasTargets()) {
             //SmartDashboard.putNumber("TAG ID", latestResult.getBestTarget().getFiducialId());
             
-            try {
-                System.out.println(getTranslationRobotToTag(latestResult.getBestTarget()));
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            // try {
+            //     System.out.println(getTranslationRobotToTag(latestResult.getBestTarget()));
+            // } catch (IOException e) {
+            //     e.printStackTrace();
+            // }
         }
     }
 

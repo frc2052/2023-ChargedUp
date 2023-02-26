@@ -94,13 +94,14 @@ public class Dashboard {
         }
         enterChannelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
         SmartDashboard.putData("DA: Enter Channel", enterChannelChooser);
+
+        SmartDashboard.putBoolean("DA: End Charge Station", true);
     }
 
     // updates dashboard with needed information
     public void updateDashboard() {
-        SmartDashboard.putString("Auto Description", getAuto().description);
+        // SmartDashboard.putString("Auto Description", getAuto().description);
         SmartDashboard.putBoolean("DA: Score Game Piece", false);
-        SmartDashboard.putBoolean("DA: End Charge Station", false);
     }
 
     public boolean getScoreGamePiece() {
@@ -108,7 +109,7 @@ public class Dashboard {
     }
 
     public boolean endChargeStation(){
-        return SmartDashboard.getBoolean("DA: End Charge Station", false);
+        return SmartDashboard.getBoolean("DA: End Charge Station", true);
     }
 
     public <V> void putData(String key, V value) {
@@ -179,7 +180,8 @@ public class Dashboard {
         NO_AUTO("NO AUTO", "Description"),
         DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description"),
         RED_LEFT_SCORE_ONE_BALANCE("Red Left Score One Balance", "Description"),
-        RED_LEFT_SCORE_TWO_BALANCE("Red Left Score Two Balance", "Description");
+        RED_LEFT_SCORE_TWO_BALANCE("Red Left Score Two Balance", "Description"),
+        MIDDLE_SCORE_ONE_BALANCE("Middle Score One Bwe=alance", "Description");
 
 
         private final String name;

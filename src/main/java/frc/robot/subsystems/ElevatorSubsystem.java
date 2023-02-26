@@ -71,6 +71,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setPosition(ElevatorPosition elevatorPosition) {
+        if (currentPosition == elevatorPosition) {
+            return;
+        }
+        
         previousPosition = currentPosition;
         currentPosition = elevatorPosition;
         
@@ -124,9 +128,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         STARTING(0),
         FLOOR_CUBE(7200),
         FLOOR_CONE(20000),
-        BABY_BIRD(13000),
+        BABY_BIRD(18000),
         MID_SCORE(92000),
-        TOP_SCORE(125000);
+        TOP_SCORE(127500);
 
         private final int positionTicks;
 

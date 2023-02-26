@@ -57,8 +57,8 @@ public final class Constants {
         public static final double BELT_MOTOR_D = 0;
 
         private static final int FALCON500_TICKS_PER_ROTATION = 2048;
-        public static final double BELT_MOTOR_CRUISE_VELOCITY = 4.0 * FALCON500_TICKS_PER_ROTATION;
-        public static final double BELT_MOTOR_MAX_ACCELERATION = 4.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final double BELT_MOTOR_CRUISE_VELOCITY = 5.0 * FALCON500_TICKS_PER_ROTATION;
+        public static final double BELT_MOTOR_MAX_ACCELERATION = 5.0 * FALCON500_TICKS_PER_ROTATION;
         public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 500;
     }
 
@@ -70,10 +70,15 @@ public final class Constants {
     public static final class Intake {
         public static final int INTAKE_MOTOR_ID = 13;
 
+        public static final double INTAKE_IN_SPEED = 1.0;
+        public static final double INTAKE_IN_SLOW_SPEED = 0.3;
+        public static final double INTAKE_OUT_SPEED = -0.5;
+
+
         // Minimum allowable amps
         public static final double INTAKE_CRUISE_CURRENT_AMPS = 2.0;
-        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 8.0;
-        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.20;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 10.0;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.25;
     }
     
     public static final class AutoBalance {
@@ -130,5 +135,18 @@ public final class Constants {
         public static final double DISTANCE_BETWEEN_GAME_PIECES_METERS = Units.feetToMeters(4);
         public static final double DISTANCE_WALL_TO_GAME_PIECE_METERS = Units.inchesToMeters(36.25);
         public static final double FIELD_WIDTH = Units.feetToMeters(26.291667);
+    }
+
+    public static final class LEDs {
+        // For binary arduino code output
+        public static final int CHANNEL_1_PIN = 1; // 2^0
+        public static final int CHANNEL_2_PIN = 2; // 2^1
+        public static final int CHANNEL_3_PIN = 3; // 2^2
+        public static final int CHANNEL_4_PIN = 4; // 2^3
+        public static final int CHANNEL_5_PIN = 5; // 2^4
+        public static final int CHANNEL_6_PIN = 6; // 2^4
+        public static final int CHANNEL_7_PIN = 7; // 2^4
+        public static final int CHANNEL_8_PIN = 8; // 2^4
+
     }
 }

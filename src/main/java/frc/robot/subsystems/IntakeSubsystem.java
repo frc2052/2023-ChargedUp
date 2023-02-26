@@ -50,11 +50,17 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void intakeIn() {
-        intakeMotor.set(ControlMode.PercentOutput, 0.8);
+        intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SPEED);
+        
+        System.out.println("Intaking in!!!");
     }
     
+    public void slowIntakeIn() {
+        intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SLOW_SPEED);
+    }
+
     public void intakeOut() {
-        intakeMotor.set(ControlMode.PercentOutput, -0.5);
+        intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_OUT_SPEED);
     }
 
     public void stop() {
