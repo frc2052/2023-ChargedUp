@@ -10,83 +10,76 @@ import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class NewChargeStationBalanceCommand extends CommandBase {
+    private DrivetrainSubsystem drivetrain;
+    private boolean holding;
+    private Timer balanceTimer;
 
-  private DrivetrainSubsystem drivetrain;
-  private boolean holding;
-  private Timer balanceTimer;
+    private double previousPitch;
+    private double currentPitch;
 
-  private double previousPitch;
-  private double currentPitch;
+    /** Creates a new NewChargeStationAutoBalance. */
+    public NewChargeStationBalanceCommand(DrivetrainSubsystem drivetrain) {
+        this.drivetrain = drivetrain;
 
-  /** Creates a new NewChargeStationAutoBalance. */
-  public NewChargeStationBalanceCommand(
-    DrivetrainSubsystem drivetrain) {
+        balanceTimer = new Timer();
+        
+        addRequirements(drivetrain);
+    }
 
-        System.out.println("NEW NewChargeStationBalanceCommand ************************* ");
+    public void reset() {
+        holding = false;
+        previousPitch = 0;
+        currentPitch = 0;
+        balanceTimer.stop();
+        balanceTimer.reset();
+    }
 
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        holding = false;
+        previousPitch = 0;
+        currentPitch = 0;
+    }
 
-    balanceTimer = new Timer();
-    this.drivetrain = drivetrain;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(drivetrain);
-  }
+    @Override
+    public void execute(){
+        previousPitch = currentPitch;
+        currentPitch = drivetrain.getNavx().getPitch();
+        boolean isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.125;
+        boolean isLevel = Math.abs(drivetrain.getNavx().getPitch()) < 3;
 
-  public void reset() {
-    holding = false;
-    previousPitch = 0;
-    currentPitch = 0;
-    balanceTimer.stop();
-    balanceTimer.reset();
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    holding = false;
-    previousPitch = 0;
-    currentPitch = 0;
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-
-  @Override
-  public void execute(){
-    previousPitch = currentPitch;
-    currentPitch = drivetrain.getNavx().getPitch();
-    boolean isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.125;
-    boolean isLevel = Math.abs(drivetrain.getNavx().getPitch()) < 3;
-
-      if (!isDropping && !holding  && !isLevel) {
-        drivetrain.drive(
-            Math.copySign(0.2, (double) -(drivetrain.getNavx().getPitch())),
-            0,
-            0, 
-            false
-        );
-      } else {
-          //if balance timer has gone for 2 seconds, x the wheels
-          if (balanceTimer.hasElapsed(1)){
-              drivetrain.xWheels();
-              holding = true;
-              isLevel = true;
-          //if the balance timer has NOT started and the bot is dropping, start timer
-          } else if (!(balanceTimer.hasElapsed(0.1)) && isDropping){
-              balanceTimer.start();
-          } else if (!balanceTimer.hasElapsed(1)){
-            //do nothing still dropping
-          //if the pitch changes to greater than the tolerance, stop and reset the balance timer
-          } else if ((Math.abs(drivetrain.getNavx().getPitch())) > Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES){
-              balanceTimer.stop();
-              balanceTimer.reset();
-              holding = false;
-              isDropping = false;
-              isLevel = false;
+        if (!isDropping && !holding && !isLevel) {
+            drivetrain.drive(
+                Math.copySign(0.2, (double) -(drivetrain.getNavx().getPitch())),
+                0,
+                0, 
+                false
+            );
+        } else {
+            //if balance timer has gone for 2 seconds, x the wheels
+            if (balanceTimer.hasElapsed(1)) {
+                drivetrain.xWheels();
+                holding = true;
+                isLevel = true;
+            //if the balance timer has NOT started and the bot is dropping, start timer
+            } else if (!(balanceTimer.hasElapsed(0.1)) && isDropping) {
+                balanceTimer.start();
+            } else if (!balanceTimer.hasElapsed(1)) {
+                //do nothing still dropping
+            //if the pitch changes to greater than the tolerance, stop and reset the balance timer
+            } else if ((Math.abs(drivetrain.getNavx().getPitch())) > Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES) {
+                balanceTimer.stop();
+                balanceTimer.reset();
+                holding = false;
+                isDropping = false;
+                isLevel = false;
+            }
         }
-        }
-  }
+    }
 
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }

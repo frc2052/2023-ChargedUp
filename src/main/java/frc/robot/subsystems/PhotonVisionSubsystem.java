@@ -5,9 +5,7 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
-import java.util.Optional;
 
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
@@ -18,139 +16,93 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.io.Dashboard;
 
 public class PhotonVisionSubsystem extends SubsystemBase {
     private final PhotonCamera camera;
-    private PhotonPoseEstimator poseEstimator;
 
-    private AprilTagFieldLayout fieldLayout;
-
-    private PhotonPipelineResult latestResult;
+    private final PhotonPoseEstimator poseEstimator;
+    private static AprilTagFieldLayout fieldLayout;
     
+    private final Timer driveModeResetTimer;
+
     public PhotonVisionSubsystem() {
         camera = new PhotonCamera(Constants.Camera.CAMERA_NAME);
 
         try {
             fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-
-            poseEstimator = new PhotonPoseEstimator(
-                fieldLayout,
-                PoseStrategy.AVERAGE_BEST_TARGETS, 
-                camera,
-                Constants.Camera.CAMERA_POSITION_METERS
-            );
         } catch (IOException e) {
             DriverStation.reportError(e.getMessage(), e.getStackTrace());
         }
 
-        camera.setDriverMode(false);
+        poseEstimator = new PhotonPoseEstimator(
+            fieldLayout,
+            PoseStrategy.AVERAGE_BEST_TARGETS, 
+            camera,
+            Constants.Camera.CAMERA_POSITION_METERS
+        );
+
+        camera.setDriverMode(true);
         camera.setPipelineIndex(0);
 
         camera.setLED(VisionLEDMode.kOff);
+
+        driveModeResetTimer = new Timer();
     }
 
     @Override
     public void periodic() {
-        latestResult = camera.getLatestResult();
-
-        SmartDashboard.putBoolean("Camera Connected", camera.isConnected());
-
-        if (latestResult.hasTargets()) {
-            //SmartDashboard.putNumber("TAG ID", latestResult.getBestTarget().getFiducialId());
-            
-            // try {
-            //     System.out.println(getTranslationRobotToTag(latestResult.getBestTarget()));
-            // } catch (IOException e) {
-            //     e.printStackTrace();
-            // }
+        if (driveModeResetTimer.get() >= 1.0) {
+            camera.setDriverMode(true);
         }
-    }
 
-    public boolean hasTargets() {
-        return latestResult.hasTargets();
+        Dashboard.getInstance().putData("Camera Connected", camera.isConnected());
     }
 
     public PhotonTrackedTarget getTarget() throws TargetNotFoundException {
-        if (!hasTargets()) {
+        camera.setDriverMode(false);
+        driveModeResetTimer.reset();
+
+        PhotonPipelineResult result = camera.getLatestResult();
+
+        if (!result.hasTargets()) {
             // If there aren't any targets stop any further vision processing.
             throw new TargetNotFoundException();
         }
-        return latestResult.getBestTarget();
+
+        return result.getBestTarget();
     }
 
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d previousEstimatedRobotPose) {
-        if (poseEstimator == null) {
-            return Optional.empty();
-        }
-        
-            poseEstimator.setReferencePose(previousEstimatedRobotPose);
-        return poseEstimator.update();
-    }
-
-    public static double getHorizontalOffsetDegrees(PhotonTrackedTarget target) {
-        return target.getYaw();
-    }
-
-    /**
-     * @return Estimated height from the ground to the center of the april tag in meters.
-     */
-    public static double getTargetHeightFromGroundMeters(PhotonTrackedTarget target) {
-        // Special case for april tags mounted in the loading zone,
-        // which are higher than those in the community.
-        if (target.getFiducialId() == 4 || target.getFiducialId() == 5) {
-            return Constants.Camera.LOADING_ZONE_GROUND_TO_APRIL_TAG_HEIGHT_METERS +
-                (Constants.Camera.APRIL_TAG_HEIGHT_METERS / 2);
-        }
-
-        return Constants.Camera.COMMUNITY_GROUND_TO_APRIL_TAG_HEIGHT_METERS +
-            (Constants.Camera.APRIL_TAG_HEIGHT_METERS / 2);
-    }
-    
     /**
      * @return Estimated distance from the camera to the april tag in meters.
     */
     public static double getDistanceToTargetMeters(PhotonTrackedTarget target) {
         return PhotonUtils.calculateDistanceToTargetMeters(
-            Constants.Camera.CAMERA_HEIGHT_METERS, 
-            getTargetHeightFromGroundMeters(target), 
-            Constants.Camera.CAMERA_PITCH_RADIANS,
+            Constants.Camera.CAMERA_POSITION_METERS.getZ(),
+            fieldLayout.getTagPose(target.getFiducialId()).get().getZ(),
+            Constants.Camera.CAMERA_POSITION_METERS.getRotation().getY(),
             Units.degreesToRadians(target.getPitch())
         );
     }
 
-    public static Pose3d getPose3d(PhotonTrackedTarget target) throws IOException {
-        AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-
-        return PhotonUtils.estimateFieldToRobotAprilTag(
-            target.getBestCameraToTarget(), 
-            fieldLayout.getTagPose(target.getFiducialId()).get(), 
-            Constants.Camera.CAMERA_POSITION_METERS
-        );
-    }
-
-    public static Translation2d getTranslationRobotToTag(PhotonTrackedTarget target) throws IOException {
-        AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-        Translation2d translation = PhotonUtils.estimateCameraToTargetTranslation(
-            PhotonUtils.calculateDistanceToTargetMeters(
-                Constants.Camera.CAMERA_POSITION_METERS.getZ(),
-                fieldLayout.getTagPose(target.getFiducialId()).get().getZ(),
-                Constants.Camera.CAMERA_POSITION_METERS.getRotation().getY(),
-                Units.degreesToRadians(target.getPitch())
-            ),
+    public static Translation2d getRobotToTargetTranslation(PhotonTrackedTarget target) throws IOException {
+        // Offset of camera to target
+        Translation2d cameraToTarget = PhotonUtils.estimateCameraToTargetTranslation(
+            getDistanceToTargetMeters(target),
             Rotation2d.fromDegrees(-target.getYaw())
         );
+
+        // Convert camera relative to robot relative
         return new Translation2d(
-            translation.getX() + Constants.Camera.CAMERA_POSITION_METERS.getX(),
-            translation.getY() + Constants.Camera.CAMERA_POSITION_METERS.getY()
+            cameraToTarget.getX() + Constants.Camera.CAMERA_POSITION_METERS.getX(), 
+            cameraToTarget.getY() + Constants.Camera.CAMERA_POSITION_METERS.getY()
         );
     }
 

@@ -92,8 +92,6 @@ public final class Constants {
 
     public static final class Camera {
         public static final String CAMERA_NAME = "2052_Cicada";
-        public static final double CAMERA_HEIGHT_METERS = 0;
-        public static final double CAMERA_PITCH_RADIANS = 0;
 
         public static final Transform3d CAMERA_POSITION_METERS = new Transform3d(
             new Translation3d(Units.inchesToMeters(6), Units.inchesToMeters(3.675), Units.inchesToMeters(41.75)), 
@@ -147,6 +145,5 @@ public final class Constants {
         public static final int CHANNEL_6_PIN = 6; // 2^4
         public static final int CHANNEL_7_PIN = 7; // 2^4
         public static final int CHANNEL_8_PIN = 8; // 2^4
-
     }
 }

@@ -9,7 +9,6 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -17,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auto.AutoBase;
 import frc.robot.auto.AutoTrajectoryConfig;
-import frc.robot.commands.MatchEndBlockCommand;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.drive.NewChargeStationBalanceCommand;
@@ -131,13 +129,7 @@ public class RedLeftScoreTwoBalanceAuto extends AutoBase{
     
             addCommands(balancePath);
 
-            addCommands(
-                new ParallelDeadlineGroup(
-                    new MatchEndBlockCommand(),
-                    new NewChargeStationBalanceCommand(drivetrain)
-                )
-            );
-
+            addCommands(new NewChargeStationBalanceCommand(drivetrain));
             addCommands(new RunCommand(() -> { drivetrain.xWheels(); }, drivetrain));
         }
     }
