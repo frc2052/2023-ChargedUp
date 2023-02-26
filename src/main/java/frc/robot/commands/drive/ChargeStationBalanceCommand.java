@@ -1,68 +1,83 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.commands.drive;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-public class ChargeStationBalanceCommand extends DriveCommand {    
-    private final PIDController balanceController;
-
-    private boolean holding = false;
+public class ChargeStationBalanceCommand extends CommandBase {
+    private DrivetrainSubsystem drivetrain;
+    private boolean holding;
     private Timer balanceTimer;
 
+    private double previousPitch;
+    private double currentPitch;
+
+    /** Creates a new NewChargeStationAutoBalance. */
     public ChargeStationBalanceCommand(DrivetrainSubsystem drivetrain) {
-        super(drivetrain);
+        this.drivetrain = drivetrain;
 
-        balanceController = new PIDController(
-            Constants.AutoBalance.BALANCE_P,
-            Constants.AutoBalance.BALANCE_I,
-            Constants.AutoBalance.BALANCE_D
-        );
-        balanceController.setSetpoint(0);
-        balanceController.setTolerance(Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES);
+        balanceTimer = new Timer();
+        
+        addRequirements(drivetrain);
     }
 
-    @Override
-    public void initialize(){
+    public void reset() {
         holding = false;
+        previousPitch = 0;
+        currentPitch = 0;
+        balanceTimer.stop();
+        balanceTimer.reset();
+    }
+
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        holding = false;
+        previousPitch = 0;
+        currentPitch = 0;
     }
 
     @Override
-    protected void drive() {
-        double output = balanceController.calculate(drivetrain.getNavx().getPitch(), 0);
+    public void execute(){
+        previousPitch = currentPitch;
+        currentPitch = drivetrain.getNavx().getPitch();
+        boolean isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.125;
+        boolean isLevel = Math.abs(drivetrain.getNavx().getPitch()) < 3;
 
-        Dashboard.getInstance().putData(
-            "Balance Drive",
-            drivetrain.getNavx().getPitch()
-            // Math.copySign(
-            //     Math.min(Math.abs(output), Constants.AutoBalance.MAX_SPEED_METERS_PER_SECOND), 
-            //     output
-            // )
-        );
-
-        if (Math.abs(drivetrain.getNavx().getPitch()) > 5 && !holding) {
+        if (!isDropping && !holding && !isLevel) {
             drivetrain.drive(
-                Math.copySign(0.1, (double) -(drivetrain.getNavx().getPitch())),
+                Math.copySign(0.2, (double) -(drivetrain.getNavx().getPitch())),
                 0,
                 0, 
                 false
             );
         } else {
-            if (balanceTimer.hasElapsed(2)){
+            //if balance timer has gone for 2 seconds, x the wheels
+            if (balanceTimer.hasElapsed(1)) {
                 drivetrain.xWheels();
                 holding = true;
-            } else if ((balanceTimer.hasElapsed(0.1) && drivetrain.getNavx().getPitch() < 14)){
+                isLevel = true;
+            //if the balance timer has NOT started and the bot is dropping, start timer
+            } else if (!(balanceTimer.hasElapsed(0.1)) && isDropping) {
                 balanceTimer.start();
-            } else if (drivetrain.getNavx().getPitch() > 14){
+            } else if (!balanceTimer.hasElapsed(1)) {
+                //do nothing still dropping
+            //if the pitch changes to greater than the tolerance, stop and reset the balance timer
+            } else if ((Math.abs(drivetrain.getNavx().getPitch())) > Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES) {
                 balanceTimer.stop();
                 balanceTimer.reset();
+                holding = false;
+                isDropping = false;
+                isLevel = false;
             }
         }
     }
 
-    // Returns true when the command should end.
     @Override
     public boolean isFinished() {
         return false;

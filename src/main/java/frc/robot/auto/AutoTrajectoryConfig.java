@@ -7,7 +7,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class AutoTrajectoryConfig {
-    public static final AutoTrajectoryConfig slowTrajectoryConfig = new AutoTrajectoryConfig(
+    public static final AutoTrajectoryConfig defaultTrajectoryConfig = new AutoTrajectoryConfig(
         new TrajectoryConfig(2.5, 1.5).setKinematics(DrivetrainSubsystem.getKinematics()),
         new PIDController(1, 0, 0),
         new ProfiledPIDController(
@@ -46,7 +46,13 @@ public class AutoTrajectoryConfig {
     public static final AutoTrajectoryConfig speedDriveTrajectoryConfig = new AutoTrajectoryConfig(
         new TrajectoryConfig(4.5, 3.5).setKinematics(DrivetrainSubsystem.getKinematics()), 
         new PIDController(1, 0, 0),
-        new ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(4 * Math.PI, 3 * Math.PI))
+        new ProfiledPIDController(
+            10, 0, 0, 
+            new TrapezoidProfile.Constraints(
+                4 * Math.PI, 
+                3 * Math.PI
+            )
+        )
     );
     
     private final TrajectoryConfig trajectoryConfig;

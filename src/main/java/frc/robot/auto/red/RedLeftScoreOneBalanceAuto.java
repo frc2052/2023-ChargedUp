@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.auto.robot.red;
+package frc.robot.auto.red;
 
 import java.util.List;
 
@@ -15,10 +15,12 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auto.AutoBase;
 import frc.robot.auto.AutoTrajectoryConfig;
+import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
+import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.intake.IntakeInCommand;
-import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
@@ -29,34 +31,37 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
-public class RedLeftCommunityDropOffAuto extends AutoBase {
-    
-    public RedLeftCommunityDropOffAuto (
-        Node startNode,    
+/**
+ * Score gamepiece, drive to pick up gamepiece, drive to chargestation, and balance.
+ */
+public class RedLeftScoreOneBalanceAuto extends AutoBase {
+    private final Node startNode;
+    private final boolean endChargeStation;
+
+    /** Creates a new scoretwoandbalence. */
+    public RedLeftScoreOneBalanceAuto(
+        Node startNode,
+        boolean endChargeStation,
         DrivetrainSubsystem drivetrain, 
         ElevatorSubsystem elevator, 
-        ArmSubsystem arm,
-        IntakeSubsystem intake
-    ){
+        IntakeSubsystem intake, 
+        ArmSubsystem arm
+    ) {
         super(drivetrain, elevator, intake, arm);
-        //begining 
+
+        this.startNode = startNode;
+        this.endChargeStation = endChargeStation;
+    }
+
+    public void init() {
         Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startNode), 0);
-        Translation2d chargeStationMidpoint = createTranslation2dInches(24, -12);
+        Translation2d chargeStationMidpoint = createTranslation2dInches(18, -6);
         Pose2d startPickUpPose = createPose2dInches(64, -4, 0);
+        Pose2d approachPickUpPose = createPose2dInches(180, -12, 0);
+        Pose2d pickUpPose = createPose2dInches(195, -12, 0);
         
-        //first cone pickup
-        Pose2d approachFirstCone = createPose2dInches(180, -12, 0);
-        Pose2d pickUpFirst = createPose2dInches(195, -12, 0);
-        //second cone pickup
-        Pose2d approachSecondCone = createPose2dInches(180, -40, 0);
-        Pose2d pickUpSecond = createPose2dInches(195, -46, 0);
-        //third cone picku[]
-        Pose2d approachThirdCone = createPose2dInches(180, -88, 0);
-        Pose2d pickUpThird = createPose2dInches(195, -94, 0);
-        
-        //community drop off
-        Pose2d returnCommunityPose = createPose2dInches(100, -12, 0);
-    
+        Pose2d lineUpPose = createPose2dInches(170, -74, 180);
+        Pose2d chargeStationPose = createPose2dInches(60, -74, 180);
 
         drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
 
@@ -65,17 +70,16 @@ public class RedLeftCommunityDropOffAuto extends AutoBase {
             addCommands(new MidScoreCommand(elevator, arm));
         } else {
             addCommands(new TopScoreCommand(elevator, arm));
-
         }
-        // backs up
+
         SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.slowTrajectoryConfig.withEndVelocity(2), 
+            AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(2), 
             initialPose,
             List.of(chargeStationMidpoint),
             startPickUpPose,
             createRotation(0)
         );
-        //takes arm and stuff back in
+
         ParallelCommandGroup retract = new ParallelCommandGroup(
             new ScoreCommand(intake, arm, elevator, startNode == Node.MIDDLE_CUBE).withTimeout(
                 startNode == Node.MIDDLE_CUBE ? 0 : 0.5
@@ -85,15 +89,14 @@ public class RedLeftCommunityDropOffAuto extends AutoBase {
         
         addCommands(retract);
 
-        //approaches first cone
+        // Drive to approach cone
         SwerveControllerCommand approachPickupPath = createSwerveTrajectoryCommand(
             AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig.withStartAndEndVelocity(2, 0.5), 
             getLastEndingPose(), 
-            approachFirstCone,
+            approachPickUpPose,
             createRotation(0)
         );
 
-        //picks up cone ?
         addCommands(new ParallelDeadlineGroup(
             approachPickupPath,
             new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator),
@@ -101,21 +104,39 @@ public class RedLeftCommunityDropOffAuto extends AutoBase {
             new IntakeInCommand(intake)
         ));
 
-        //todo; make pick up first cone
-
-        SwerveControllerCommand dropOffPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig.withStartAndEndVelocity(2, 0.5), 
+        // Drive to pickup cone
+        SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.defaultTrajectoryConfig.withStartVelocity(0.5), 
             getLastEndingPose(), 
-            returnCommunityPose,
-            createRotation(180)
+            pickUpPose,
+            createRotation(0)
         );
 
-        addCommands (new ParallelDeadlineGroup(
-            dropOffPath,
-            new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator),
-            
-            new IntakeOutCommand(intake)
-            )
-        );
-    }
+        addCommands(pickUpPath);
+        addCommands(new ArmInCommand(arm));
+
+        if (endChargeStation) {
+            // Drive to lineup w/ charge station
+            SwerveControllerCommand lineupPath = createSwerveTrajectoryCommand(
+                AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig, 
+                getLastEndingPose(), 
+                lineUpPose, 
+                createRotation(180)
+            );
+
+            addCommands(lineupPath);
+        
+            //going on charge station
+            SwerveControllerCommand onChargePath = super.createSwerveTrajectoryCommand(
+                AutoTrajectoryConfig.chargeStationTrajectoryConfig, 
+                getLastEndingPose(), 
+                chargeStationPose, 
+                createRotation(180)
+            );
+        
+            addCommands(onChargePath);
+            addCommands(new IntakeStopCommand(intake));
+            addCommands(new ChargeStationBalanceCommand(drivetrain));
+        }
+    };
 }

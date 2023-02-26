@@ -114,25 +114,26 @@ public final class Constants {
     }
 
     public static final class Auto {
-        public static final double ROBOT_LENGTH_METERS = Units.inchesToMeters(28.5);
+        public static final double ROBOT_LENGTH_INCHES = 28.5;
 
-        public static final double NODE_WIDTH_METERS = Units.inchesToMeters(18.5);
-        public static final double NODE_DIVIDER_WIDTH_METERS = Units.inchesToMeters(3);
+        public static final double NODE_WIDTH_INCHES = 18.5;
+        public static final double NODE_DIVIDER_WIDTH_INCHES = 3;
 
-        public static final double CHANNEL_WIDTH_METERS = Units.inchesToMeters(59.375);
+        public static final double CHANNEL_WIDTH_INCHES = 59.375;
 
-        public static final double CHARGE_STATION_DEPTH = Units.inchesToMeters(76.125);
+        public static final double CHARGE_STATION_DEPTH_INCHES = 76.125;
 
-        public static final double COMMUNITY_WIDTH_METERS = Units.feetToMeters(18); //SKD: Verified
-        public static final double COMMUNITY_DEPTH_METERS = Units.inchesToMeters(193.25);  //SKD: 139 inches
-        public static final double LOADING_ZONE_WIDTH = Units.inchesToMeters(99);
+        public static final double COMMUNITY_WIDTH_INCHES = 216; //SKD: Verified
+        public static final double NEAR_COMMUNITY_DEPTH_INCHES = 132.375;  //SKD: 139 inches
+        public static final double FAR_COMMUNITY_DEPTH_INCHES = 193.25;  //SKD: 139 inches
+        public static final double LOADING_ZONE_WIDTH_INCHES = 99;
 
-        public static final double DISTANCE_GRID_TO_CHARGE_STATION_METERS = Units.inchesToMeters(60.5625);
-        public static final double DISTANCE_GRID_TO_GAME_PIECES_METERS = Units.inchesToMeters(224);
+        public static final double DISTANCE_GRID_TO_CHARGE_STATION_INCHES = 60.5625;
+        public static final double DISTANCE_GRID_TO_GAME_PIECES_INCHES = 224;
         
-        public static final double DISTANCE_BETWEEN_GAME_PIECES_METERS = Units.feetToMeters(4);
-        public static final double DISTANCE_WALL_TO_GAME_PIECE_METERS = Units.inchesToMeters(36.25);
-        public static final double FIELD_WIDTH = Units.feetToMeters(26.291667);
+        public static final double DISTANCE_BETWEEN_GAME_PIECES_INCHES = 48;
+        public static final double DISTANCE_WALL_TO_GAME_PIECE_INCHES = 36.25;
+        public static final double FIELD_WIDTH_INCHES = 315.5;
     }
 
     public static final class LEDs {

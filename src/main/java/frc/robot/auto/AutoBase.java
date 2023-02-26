@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.commands.elevator.ZeroElevator;
-import frc.robot.io.Dashboard.Grid;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -45,7 +44,11 @@ public abstract class AutoBase extends SequentialCommandGroup {
         if (!this.elevator.elevatorZeroed()) {
             addCommands(new ZeroElevator(this.elevator));
         }
+
+        init();
     }
+
+    public abstract void init();
 
     public Pose2d getLastEndingPose() {
         return lastEndingPose;
@@ -60,19 +63,7 @@ public abstract class AutoBase extends SequentialCommandGroup {
     }
 
     public double getLeftStartingYOffsetInches(Node startNode) {
-        return Units.metersToInches(-startNode.ordinal() * (Constants.Auto.NODE_WIDTH_METERS + Constants.Auto.NODE_DIVIDER_WIDTH_METERS));
-    }
-
-    public Pose2d getStartingPose(Grid grid, Node node) {
-        double distanceToFirstPipeInches = 3.5 + 16.5;
-        double scoringElementWidthInches = 18.5 + 13.5;
-
-        double startingYOffsetMeters = (((3 * (2 - grid.ordinal())) + (2 - node.ordinal())) * 
-            scoringElementWidthInches) + distanceToFirstPipeInches + Constants.Auto.LOADING_ZONE_WIDTH;
-
-        double gridDepth = 56.25;
-
-        return new Pose2d(gridDepth + (Constants.Auto.ROBOT_LENGTH_METERS / 2), startingYOffsetMeters, Rotation2d.fromDegrees(180));
+        return -startNode.ordinal() * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
     }
 
     // Creates easy rotation 2d suppliers for the SwerveControllerCommands
@@ -86,7 +77,7 @@ public abstract class AutoBase extends SequentialCommandGroup {
         Supplier<Rotation2d> rotationSupplier
     ) {
         return createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.slowTrajectoryConfig, 
+            AutoTrajectoryConfig.defaultTrajectoryConfig, 
             startPose, 
             new ArrayList<Translation2d>(), 
             endPose, 
@@ -101,7 +92,7 @@ public abstract class AutoBase extends SequentialCommandGroup {
         Supplier<Rotation2d> rotationSupplier
     ) {
         return createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.slowTrajectoryConfig, 
+            AutoTrajectoryConfig.defaultTrajectoryConfig, 
             startPose, 
             midpoints, 
             endPose, 

@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.auto.field;
+package frc.robot.auto;
 
 import frc.robot.io.Dashboard.Channel;
 import frc.robot.io.Dashboard.GamePiece;
@@ -18,7 +18,6 @@ public class DynamicAutoConfiguration {
     private final boolean scoreGamePiece;
     private final Grid scoreGrid;
     private final Node scoreNode;
-    private final Channel enterChannel;
     private final boolean endChargeStation;
     
     public DynamicAutoConfiguration(
@@ -29,7 +28,6 @@ public class DynamicAutoConfiguration {
         boolean scoreGamePiece,
         Grid scoreGrid,
         Node scoreNode,
-        Channel enterChannel,
         boolean endChargeStation
     ) {
         this.startingGrid = startingGrid;
@@ -39,7 +37,6 @@ public class DynamicAutoConfiguration {
         this.scoreGamePiece = scoreGamePiece;
         this.scoreGrid = scoreGrid;
         this.scoreNode = scoreNode;
-        this.enterChannel = enterChannel;
         this.endChargeStation = endChargeStation;
     }
 
@@ -69,10 +66,6 @@ public class DynamicAutoConfiguration {
 
     public Node getScoreNode() {
         return scoreNode;
-    }
-
-    public Channel getEnterChannel() {
-        return enterChannel;
     }
 
     public boolean endChargeStation() {

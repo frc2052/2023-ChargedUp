@@ -10,10 +10,12 @@ import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
-import frc.robot.auto.robot.MiddleScoreOneBalance;
-import frc.robot.auto.robot.red.RedLeftScoreOneBalanceAuto;
-import frc.robot.auto.robot.red.RedLeftScoreTwoBalanceAuto;
-import frc.robot.commands.drive.NewChargeStationBalanceCommand;
+import frc.robot.auto.DynamicAutoConfiguration;
+import frc.robot.auto.DynamicAutoFactory;
+import frc.robot.auto.red.RedMiddleScoreOneBalance;
+import frc.robot.auto.red.RedLeftScoreOneBalanceAuto;
+import frc.robot.auto.red.RedLeftScoreTwoBalanceAuto;
+import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.AprilTagAlignCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
@@ -53,7 +55,6 @@ public class RobotContainer {
     private final Joystick turnJoystick;
     private final ControlPanel controlPanel;
     
-    // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem drivetrain;
     private final ArmSubsystem arm;
     private final IntakeSubsystem intake;
@@ -107,7 +108,7 @@ public class RobotContainer {
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
         Trigger autoBalance = new Trigger(() -> controlPanel.getY() > 0.5);
-        autoBalance.whileTrue(new NewChargeStationBalanceCommand(drivetrain));
+        autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
         JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
         aprilTagDriveButton.whileTrue(new AprilTagAlignCommand(drivetrain, vision));
@@ -189,24 +190,23 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         switch (Dashboard.getInstance().getAuto()) {
-            // case DYNAMIC_AUTO_FACTORY:
-            //     return new DynamicAutoFactory(drivetrain, elevator, intake, arm).getAuto(
-            //         new DynamicAutoConfiguration(
-            //             Dashboard.getInstance().getGrid(), 
-            //             Dashboard.getInstance().getNode(),
-            //             Dashboard.getInstance().getExitChannel(),
-            //             Dashboard.getInstance().getGamePiece(), 
-            //             Dashboard.getInstance().getScoreGamePiece(), 
-            //             Dashboard.getInstance().getScoreGrid(), 
-            //             Dashboard.getInstance().getScoreNode(), 
-            //             Dashboard.getInstance().getEnterChannel(), 
-            //             false
-            //         )
-            //     );
+            case DYNAMIC_AUTO_FACTORY:
+                return new DynamicAutoFactory(drivetrain, elevator, intake, arm).getAuto(
+                    new DynamicAutoConfiguration(
+                        Dashboard.getInstance().getStartingGrid(), 
+                        Dashboard.getInstance().getStartingNode(),
+                        Dashboard.getInstance().getExitChannel(),
+                        Dashboard.getInstance().getGamePiece(), 
+                        Dashboard.getInstance().scoreGamePiece(), 
+                        Dashboard.getInstance().getScoreGrid(), 
+                        Dashboard.getInstance().getScoreNode(),
+                        Dashboard.getInstance().endChargeStation()
+                    )
+                );
             
             case RED_LEFT_SCORE_ONE_BALANCE:
                 return new RedLeftScoreOneBalanceAuto(
-                    Dashboard.getInstance().getNode(), 
+                    Dashboard.getInstance().getStartingNode(), 
                     Dashboard.getInstance().endChargeStation(),
                     drivetrain, 
                     elevator, 
@@ -216,7 +216,7 @@ public class RobotContainer {
 
             case RED_LEFT_SCORE_TWO_BALANCE:
                 return new RedLeftScoreTwoBalanceAuto(
-                    Dashboard.getInstance().getNode(),
+                    Dashboard.getInstance().getStartingNode(),
                     Dashboard.getInstance().endChargeStation(),
                     drivetrain, 
                     elevator, 
@@ -225,7 +225,7 @@ public class RobotContainer {
                 );
 
             case MIDDLE_SCORE_ONE_BALANCE:
-                return new MiddleScoreOneBalance(
+                return new RedMiddleScoreOneBalance(
                     Dashboard.getInstance().endChargeStation(),
                     drivetrain, 
                     elevator, 

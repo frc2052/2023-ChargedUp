@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.auto.robot.blue;
+package frc.robot.auto.red;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import frc.robot.auto.AutoBase;
 import frc.robot.auto.AutoTrajectoryConfig;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
-import frc.robot.commands.drive.NewChargeStationBalanceCommand;
+import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
@@ -34,11 +34,14 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 /**
- * Score gamepiece, move and rotate to pick up gamepiece, move and rotate (strafe) to grid, 
- * shoot gamepiece (w/o stopping), & go to chargestation.
+ * Score gamepiece, drive to pick up gamepiece, drive to grid, 
+ * shoot without stopping, drive to charge station, and balance.
  */
-public class BlueLeftScoreTwoBalanceAuto extends AutoBase{
-    public BlueLeftScoreTwoBalanceAuto(
+public class RedLeftScoreTwoBalanceAuto extends AutoBase{
+    private final Node startNode;
+    private final boolean endChargeStation;
+
+    public RedLeftScoreTwoBalanceAuto(
         Node startNode,
         boolean endChargeStation,
         DrivetrainSubsystem drivetrain, 
@@ -48,8 +51,13 @@ public class BlueLeftScoreTwoBalanceAuto extends AutoBase{
     ) {
         super(drivetrain, elevator, intake, arm);
 
+        this.startNode = startNode;
+        this.endChargeStation = endChargeStation;
+    }
+    
+    public void init() {
         Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startNode), 0);
-        Translation2d chargeStationMidpoint = createTranslation2dInches(24, -2);
+        Translation2d chargeStationMidpoint = createTranslation2dInches(18, -6);
         Pose2d startPickUpPose = createPose2dInches(64, -4, 0);
         Pose2d pickUpPose = createPose2dInches(194, -16, 0);
         Translation2d scorePathMidpoint = createTranslation2dInches(108, -2);
@@ -66,7 +74,7 @@ public class BlueLeftScoreTwoBalanceAuto extends AutoBase{
         }
 
         SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.slowTrajectoryConfig.withEndVelocity(2), 
+            AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(2), 
             initialPose,
             List.of(chargeStationMidpoint),
             startPickUpPose,
@@ -100,10 +108,10 @@ public class BlueLeftScoreTwoBalanceAuto extends AutoBase{
         );
 
         addCommands(new ArmInCommand(arm));
-
+        
         // Driving back to grid
         SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.slowTrajectoryConfig.withEndVelocity(2),
+            AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(2),
             getLastEndingPose(), 
             List.of(scorePathMidpoint, chargeStationMidpoint), 
             lineUpPose, 
@@ -129,8 +137,8 @@ public class BlueLeftScoreTwoBalanceAuto extends AutoBase{
     
             addCommands(balancePath);
 
-            addCommands(new NewChargeStationBalanceCommand(drivetrain));
+            addCommands(new ChargeStationBalanceCommand(drivetrain));
             addCommands(new RunCommand(() -> { drivetrain.xWheels(); }, drivetrain));
         }
-    }
+    };
 }

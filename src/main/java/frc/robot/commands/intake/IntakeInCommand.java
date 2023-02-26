@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeInCommand extends CommandBase {
-    private final BooleanSupplier armState;
+    private final BooleanSupplier isArmOut;
 
     private final IntakeSubsystem intake;
 
@@ -18,8 +18,8 @@ public class IntakeInCommand extends CommandBase {
         this(() -> true, intake);
     }
 
-    public IntakeInCommand(BooleanSupplier armState, IntakeSubsystem intake) {
-        this.armState = armState;
+    public IntakeInCommand(BooleanSupplier isArmOut, IntakeSubsystem intake) {
+        this.isArmOut = isArmOut;
        
         this.intake = intake;
 
@@ -29,7 +29,7 @@ public class IntakeInCommand extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void execute() {
-        if (armState.getAsBoolean()) {
+        if (isArmOut.getAsBoolean()) {
             intake.intakeIn();
         } else {
             intake.slowIntakeIn();
