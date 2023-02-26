@@ -63,7 +63,7 @@ public abstract class AutoBase extends SequentialCommandGroup {
     }
 
     public double getLeftStartingYOffsetInches(Node startNode) {
-        return -startNode.ordinal() * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
+        return startNode.ordinal() * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
     }
 
     // Creates easy rotation 2d suppliers for the SwerveControllerCommands

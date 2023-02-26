@@ -32,7 +32,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 /**
- * Score gamepiece, drive to pick up gamepiece, drive to chargestation, and balance.
+ * Left side score gamepiece, drive to pick up gamepiece, drive to chargestation, and balance.
  */
 public class RedLeftScoreOneBalanceAuto extends AutoBase {
     private final Node startNode;
@@ -54,7 +54,7 @@ public class RedLeftScoreOneBalanceAuto extends AutoBase {
     }
 
     public void init() {
-        Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startNode), 0);
+        Pose2d initialPose = createPose2dInches(0, -getLeftStartingYOffsetInches(startNode), 0);
         Translation2d chargeStationMidpoint = createTranslation2dInches(18, -6);
         Pose2d startPickUpPose = createPose2dInches(64, -4, 0);
         Pose2d approachPickUpPose = createPose2dInches(180, -12, 0);

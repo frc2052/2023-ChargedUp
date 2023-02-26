@@ -34,14 +34,14 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 /**
- * Left side score gamepiece, drive to pick up gamepiece, drive to grid, 
+ * Right side score gamepiece, drive to pick up gamepiece, drive to grid, 
  * shoot without stopping, drive to charge station, and balance.
  */
-public class RedLeftScoreTwoBalanceAuto extends AutoBase{
+public class RedRightScoreTwoBalanceAuto extends AutoBase{
     private final Node startNode;
     private final boolean endChargeStation;
 
-    public RedLeftScoreTwoBalanceAuto(
+    public RedRightScoreTwoBalanceAuto(
         Node startNode,
         boolean endChargeStation,
         DrivetrainSubsystem drivetrain, 
@@ -56,13 +56,13 @@ public class RedLeftScoreTwoBalanceAuto extends AutoBase{
     }
     
     public void init() {
-        Pose2d initialPose = createPose2dInches(0, -getLeftStartingYOffsetInches(startNode), 0);
-        Translation2d chargeStationMidpoint = createTranslation2dInches(18, -6);
-        Pose2d startPickUpPose = createPose2dInches(64, -4, 0);
-        Pose2d pickUpPose = createPose2dInches(194, -16, 0);
-        Translation2d scorePathMidpoint = createTranslation2dInches(108, -2);
-        Pose2d lineUpPose = createPose2dInches(24, -80, 270);
-        Pose2d chargeStationPose = createPose2dInches(100, -80, 180);
+        Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startNode), 0);
+        Translation2d chargeStationMidpoint = createTranslation2dInches(18, 6);
+        Pose2d startPickUpPose = createPose2dInches(64, 4, 0);
+        Pose2d pickUpPose = createPose2dInches(194, 16, 0);
+        Translation2d scorePathMidpoint = createTranslation2dInches(108, 2);
+        Pose2d lineUpPose = createPose2dInches(24, 80, 270);
+        Pose2d chargeStationPose = createPose2dInches(100, 80, 180);
        
         drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
 
