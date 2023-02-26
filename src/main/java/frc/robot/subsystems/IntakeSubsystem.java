@@ -12,13 +12,13 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.io.Dashboard;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonSRX intakeMotor;
-    
+
     /** Creates a new Intake. */
     public IntakeSubsystem() {
         ErrorCode error;
@@ -35,7 +35,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         intakeMotor = new TalonSRX(Constants.Intake.INTAKE_MOTOR_ID);
         intakeMotor.configFactoryDefault();
-        
+
         if ((error = intakeMotor.configSupplyCurrentLimit(currentLimitConfiguration)) != ErrorCode.OK) {
             DriverStation.reportError("Failed to configure intake motor current limit: " + error.toString(), true);
         }
@@ -46,18 +46,24 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("intake CURRENT", intakeMotor.getSupplyCurrent());
+        Dashboard.getInstance().putData(Constants.Dashboard.INTAKE_CURRENT_KEY, intakeMotor.getSupplyCurrent());
     }
 
     public void intakeIn() {
-        intakeMotor.set(ControlMode.PercentOutput, 0.75);
+        intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SPEED);
+        
+        System.out.println("Intaking in!!!");
     }
     
+    public void slowIntakeIn() {
+        intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SLOW_SPEED);
+    }
+
     public void intakeOut() {
-        intakeMotor.set(ControlMode.PercentOutput, -0.5);
+        intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_OUT_SPEED);
     }
 
     public void stop() {
-        intakeMotor.set(ControlMode.PercentOutput, 0);
+        intakeMotor.set(ControlMode.PercentOutput, 0.0);
     }
 }

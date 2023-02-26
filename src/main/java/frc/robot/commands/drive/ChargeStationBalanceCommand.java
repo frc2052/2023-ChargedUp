@@ -1,52 +1,68 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
+import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-public class ChargeStationBalanceCommand extends PIDCommand {
-    private final static double kP = 0.01;
-    private final static double kI = 0.0;
-    private final static double kD = 0.0;
+public class ChargeStationBalanceCommand extends DriveCommand {    
+    private final PIDController balanceController;
 
-    private static final double SPEED_LIMIT_MPS = 0.05;
-    
+    private boolean holding = false;
+    private Timer balanceTimer;
 
-    private DrivetrainSubsystem drivetrain; 
+    public ChargeStationBalanceCommand(DrivetrainSubsystem drivetrain) {
+        super(drivetrain);
 
-    public ChargeStationBalanceCommand(
-        DrivetrainSubsystem drivetrain
-    ) {
-        super(
-            // The controller that the command will use
-            new PIDController(kP, kI, kD),
-            // This should return the measurement
-            () -> drivetrain.getNavx().getPitch(),
-            // This should return the setpoint (can also be a constant)
-            () -> 0,
-            // This uses the output
-            output -> {
-                drivetrain.drive((Math.max(Math.min(output, SPEED_LIMIT_MPS),-SPEED_LIMIT_MPS)), 0, 0, false);
-                System.out.println("Output: " + output);
-                System.out.println("Pitch:  " + drivetrain.getNavx().getPitch());
-            }
-            // Use the output here
+        balanceController = new PIDController(
+            Constants.AutoBalance.BALANCE_P,
+            Constants.AutoBalance.BALANCE_I,
+            Constants.AutoBalance.BALANCE_D
+        );
+        balanceController.setSetpoint(0);
+        balanceController.setTolerance(Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES);
+    }
+
+    @Override
+    public void initialize(){
+        holding = false;
+    }
+
+    @Override
+    protected void drive() {
+        double output = balanceController.calculate(drivetrain.getNavx().getPitch(), 0);
+
+        Dashboard.getInstance().putData(
+            "Balance Drive",
+            drivetrain.getNavx().getPitch()
+            // Math.copySign(
+            //     Math.min(Math.abs(output), Constants.AutoBalance.MAX_SPEED_METERS_PER_SECOND), 
+            //     output
+            // )
         );
 
-        getController().setSetpoint(0);
-
-        this.drivetrain = drivetrain;
-
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(drivetrain);
-        // Configure additional PID options by calling `getController` here.
-        getController().setTolerance(14);
+        if (Math.abs(drivetrain.getNavx().getPitch()) > 5 && !holding) {
+            drivetrain.drive(
+                Math.copySign(0.1, (double) -(drivetrain.getNavx().getPitch())),
+                0,
+                0, 
+                false
+            );
+        } else {
+            if (balanceTimer.hasElapsed(2)){
+                drivetrain.xWheels();
+                holding = true;
+            } else if ((balanceTimer.hasElapsed(0.1) && drivetrain.getNavx().getPitch() < 14)){
+                balanceTimer.start();
+            } else if (drivetrain.getNavx().getPitch() > 14){
+                balanceTimer.stop();
+                balanceTimer.reset();
+            }
+        }
     }
 
     // Returns true when the command should end.
-    
     @Override
     public boolean isFinished() {
         return false;

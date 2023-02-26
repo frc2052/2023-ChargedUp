@@ -30,8 +30,9 @@
     "Brushless",
     "Curr",
     "Neos",
+    "REVPH",
     "swervemodule",
     "TRACKWIDTH",
     "wpilibj"
-  ]
+]
 }

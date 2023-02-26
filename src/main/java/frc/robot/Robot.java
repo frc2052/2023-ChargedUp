@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.io.Dashboard;
+import frc.robot.subsystems.LEDSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -64,10 +65,13 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
+        LEDSubsystem.getInstance().enableLEDs();
+        LEDSubsystem.getInstance().robotDisabled();
     }
 
     @Override
     public void disabledPeriodic() {
+        LEDSubsystem.getInstance().robotDisabled();
     }
 
     /**
@@ -84,12 +88,13 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.schedule();
         }
+
+        LEDSubsystem.getInstance().robotEnabled();
     }
 
     /** This function is called periodically during autonomous. */
     @Override
-    public void autonomousPeriodic() {
-    }
+    public void autonomousPeriodic() {}
 
     @Override
     public void teleopInit() {
@@ -102,12 +107,14 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+
+        LEDSubsystem.getInstance().robotEnabled();
+        LEDSubsystem.getInstance().clearStatusMode();
     }
 
     /** This function is called periodically during operator control. */
     @Override
-    public void teleopPeriodic() {
-    }
+    public void teleopPeriodic() {}
 
     @Override
     public void testInit() {
@@ -117,16 +124,13 @@ public class Robot extends TimedRobot {
 
     /** This function is called periodically during test mode. */
     @Override
-    public void testPeriodic() {
-    }
+    public void testPeriodic() {}
 
     /** This function is called once when the robot is first started up. */
     @Override
-    public void simulationInit() {
-    }
+    public void simulationInit() {}
 
     /** This function is called periodically whilst in simulation. */
     @Override
-    public void simulationPeriodic() {
-    }
+    public void simulationPeriodic() {}
 }

@@ -6,55 +6,91 @@ package frc.robot.auto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import frc.robot.Constants;
+import frc.robot.commands.elevator.ZeroElevator;
+import frc.robot.io.Dashboard.Grid;
+import frc.robot.io.Dashboard.Node;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public abstract class AutoBase extends SequentialCommandGroup {
     protected final DrivetrainSubsystem drivetrain;
-    
+    protected final ElevatorSubsystem elevator;
+    protected final IntakeSubsystem intake;
+    protected final ArmSubsystem arm;
+
     private Pose2d lastEndingPose;
-    
+
     /** Creates a new Auto. */
-    public AutoBase(DrivetrainSubsystem drivetrain) {
+    public AutoBase(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
         this.drivetrain = drivetrain;
+        this.elevator = elevator;
+        this.intake = intake;
+        this.arm = arm;
 
-        addRequirements(this.drivetrain);
-        
-        init();
+        if (!this.elevator.elevatorZeroed()) {
+            addCommands(new ZeroElevator(this.elevator));
+        }
     }
-
-    /**
-     * Add commands to auto sequence from this method.
-     */
-    protected abstract void init();
 
     public Pose2d getLastEndingPose() {
         return lastEndingPose;
     }
 
+    public Pose2d createPose2dInches(double xInches, double yInches, double rotationDegrees) {
+        return new Pose2d(Units.inchesToMeters(xInches), Units.inchesToMeters(yInches), Rotation2d.fromDegrees(rotationDegrees));
+    }
+
+    public Translation2d createTranslation2dInches(double xInches, double yInches) {
+        return new Translation2d(Units.inchesToMeters(xInches), Units.inchesToMeters(yInches));
+    }
+
+    public double getLeftStartingYOffsetInches(Node startNode) {
+        return Units.metersToInches(-startNode.ordinal() * (Constants.Auto.NODE_WIDTH_METERS + Constants.Auto.NODE_DIVIDER_WIDTH_METERS));
+    }
+
+    public Pose2d getStartingPose(Grid grid, Node node) {
+        double distanceToFirstPipeInches = 3.5 + 16.5;
+        double scoringElementWidthInches = 18.5 + 13.5;
+
+        double startingYOffsetMeters = (((3 * (2 - grid.ordinal())) + (2 - node.ordinal())) * 
+            scoringElementWidthInches) + distanceToFirstPipeInches + Constants.Auto.LOADING_ZONE_WIDTH;
+
+        double gridDepth = 56.25;
+
+        return new Pose2d(gridDepth + (Constants.Auto.ROBOT_LENGTH_METERS / 2), startingYOffsetMeters, Rotation2d.fromDegrees(180));
+    }
+
+    // Creates easy rotation 2d suppliers for the SwerveControllerCommands
+    protected Supplier<Rotation2d> createRotation(double angleDegrees) {
+        return () -> { return Rotation2d.fromDegrees(angleDegrees); };
+    }
+
     protected SwerveControllerCommand createSwerveCommand(
         Pose2d startPose,
         Pose2d endPose,
-        Rotation2d rotation
+        Supplier<Rotation2d> rotationSupplier
     ) {
-        return createSwerveCommand(
+        return createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.slowTrajectoryConfig, 
             startPose, 
             new ArrayList<Translation2d>(), 
             endPose, 
-            rotation
+            rotationSupplier
         );
     }
 
@@ -62,41 +98,54 @@ public abstract class AutoBase extends SequentialCommandGroup {
         Pose2d startPose, 
         List<Translation2d> midpoints,
         Pose2d endPose,
-        Rotation2d rotation
+        Supplier<Rotation2d> rotationSupplier
     ) {
-        TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
-            2.5 / 2,
-            1.5 / 2
-        ).setKinematics(drivetrain.getKinematics());
-
-        PIDController translationController = new PIDController(1, 0, 0);
-
-        ProfiledPIDController rotationController = new ProfiledPIDController(
-            2,
-            0,
-            0,
-            new TrapezoidProfile.Constraints(
-                drivetrain.getMaxAngularVelocityRadiansPerSecond(), 
-                Math.PI
-            )
+        return createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.slowTrajectoryConfig, 
+            startPose, 
+            midpoints, 
+            endPose, 
+            rotationSupplier
         );
+    }
 
-        // Set the last ending pose so future commands can use it as a initial pose.
+    protected SwerveControllerCommand createSwerveTrajectoryCommand(
+        AutoTrajectoryConfig trajectoryConfig, 
+        Pose2d startPose, 
+        Pose2d endPose, 
+        Supplier<Rotation2d> rotationSupplier
+    ) {
+        return createSwerveTrajectoryCommand(
+            trajectoryConfig, 
+            startPose, 
+            new ArrayList<Translation2d>(), 
+            endPose, 
+            rotationSupplier
+        );
+    }
+
+    protected SwerveControllerCommand createSwerveTrajectoryCommand(
+        AutoTrajectoryConfig trajectoryConfig, 
+        Pose2d startPose, 
+        List<Translation2d> midpointList,
+        Pose2d endPose, 
+        Supplier<Rotation2d> rotationSupplier
+    ) {
         lastEndingPose = endPose;
 
         return new SwerveControllerCommand(
             TrajectoryGenerator.generateTrajectory(
                 startPose,
-                midpoints,
+                midpointList,
                 endPose,
-                trajectoryConfig
+                trajectoryConfig.getTrajectoryConfig()
             ),
             drivetrain::getPosition,
-            drivetrain.getKinematics(),
-            translationController,
-            translationController,
-            rotationController,
-            () -> rotation,
+            DrivetrainSubsystem.getKinematics(),
+            trajectoryConfig.getXYController(),
+            trajectoryConfig.getXYController(),
+            trajectoryConfig.getThetaController(), 
+            rotationSupplier,
             drivetrain::setModuleStates,
             drivetrain
         );

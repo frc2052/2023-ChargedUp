@@ -11,11 +11,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ArmSubsystem extends SubsystemBase {
-    private final DoubleSolenoid intakesolenoid;
+    private final DoubleSolenoid intakeSolenoid;
 
     /** Creates a new ArmSubsystem. */
     public ArmSubsystem() {
-        intakesolenoid = new DoubleSolenoid(
+        intakeSolenoid = new DoubleSolenoid(
             Constants.Compressor.PNEUMATIC_HUB_ID,
             PneumaticsModuleType.REVPH, 
             Constants.Arm.ARM_SOLENOID_OUT_CHANNEL, 
@@ -23,19 +23,23 @@ public class ArmSubsystem extends SubsystemBase {
         );
     }
 
+    public void toggleArm() {
+        if (intakeSolenoid.get() == Value.kOff) {
+            armOut();
+        } else {
+            intakeSolenoid.toggle();
+        }
+    }
+
     public void armIn() {
-        intakesolenoid.set(Value.kReverse);
+        intakeSolenoid.set(Value.kForward);
     }
 
     public void armOut() {
-        intakesolenoid.set(Value.kForward);
+        intakeSolenoid.set(Value.kReverse);
     }
 
-    public void toggleArm() {
-        if (intakesolenoid.get() == Value.kOff) {
-            armIn();
-        } else {
-            intakesolenoid.toggle();
-        }
+    public boolean isArmOut() {
+        return intakeSolenoid.get() == Value.kReverse;
     }
 }

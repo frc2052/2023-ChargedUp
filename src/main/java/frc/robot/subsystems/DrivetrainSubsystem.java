@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.io.Dashboard;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private final NeoSwerverModule frontLeftModule;
@@ -29,7 +30,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final NeoSwerverModule backRightModule;
 
     // Representation of our robots swerve module positions relative to the center of the wheels.
-    private final SwerveDriveKinematics kinematics;
+    private static final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+        // Front left
+        new Translation2d(Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+        // Front right
+        new Translation2d(Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+        // Back left
+        new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+        // Back right
+        new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0)
+    );
 
     private final AHRS navx;
 
@@ -71,17 +81,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
             new Rotation2d(Constants.Drivetrain.BACK_RIGHT_MODULE_STEER_OFFSET_RADIANS)
         );
 
-        kinematics = new SwerveDriveKinematics(
-            // Front left
-            new Translation2d(Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Front right
-            new Translation2d(Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Back left
-            new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Back right
-            new Translation2d(-Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0)
-        );
-
         navx = new AHRS(SPI.Port.kMXP, (byte) 200);
         navx.reset();
 
@@ -99,7 +98,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        field.setRobotPose(odometry.getPoseMeters());
+        Dashboard.getInstance().putData(
+            "Pitch of Robot",
+            navx.getPitch()
+        );
+
         debug();
     }
 
@@ -107,15 +110,28 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * All parameters are taken in normalized terms of [-1.0 to 1.0].
      */
     public void drive(
-        double normalizedXVelocityMetersPerSecond, 
-        double normalizedYVelocityMetersPerSecond, 
-        double normalizedRotationVelocityRadiansPerSecond, 
+        double normalizedXVelocity, 
+        double normalizedYVelocity, 
+        double normalizedRotationVelocity, 
         boolean fieldCentric
     ) {
+        normalizedXVelocity = Math.copySign(
+            Math.min(Math.abs(normalizedXVelocity), 1.0),
+            normalizedXVelocity
+        );
+        normalizedYVelocity = Math.copySign(
+            Math.min(Math.abs(normalizedYVelocity), 1.0),
+            normalizedYVelocity
+        );
+        normalizedRotationVelocity = Math.copySign(
+            Math.min(Math.abs(normalizedRotationVelocity), 1.0),
+            normalizedRotationVelocity
+        );
+
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
-            normalizedXVelocityMetersPerSecond * getMaxVelocityMetersPerSecond(), 
-            normalizedYVelocityMetersPerSecond * getMaxVelocityMetersPerSecond(), 
-            normalizedRotationVelocityRadiansPerSecond * getMaxAngularVelocityRadiansPerSecond()
+            normalizedXVelocity * getMaxVelocityMetersPerSecond(), 
+            normalizedYVelocity * getMaxVelocityMetersPerSecond(), 
+            normalizedRotationVelocity * getMaxAngularVelocityRadiansPerSecond()
         );
 
         if (fieldCentric) {
@@ -139,6 +155,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public AHRS getNavx(){
         return navx;
+    }
+
+    public void xWheels() {
+        frontLeftModule.setState(0, Rotation2d.fromDegrees(45));
+        frontRightModule.setState(0, Rotation2d.fromDegrees(-45));
+        backLeftModule.setState(0, Rotation2d.fromDegrees(-45));
+        backRightModule.setState(0, Rotation2d.fromDegrees(45));
     }
 
     public void setModuleStates(SwerveModuleState[] swerveModuleStates) {
@@ -165,7 +188,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             hasVelocity ? swerveModuleStates[3].angle : backRightModule.getState().angle
         );
         
-        odometry.update(getRotation(), getModulePositions());
+        field.setRobotPose(odometry.update(getRotation(), getModulePositions()));
     }
 
     private SwerveModulePosition[] getModulePositions() {
@@ -185,7 +208,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         navx.reset();
     }
 
-    public SwerveDriveKinematics getKinematics() {
+    public static SwerveDriveKinematics getKinematics() {
         return kinematics;
     }
 
@@ -194,19 +217,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
-        // Ensure proper magnetometer calibration in order to get valid fused headings.
-        // if (navx.isMagnetometerCalibrated()) {
-        //     return Rotation2d.fromDegrees(navx.getFusedHeading());
-        // }
-
        return navx.getRotation2d();
     }
 
-    public double getMaxVelocityMetersPerSecond() {
+    public static double getMaxVelocityMetersPerSecond() {
         return NeoSwerverModule.getMaxVelocityMetersPerSecond(ModuleConfiguration.MK4I_L2);
     }
 
-    public double getMaxAngularVelocityRadiansPerSecond() {
+    public static double getMaxAngularVelocityRadiansPerSecond() {
         /*
          * Find the theoretical maximum angular velocity of the robot in radians per second 
          * (a measure of how fast the robot can rotate in place).
@@ -223,6 +241,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * be the offsets for each SwerveModule respectively.
      */
     public void debug() {
+        Dashboard.getInstance().putData("Odometry X", odometry.getPoseMeters().getX());
+        Dashboard.getInstance().putData("Odometry Y", odometry.getPoseMeters().getY());
+
         frontLeftModule.debug();
         frontRightModule.debug();   
         backLeftModule.debug();

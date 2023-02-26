@@ -4,10 +4,17 @@
 
 package frc.robot;
 
-import frc.robot.commands.arm.ArmToggleCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
-import frc.robot.commands.drive.ChargeStationBalanceCommand;
+import frc.robot.commands.intake.IntakeStopCommand;
+import frc.robot.commands.score.MidScoreCommand;
+import frc.robot.commands.score.ScoreCommand;
+import frc.robot.commands.score.TopScoreCommand;
+import frc.robot.auto.robot.MiddleScoreOneBalance;
+import frc.robot.auto.robot.red.RedLeftScoreOneBalanceAuto;
+import frc.robot.auto.robot.red.RedLeftScoreTwoBalanceAuto;
+import frc.robot.commands.drive.NewChargeStationBalanceCommand;
+import frc.robot.commands.drive.AprilTagAlignCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
@@ -19,18 +26,18 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.PhotonVisionSubsystem;
+import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
+
+import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.auto.DynamicAutoConfiguration;
-import frc.robot.auto.DynamicAutoFactory;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -51,9 +58,7 @@ public class RobotContainer {
     private final ArmSubsystem arm;
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
-    //private final PhotonVisionSubsystem vision;
-
-    private final Compressor compressor;
+    private final PhotonVisionSubsystem vision;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -67,11 +72,9 @@ public class RobotContainer {
         arm = new ArmSubsystem();
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
-        //vision = new PhotonVisionSubsystem();
+        vision = new PhotonVisionSubsystem();
 
-        compressor = new Compressor(Constants.Compressor.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH);
-        // Min and max recharge pressure, max pressure will stop at 115
-        compressor.enableAnalog(100, 120);
+        new PneumaticsSubsystem();
 
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
@@ -85,8 +88,6 @@ public class RobotContainer {
                 drivetrain
             )
         );
-        elevator.setDefaultCommand(new RunCommand(() -> elevator.stop(), elevator));
-        intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
 
         // Configure the trigger bindings
         configureBindings();
@@ -102,55 +103,79 @@ public class RobotContainer {
         /*
          * Drivetrain button bindings
          */
-        JoystickButton zeroGyroButton = new JoystickButton(controlPanel, 10);
-
+        JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
-        /*
-         * Charge station auto balancing button bindings
-         */
-        JoystickButton autoBalance = new JoystickButton(controlPanel, 9);
+        Trigger autoBalance = new Trigger(() -> controlPanel.getY() > 0.5);
+        autoBalance.whileTrue(new NewChargeStationBalanceCommand(drivetrain));
 
-        autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
+        JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
+        aprilTagDriveButton.whileTrue(new AprilTagAlignCommand(drivetrain, vision));
+
+        /*
+         * LED button bindings
+         */
+        JoystickButton LEDOffButton = new JoystickButton(controlPanel, 9);
+        JoystickButton LEDConeButton = new JoystickButton(controlPanel, 1);
+        JoystickButton LEDCubeButton = new JoystickButton (controlPanel, 6);
+
+        LEDOffButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
+        LEDConeButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CONE)));
+        LEDCubeButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CUBE)));
 
         /*
          * Elevator button bindings
          */
-        JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 8);
-        JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 2);
-        JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 4);
-        JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 3);
-        JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 5);
-        Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getY() < -0.5);
-
-        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOORCUBE, elevator));
-        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOORCONE, elevator));
-        elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABYBIRD, elevator));
-        elevatorMidScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.MIDSCORE, elevator));
-        elevatorTopScoreButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TOPSCORE, elevator));
+        Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getX() < -0.5);
+        JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 12);
+        JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 10);
+        JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 5);
+        
         elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator));
+        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
+        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
+        elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
 
-        JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 12);
-        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 11);
+        JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 3);
+        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 4);
+
         manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
         manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
+
+        /*
+         * Score button bindings
+         */
+        JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 7);
+        JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 8);
+        JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
         
+        scoreButton.whileTrue(new ScoreCommand(intake, arm, elevator));
+        elevatorMidScoreButton.onTrue(new MidScoreCommand(elevator, arm));
+        elevatorTopScoreButton.onTrue(new TopScoreCommand(elevator, arm));
+
         /*
          * Arm button bindings
          */
-        JoystickButton intakeArmToggle = new JoystickButton(controlPanel, 1);
-        intakeArmToggle.onTrue(new ArmToggleCommand(arm));
+        JoystickButton controlPanelIntakeArmToggle = new JoystickButton(controlPanel, 11);
+        JoystickButton driverIntakeArmToggle = new JoystickButton(driveJoystick, 6);
+
+        driverIntakeArmToggle.or(controlPanelIntakeArmToggle).onTrue(new InstantCommand(() -> arm.toggleArm(), arm));
 
         /*
          * Intake button bindings
          */
-        JoystickButton intakeInButton = new JoystickButton(controlPanel, 7);
-        JoystickButton intakeOutButton = new JoystickButton(controlPanel, 6);
+        Trigger controlPanelIntakeInButton = new Trigger(() -> controlPanel.getX() > 0.5);
+        JoystickButton driverIntakeInButton = new JoystickButton(driveJoystick, 3);
 
-        intakeInButton.whileTrue(new IntakeInCommand(intake));
-        intakeOutButton.whileTrue(new IntakeOutCommand(intake));
+        driverIntakeInButton.or(controlPanelIntakeInButton).whileTrue(new IntakeInCommand(arm::isArmOut, intake));
+        driverIntakeInButton.or(controlPanelIntakeInButton).onFalse(new IntakeStopCommand(intake));
+        
+        Trigger controlPanelIntakeOutButton = new Trigger(() -> controlPanel.getY() < -0.5);
+        JoystickButton driverIntakeOutButton = new JoystickButton(driveJoystick, 2);
+
+        driverIntakeOutButton.or(controlPanelIntakeOutButton).whileTrue(new IntakeOutCommand(intake));
+        driverIntakeOutButton.or(controlPanelIntakeOutButton).onFalse(new IntakeStopCommand(intake));
     }
-      
 
     public void zeroOdometry() {
         drivetrain.zeroGyro();
@@ -163,23 +188,52 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        //return new TestAuto(drivetrain);
         switch (Dashboard.getInstance().getAuto()) {
-            case DYNAMIC_AUTO_FACTORY:
-                return new DynamicAutoFactory(drivetrain).getAuto(
-                    new DynamicAutoConfiguration(
-                        Dashboard.getInstance().getGrid(), 
-                        Dashboard.getInstance().getNode(),
-                        Dashboard.getInstance().getChannel(),
-                        Dashboard.getInstance().getGamePiece(), 
-                        Dashboard.getInstance().getScoreGamePiece(), 
-                        Dashboard.getInstance().getScoreGrid(), 
-                        Dashboard.getInstance().getScoreNode(), 
-                        Dashboard.getInstance().getEnterChannel(), 
-                        false
-                    )
+            // case DYNAMIC_AUTO_FACTORY:
+            //     return new DynamicAutoFactory(drivetrain, elevator, intake, arm).getAuto(
+            //         new DynamicAutoConfiguration(
+            //             Dashboard.getInstance().getGrid(), 
+            //             Dashboard.getInstance().getNode(),
+            //             Dashboard.getInstance().getExitChannel(),
+            //             Dashboard.getInstance().getGamePiece(), 
+            //             Dashboard.getInstance().getScoreGamePiece(), 
+            //             Dashboard.getInstance().getScoreGrid(), 
+            //             Dashboard.getInstance().getScoreNode(), 
+            //             Dashboard.getInstance().getEnterChannel(), 
+            //             false
+            //         )
+            //     );
+            
+            case RED_LEFT_SCORE_ONE_BALANCE:
+                return new RedLeftScoreOneBalanceAuto(
+                    Dashboard.getInstance().getNode(), 
+                    Dashboard.getInstance().endChargeStation(),
+                    drivetrain, 
+                    elevator, 
+                    intake, 
+                    arm
                 );
-        
+
+            case RED_LEFT_SCORE_TWO_BALANCE:
+                return new RedLeftScoreTwoBalanceAuto(
+                    Dashboard.getInstance().getNode(),
+                    Dashboard.getInstance().endChargeStation(),
+                    drivetrain, 
+                    elevator, 
+                    intake, 
+                    arm
+                );
+
+            case MIDDLE_SCORE_ONE_BALANCE:
+                return new MiddleScoreOneBalance(
+                    Dashboard.getInstance().endChargeStation(),
+                    drivetrain, 
+                    elevator, 
+                    intake, 
+                    arm
+                );
+
+            case NO_AUTO:
             default:
                 return null;
         }
