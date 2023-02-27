@@ -20,9 +20,6 @@ import frc.robot.subsystems.IntakeSubsystem;
  * Left side score gamepiece, drive to pick up gamepiece, drive to chargestation, and balance.
  */
 public class RedScoreOneBalanceAuto extends ScorePickUpAuto {
-    private final Grid startGrid;
-    private final boolean endChargeStation;
-
     /** Creates a new scoretwoandbalence. */
     public RedScoreOneBalanceAuto(
         Grid startGrid,
@@ -33,10 +30,7 @@ public class RedScoreOneBalanceAuto extends ScorePickUpAuto {
         IntakeSubsystem intake, 
         ArmSubsystem arm
     ) {
-        super(startGrid, startNode, drivetrain, elevator, intake, arm);
-
-        this.startGrid = startGrid;
-        this.endChargeStation = endChargeStation;
+        super(startGrid, startNode, endChargeStation, drivetrain, elevator, intake, arm);
     }
 
     @Override

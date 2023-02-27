@@ -49,8 +49,8 @@ public class PhotonVisionSubsystem extends SubsystemBase {
             Constants.Camera.CAMERA_POSITION_METERS
         );
 
-        camera.setDriverMode(true);
         camera.setPipelineIndex(0);
+        camera.setDriverMode(true);
 
         camera.setLED(VisionLEDMode.kOff);
 

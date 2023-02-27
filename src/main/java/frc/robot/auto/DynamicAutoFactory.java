@@ -58,7 +58,15 @@ public class DynamicAutoFactory {
 
     public SequentialCommandGroup getAuto(DynamicAutoConfiguration configuration) {
         // Inline implementation of the abstract auto class to create an instance of auto.
-        return new AutoBase(drivetrain, elevator, intake, arm) {
+        return new AutoBase(
+            configuration.getStartingGrid(), 
+            configuration.getStartingNode(),
+            configuration.endChargeStation(),
+            drivetrain, 
+            elevator, 
+            intake, 
+            arm
+        ) {
             @Override
             public void init() {
                 // Initial starting position of the robot across the front of the grids.

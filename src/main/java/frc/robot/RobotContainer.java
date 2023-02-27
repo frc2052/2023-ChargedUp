@@ -249,6 +249,7 @@ public class RobotContainer {
 
             case MIDDLE_SCORE_ONE_BALANCE:
                 return new RedMiddleScoreOneBalance(
+                    Dashboard.getInstance().getStartingGrid(),
                     Dashboard.getInstance().getStartingNode(),
                     Dashboard.getInstance().endChargeStation(),
                     drivetrain, 

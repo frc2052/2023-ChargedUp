@@ -28,9 +28,6 @@ import frc.robot.subsystems.IntakeSubsystem;
  * shoot without stopping, drive to charge station, and balance.
  */
 public class RedLeftScoreTwoBalanceAuto extends ScorePickUpAuto {
-    private final Grid startGrid;
-    private final boolean endChargeStation;
-
     public RedLeftScoreTwoBalanceAuto(
         Grid startGrid,
         Node startNode,
@@ -40,10 +37,7 @@ public class RedLeftScoreTwoBalanceAuto extends ScorePickUpAuto {
         IntakeSubsystem intake, 
         ArmSubsystem arm
     ) {
-        super(startGrid, startNode, drivetrain, elevator, intake, arm);
-
-        this.startGrid = startGrid;
-        this.endChargeStation = endChargeStation;
+        super(startGrid, startNode, endChargeStation, drivetrain, elevator, intake, arm);
     }
     
     public void init() {

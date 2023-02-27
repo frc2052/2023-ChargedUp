@@ -42,14 +42,14 @@ public class Dashboard {
         for (Autos auto : Autos.values()) {
             autoChooser.addOption(auto.name, auto);
         }
-        autoChooser.setDefaultOption(Autos.NO_AUTO.name, Autos.NO_AUTO);
+        autoChooser.setDefaultOption(Autos.NO_AUTO.name(), Autos.NO_AUTO);
         SmartDashboard.putData("Auto", autoChooser);
 
         startingNodeChooser = new SendableChooser<Node>();
         for (Node node : Node.values()) {
             startingNodeChooser.addOption(node.name(), node);
         }
-        startingNodeChooser.setDefaultOption(Node.values()[0].name(), Node.values()[0]);
+        startingNodeChooser.setDefaultOption(Node.MIDDLE_CUBE.name(), Node.MIDDLE_CUBE);
         SmartDashboard.putData("Starting Node", startingNodeChooser);
 
         startingGridChooser = new SendableChooser<Grid>();
@@ -95,8 +95,6 @@ public class Dashboard {
     // updates dashboard with needed information
     public void updateDashboard() {
         SmartDashboard.putString("Auto Description", getAuto().description);
-        SmartDashboard.putBoolean("DA: Score Game Piece", false);
-
     }
 
     public <V> void putData(String key, V value) {

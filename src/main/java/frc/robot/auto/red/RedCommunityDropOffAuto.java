@@ -20,19 +20,16 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class RedCommunityDropOffAuto extends ScorePickUpAuto {
-    private final Grid startGrid;
-
     public RedCommunityDropOffAuto (
         Grid startGrid,
-        Node startNode,    
+        Node startNode,
+        boolean endChargeStation,  
         DrivetrainSubsystem drivetrain, 
         ElevatorSubsystem elevator, 
         ArmSubsystem arm,
         IntakeSubsystem intake
     ){
-        super(startGrid, startNode, drivetrain, elevator, intake, arm);
-
-        this.startGrid = startGrid;
+        super(startGrid, startNode, endChargeStation, drivetrain, elevator, intake, arm);
     }
 
     public void init() {

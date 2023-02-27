@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.commands.elevator.ZeroElevator;
+import frc.robot.io.Dashboard.Grid;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -27,6 +28,9 @@ import frc.robot.subsystems.IntakeSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public abstract class AutoBase extends SequentialCommandGroup {
+    protected final Grid startGrid;
+    protected final Node startNode;
+    protected final boolean endChargeStation;
     protected final DrivetrainSubsystem drivetrain;
     protected final ElevatorSubsystem elevator;
     protected final IntakeSubsystem intake;
@@ -35,7 +39,18 @@ public abstract class AutoBase extends SequentialCommandGroup {
     private Pose2d lastEndingPose;
 
     /** Creates a new Auto. */
-    public AutoBase(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm) {
+    public AutoBase(
+        Grid startGrid,
+        Node startNode,
+        boolean endChargeStation,
+        DrivetrainSubsystem drivetrain, 
+        ElevatorSubsystem elevator, 
+        IntakeSubsystem intake, 
+        ArmSubsystem arm
+    ) {
+        this.startGrid = startGrid;
+        this.startNode = startNode;
+        this.endChargeStation = endChargeStation;
         this.drivetrain = drivetrain;
         this.elevator = elevator;
         this.intake = intake;
@@ -62,8 +77,12 @@ public abstract class AutoBase extends SequentialCommandGroup {
         return new Translation2d(Units.inchesToMeters(xInches), Units.inchesToMeters(yInches));
     }
 
-    public double getLeftStartingYOffsetInches(Node startNode) {
-        return startNode.ordinal() * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
+    public double getLeftStartingYOffsetInches(Grid startGrid, Node startNode) {
+        if (startGrid == Grid.LEFT_GRID) {
+            return startNode.ordinal() * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
+        } else {
+            return (2 - startNode.ordinal()) * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
+        }
     }
 
     // Creates easy rotation 2d suppliers for the SwerveControllerCommands

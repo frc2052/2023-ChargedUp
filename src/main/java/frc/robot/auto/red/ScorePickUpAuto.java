@@ -32,31 +32,26 @@ import frc.robot.subsystems.IntakeSubsystem;
 
 /** Add your docs here. */
 public class ScorePickUpAuto extends AutoBase {
-    private final Grid startGrid;
-    private final Node startNode;
-
     public ScorePickUpAuto(
         Grid startGrid,
         Node startNode,
+        boolean endChargeStation,
         DrivetrainSubsystem drivetrain, 
         ElevatorSubsystem elevator, 
         IntakeSubsystem intake,
         ArmSubsystem arm
     ) {
-        super(drivetrain, elevator, intake, arm);
-        
-        this.startGrid = startGrid;
-        this.startNode = startNode;
+        super(startGrid, startNode, endChargeStation, drivetrain, elevator, intake, arm);
     }
 
     @Override
     public void init() {
         double flip = startGrid == Grid.LEFT_GRID ? -1.0 : 1.0;
 
-        Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startNode) * flip, 0);
+        Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startGrid, startNode) * flip, 0);
         Translation2d chargeStationMidpoint = createTranslation2dInches(18, 6 * flip);
         Pose2d startPickUpPose = createPose2dInches(64, 4 * flip, 0);
-        Pose2d pickUpPose = createPose2dInches(194, 16 * flip, 0);
+        Pose2d pickUpPose = createPose2dInches(194, 12 * flip, 0);
 
         drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
 
