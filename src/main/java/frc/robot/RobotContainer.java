@@ -14,6 +14,7 @@ import frc.robot.auto.DynamicAutoConfiguration;
 import frc.robot.auto.DynamicAutoFactory;
 import frc.robot.auto.red.RedMiddleScoreOneBalance;
 import frc.robot.auto.red.RedScoreOneBalanceAuto;
+import frc.robot.auto.red.MiddleScoreOneExitBalance;
 import frc.robot.auto.red.RedLeftScoreTwoBalanceAuto;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.AprilTagAlignCommand;
@@ -249,6 +250,17 @@ public class RobotContainer {
 
             case RED_LEFT_SCORE_TWO_BALANCE:
                 return new RedLeftScoreTwoBalanceAuto(
+                    Dashboard.getInstance().getStartingGrid(), 
+                    Dashboard.getInstance().getStartingNode(),
+                    Dashboard.getInstance().endChargeStation(),
+                    drivetrain, 
+                    elevator, 
+                    intake, 
+                    arm
+                );
+
+            case MIDDLE_SCORE_ONE_EXIT:
+                return new MiddleScoreOneExitBalance(
                     Dashboard.getInstance().getStartingGrid(), 
                     Dashboard.getInstance().getStartingNode(),
                     Dashboard.getInstance().endChargeStation(),

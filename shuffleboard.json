@@ -736,26 +736,6 @@
               "_showGlyph": false
             }
           },
-          "7,0": {
-            "size": [
-              3,
-              3
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Intake Current",
-              "_title": "SmartDashboard/Intake Current",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Graph/Visible time": 7.5,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 20.0,
-              "Y-axis/Lower bound": 0.0,
-              "Y-axis/Unit": "ul",
-              "Visible data/SmartDashboard/Intake Current": true
-            }
-          },
           "9,3": {
             "size": [
               1,
@@ -850,6 +830,26 @@
               "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "7,0": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Intake Current",
+              "_title": "SmartDashboard/Intake Current",
+              "_glyph": 484,
+              "_showGlyph": true,
+              "Graph/Visible time": 5.0,
+              "Graph/X-axis auto scrolling": true,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 20.0,
+              "Y-axis/Lower bound": 0.0,
+              "Y-axis/Unit": "Amps",
+              "Visible data/SmartDashboard/Intake Current": true
             }
           }
         }

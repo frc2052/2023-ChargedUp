@@ -69,7 +69,7 @@ public class MiddleScoreOneExitBalance extends AutoBase {
                 AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(1), 
                 initialPose,
                 lineUpPose,
-                createRotation(180)
+                createRotation(0)
             );
             addCommands(lineUpPath);
 
@@ -84,7 +84,7 @@ public class MiddleScoreOneExitBalance extends AutoBase {
             SwerveControllerCommand overChargePath = createSwerveTrajectoryCommand(
                 AutoTrajectoryConfig.defaultTrajectoryConfig.withStartVelocity(1), 
                 getLastEndingPose(),
-                chargeStationPose,
+                driveOverPose,
                 createRotation(0)
             );
             addCommands(overChargePath);

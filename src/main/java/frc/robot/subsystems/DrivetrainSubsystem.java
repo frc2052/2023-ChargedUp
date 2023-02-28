@@ -42,6 +42,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     );
 
     private final AHRS navx;
+    private Rotation2d navxOffset;
 
     private final SwerveDriveOdometry odometry;
     private final Field2d field;
@@ -83,6 +84,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         navx = new AHRS(SPI.Port.kMXP, (byte) 200);
         navx.reset();
+        navxOffset = new Rotation2d();
 
         odometry = new SwerveDriveOdometry(
             kinematics, 
@@ -201,6 +203,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d initialStartingPose) {
+        navxOffset = initialStartingPose.getRotation();
         odometry.resetPosition(getRotation(), getModulePositions(), initialStartingPose);
     }
 
@@ -217,7 +220,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
-       return navx.getRotation2d();
+       return navx.getRotation2d().rotateBy(navxOffset);
     }
 
     public static double getMaxVelocityMetersPerSecond() {

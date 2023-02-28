@@ -69,6 +69,13 @@ public class DynamicAutoFactory {
         ) {
             @Override
             public void init() {
+                System.out.println(getBaseLineYInches(configuration.getStartingGrid(), configuration.getStartingNode()));
+                System.out.println(getMidChannelYInches(configuration.getExitChannel()));
+
+                // if (true) {
+                //     return;
+                // }
+
                 // Initial starting position of the robot across the front of the grids.
                 Pose2d initialPose = createPose2dInches(
                     Constants.Auto.ROBOT_LENGTH_INCHES / 2, 
@@ -235,15 +242,15 @@ public class DynamicAutoFactory {
     private double getBaseLineYInches(Grid grid, Node node) {
         double distanceToFirstPipeInches = 3.5 + 16.5;
         int scoringPositionIndex = (3 * grid.ordinal()) + node.ordinal();
-        double scoringElementWidthInches = 18.5 + 13.5;
+        double scoringElementWidthInches = (18.5 + 13.5) / 2;
 
-        return distanceToFirstPipeInches + (scoringPositionIndex * scoringElementWidthInches);
+        return distanceToFirstPipeInches + (scoringPositionIndex * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES));
     }
 
     private double getMidChannelYInches(Channel channel) {
         switch (channel) {
             case LEFT_CHANNEL:
-                return Constants.Auto.COMMUNITY_WIDTH_INCHES;
+                return Constants.Auto.CHANNEL_WIDTH_INCHES / 2;
         
             case RIGHT_CHANNEL:
                 return Constants.Auto.COMMUNITY_WIDTH_INCHES -

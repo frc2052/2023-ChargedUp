@@ -51,8 +51,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void intakeIn() {
         intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SPEED);
-        
-        System.out.println("Intaking in!!!");
     }
     
     public void slowIntakeIn() {

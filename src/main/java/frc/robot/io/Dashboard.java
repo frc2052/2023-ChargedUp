@@ -171,7 +171,8 @@ public class Dashboard {
         TEST_LEFT_SCORE_ONE_BALANCE("Test Score One Balance", ""),
         RED_LEFT_SCORE_ONE_BALANCE("Red Left Score One Balance", "Description"),
         RED_LEFT_SCORE_TWO_BALANCE("Red Left Score Two Balance", "Description"),
-        MIDDLE_SCORE_ONE_BALANCE("Middle Score One Bwe=alance", "Description");
+        MIDDLE_SCORE_ONE_EXIT("Middle Score One Exit", "Description"),
+        MIDDLE_SCORE_ONE_BALANCE("Middle Score One Balance", "Description");
 
 
         private final String name;

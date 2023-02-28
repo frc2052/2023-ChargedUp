@@ -15,12 +15,17 @@ public class AprilTagAlignCommand extends DriveCommand {
     private final PhotonVisionSubsystem vision;
 
     // PID constants should be tuned per robot
-    private final double LINEAR_P = 1.0;
+    private final double LINEAR_P = 0.1;
     private final double LINEAR_I = 0.0;
     private final double LINEAR_D = 0.0;
 
+    private final double ROTATION_P = 0.01;
+    private final double ROTATION_I = 0.0;
+    private final double ROTATION_D = 0.01;
+
     private final PIDController xController;
     private final PIDController yController;
+    private final PIDController rotationController;
 
     public AprilTagAlignCommand(Node node, DrivetrainSubsystem drivetrain, PhotonVisionSubsystem vision) {
         super(drivetrain);
@@ -35,6 +40,9 @@ public class AprilTagAlignCommand extends DriveCommand {
         yController = new PIDController(LINEAR_P, LINEAR_I, LINEAR_D);
         yController.setTolerance(0.05);
 
+        rotationController = new PIDController(ROTATION_P, ROTATION_I, ROTATION_D);
+        rotationController.setTolerance(0.05);
+
         addRequirements(this.vision);
     }
 
@@ -48,13 +56,11 @@ public class AprilTagAlignCommand extends DriveCommand {
             drivetrain.drive(
                 -xController.calculate(robotToTarget.getX(), Units.inchesToMeters(Constants.Auto.ROBOT_LENGTH_INCHES)),
                 -yController.calculate(robotToTarget.getY(), yOffset), 
-                0, 
+                -rotationController.calculate(-vision.getTarget().getYaw(), 0), 
                 false
             );
         } catch (Exception e) {
             end(true);
-
-            e.printStackTrace();
         }
     }
 

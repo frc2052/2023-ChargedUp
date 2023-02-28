@@ -51,7 +51,7 @@ public class DefaultDriveCommand extends DriveCommand {
         drivetrain.drive(
             slewAxis(xLimiter, deadBand(-xSupplier.getAsDouble())), 
             slewAxis(yLimiter, deadBand(-ySupplier.getAsDouble())),
-            slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble())),
+            slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble() * .75)),
             fieldCentricSupplier.getAsBoolean()
         );
     }
