@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.io.Dashboard;
+import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonSRX intakeMotor;
@@ -47,6 +48,12 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         Dashboard.getInstance().putData(Constants.Dashboard.INTAKE_CURRENT_KEY, intakeMotor.getSupplyCurrent());
+        if (intakeMotor.getSupplyCurrent()  < Constants.Intake.INTAKE_CRUISE_CURRENT_AMPS + 1 && intakeMotor.getSupplyCurrent() > 1){
+            //reusing status mode, just because we want white
+            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.NO_AUTO);
+        } else if (LEDSubsystem.getInstance().getLEDStatusMode() == LEDStatusMode.NO_AUTO && !LEDSubsystem.getInstance().getRobotDisabled()){
+            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF);
+        }
     }
 
     public void intakeIn() {
