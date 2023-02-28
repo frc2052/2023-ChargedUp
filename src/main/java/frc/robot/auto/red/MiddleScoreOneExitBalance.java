@@ -23,8 +23,8 @@ import frc.robot.subsystems.IntakeSubsystem;
 /**
  * Middle score gamepiece, drive to chargestation, and balance.
  */
-public class RedMiddleScoreOneBalance extends AutoBase {
-    public RedMiddleScoreOneBalance(
+public class MiddleScoreOneExitBalance extends AutoBase {
+    public MiddleScoreOneExitBalance(
         Grid startGrid,
         Node startNode,
         boolean endChargeStation,
@@ -53,6 +53,11 @@ public class RedMiddleScoreOneBalance extends AutoBase {
             0, 
             0
         );
+        Pose2d driveOverPose = createPose2dInches(
+            Constants.Auto.DISTANCE_GRID_TO_CHARGE_STATION_INCHES + Constants.Auto.CHARGE_STATION_DEPTH_INCHES + Constants.Auto.ROBOT_LENGTH_INCHES, 
+            0,
+            0
+        );
 
         drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
 
@@ -68,13 +73,29 @@ public class RedMiddleScoreOneBalance extends AutoBase {
             );
             addCommands(lineUpPath);
 
-            SwerveControllerCommand chargePath = createSwerveTrajectoryCommand(
-                AutoTrajectoryConfig.chargeStationTrajectoryConfig.withStartVelocity(1), 
+            SwerveControllerCommand onChargePath = createSwerveTrajectoryCommand(
+                AutoTrajectoryConfig.chargeStationTrajectoryConfig.withStartAndEndVelocity(1, 1), 
                 getLastEndingPose(),
                 chargeStationPose,
                 createRotation(0)
             );
-            addCommands(chargePath);
+            addCommands(onChargePath);
+
+            SwerveControllerCommand overChargePath = createSwerveTrajectoryCommand(
+                AutoTrajectoryConfig.defaultTrajectoryConfig.withStartVelocity(1), 
+                getLastEndingPose(),
+                chargeStationPose,
+                createRotation(0)
+            );
+            addCommands(overChargePath);
+
+            SwerveControllerCommand reverseOnChargePath = createSwerveTrajectoryCommand(
+                AutoTrajectoryConfig.chargeStationTrajectoryConfig, 
+                getLastEndingPose(),
+                chargeStationPose,
+                createRotation(0)
+            );
+            addCommands(reverseOnChargePath);
 
             addCommands(new ChargeStationBalanceCommand(drivetrain));
         }

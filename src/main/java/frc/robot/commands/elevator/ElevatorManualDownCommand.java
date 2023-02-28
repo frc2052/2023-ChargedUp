@@ -19,7 +19,7 @@ public class ElevatorManualDownCommand extends CommandBase {
 
     // Called when the command is initially scheduled.
     @Override
-    public void initialize() {
+    public void execute() {
         elevator.manualDown();
     }
 

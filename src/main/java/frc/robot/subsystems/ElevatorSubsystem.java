@@ -60,6 +60,11 @@ public class ElevatorSubsystem extends SubsystemBase {
             beltMotor.getSelectedSensorPosition()
         );
 
+        Dashboard.getInstance().putData(
+            "Elevator Limit Switch", 
+            elevatorZeroed()
+        );
+
         if (elevatorZeroed() || beltMotor.getSelectedSensorPosition() < 0) {
             zeroEncoder();
 
@@ -116,7 +121,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void manualDown() {
         if (!elevatorZeroed()) {
-            beltMotor.set(TalonFXControlMode.PercentOutput, -0.075);
+            beltMotor.set(TalonFXControlMode.PercentOutput, -0.15);
+        } else {
+            stop();
         }
     }
 

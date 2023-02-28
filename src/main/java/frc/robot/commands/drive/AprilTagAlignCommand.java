@@ -9,7 +9,7 @@ public class AprilTagAlignCommand extends DriveCommand {
     private final PhotonVisionSubsystem vision;
 
     // PID constants should be tuned per robot
-    private final double LINEAR_P = 0.1;
+    private final double LINEAR_P = 1;
     private final double LINEAR_I = 0;
     private final double LINEAR_D = 0.0;
 
@@ -22,10 +22,10 @@ public class AprilTagAlignCommand extends DriveCommand {
         this.vision = vision;
 
         xController = new PIDController(LINEAR_P, LINEAR_I, LINEAR_D);
-        xController.setTolerance(0.1);
+        xController.setTolerance(0.05);
 
         yController = new PIDController(LINEAR_P, LINEAR_I, LINEAR_D);
-        yController.setTolerance(0.1);
+        yController.setTolerance(0.05);
 
         addRequirements(this.vision);
     }
@@ -36,8 +36,8 @@ public class AprilTagAlignCommand extends DriveCommand {
             Translation2d robotToTarget = PhotonVisionSubsystem.getRobotToTargetTranslation(vision.getTarget());
 
             drivetrain.drive(
-                xController.calculate(robotToTarget.getX(), 0),
-                yController.calculate(robotToTarget.getY(), 0), 
+                0, //-xController.calculate(robotToTarget.getX(), 0),
+                -yController.calculate(robotToTarget.getY(), 0), 
                 0, 
                 false
             );

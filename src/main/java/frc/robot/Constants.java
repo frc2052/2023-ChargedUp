@@ -52,7 +52,7 @@ public final class Constants {
 
         public static final int LIMIT_SWITCH_DIO_CHANNEL = 0;
 
-        public static final double BELT_MOTOR_P = 0.2;
+        public static final double BELT_MOTOR_P = 0.25;
         public static final double BELT_MOTOR_I = 0;
         public static final double BELT_MOTOR_D = 0;
 
@@ -76,9 +76,9 @@ public final class Constants {
 
 
         // Minimum allowable amps
-        public static final double INTAKE_CRUISE_CURRENT_AMPS = 2.0;
+        public static final double INTAKE_CRUISE_CURRENT_AMPS = 4.0;
         public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 10.0;
-        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.25;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.5;
     }
     
     public static final class AutoBalance {
