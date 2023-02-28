@@ -51,14 +51,14 @@ public class ChargeStationBalanceCommand extends CommandBase {
 
         if (!isDropping && !holding && !isLevel) {
             drivetrain.drive(
-                Math.copySign(0.2, (double) -(drivetrain.getNavx().getPitch())),
+                Math.copySign(0.175, (double) -(drivetrain.getNavx().getPitch())),
                 0,
                 0, 
                 false
             );
         } else {
             //if balance timer has gone for 2 seconds, x the wheels
-            if (balanceTimer.hasElapsed(1)) {
+            if (balanceTimer.hasElapsed(0.5)) {
                 drivetrain.xWheels();
                 holding = true;
                 isLevel = true;
