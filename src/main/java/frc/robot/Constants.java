@@ -72,13 +72,13 @@ public final class Constants {
 
         public static final double INTAKE_IN_SPEED = 1.0;
         public static final double INTAKE_IN_SLOW_SPEED = 0.3;
-        public static final double INTAKE_OUT_SPEED = -0.5;
+        public static final double INTAKE_OUT_SPEED = -0.4;
 
 
         // Minimum allowable amps
-        public static final double INTAKE_CRUISE_CURRENT_AMPS = 4.0;
+        public static final double INTAKE_CRUISE_CURRENT_AMPS = 2.0;
         public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 10.0;
-        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.5;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.25;
     }
     
     public static final class AutoBalance {
