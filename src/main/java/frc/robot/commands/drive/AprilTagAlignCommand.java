@@ -2,23 +2,31 @@ package frc.robot.commands.drive;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
+import frc.robot.Constants.Auto;
+import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 
 public class AprilTagAlignCommand extends DriveCommand {
+    private final Node node;
+
     private final PhotonVisionSubsystem vision;
 
     // PID constants should be tuned per robot
-    private final double LINEAR_P = 1;
-    private final double LINEAR_I = 0;
+    private final double LINEAR_P = 1.0;
+    private final double LINEAR_I = 0.0;
     private final double LINEAR_D = 0.0;
 
     private final PIDController xController;
     private final PIDController yController;
-   
-    public AprilTagAlignCommand(DrivetrainSubsystem drivetrain, PhotonVisionSubsystem vision) {
+
+    public AprilTagAlignCommand(Node node, DrivetrainSubsystem drivetrain, PhotonVisionSubsystem vision) {
         super(drivetrain);
         
+        this.node = node;
+
         this.vision = vision;
 
         xController = new PIDController(LINEAR_P, LINEAR_I, LINEAR_D);
@@ -35,9 +43,11 @@ public class AprilTagAlignCommand extends DriveCommand {
         try {
             Translation2d robotToTarget = PhotonVisionSubsystem.getRobotToTargetTranslation(vision.getTarget());
 
+            double yOffset = (node.ordinal() - 1) * Auto.NODE_WIDTH_INCHES;
+
             drivetrain.drive(
-                0, //-xController.calculate(robotToTarget.getX(), 0),
-                -yController.calculate(robotToTarget.getY(), 0), 
+                -xController.calculate(robotToTarget.getX(), Units.inchesToMeters(Constants.Auto.ROBOT_LENGTH_INCHES)),
+                -yController.calculate(robotToTarget.getY(), yOffset), 
                 0, 
                 false
             );

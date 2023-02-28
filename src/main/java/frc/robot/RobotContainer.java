@@ -27,6 +27,7 @@ import frc.robot.io.Dashboard.Channel;
 import frc.robot.io.Dashboard.DriveMode;
 import frc.robot.io.Dashboard.GamePiece;
 import frc.robot.io.Dashboard.Grid;
+import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -118,7 +119,17 @@ public class RobotContainer {
         autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
         JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
-        aprilTagDriveButton.whileTrue(new AprilTagAlignCommand(drivetrain, vision));
+        JoystickButton aprilTagLeftNodeDriveButton = new JoystickButton(turnJoystick, 4);
+        JoystickButton aprilTagRightNodeDriveButton = new JoystickButton(turnJoystick, 5);
+        aprilTagDriveButton.and(aprilTagLeftNodeDriveButton).whileTrue(
+            new AprilTagAlignCommand(Node.LEFT_CONE, drivetrain, vision)
+        );
+        aprilTagDriveButton.and(aprilTagRightNodeDriveButton).whileTrue(
+            new AprilTagAlignCommand(Node.RIGHT_CONE, drivetrain, vision)
+        );
+        aprilTagDriveButton.whileTrue(
+            new AprilTagAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision)
+        );
 
         /*
          * LED button bindings
