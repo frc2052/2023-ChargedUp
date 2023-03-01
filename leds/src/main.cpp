@@ -13,7 +13,7 @@ int PIN_THIRTY_TWO = 33;
 int PIN_SIXTY_FOUR = 32;
 int PIN_ONE_HUNDRED_TWENTY_EIGHT = 35;
 
-int currentCode;
+int currentCode = -1;
 
 unsigned long startMillis;
 unsigned long currentMillis;
@@ -29,6 +29,8 @@ void setup() {
   FastLED.setBrightness(BRIGHTNESS);
   FastLED.clear();
   FastLED.show();
+
+        
 }
 
   void cone()
@@ -129,7 +131,7 @@ void loop() {
     }
   }
   currentCode = code;
-  if (code >=1 || code <=6)
+  if (code >=1 && code <=6)
   {
     pulse.update();
   }
