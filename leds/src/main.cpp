@@ -15,9 +15,6 @@ int PIN_ONE_HUNDRED_TWENTY_EIGHT = 35;
 
 int currentCode = -1;
 
-unsigned long startMillis;
-unsigned long currentMillis;
-
 CRGB g_leds[NUM_LEDS]; //create our LED array object for all our LEDs
 Pulse pulse = Pulse();
 
