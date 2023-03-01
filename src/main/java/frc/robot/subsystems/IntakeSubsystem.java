@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 
+import javax.lang.model.util.ElementScanner14;
+
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -49,9 +51,8 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         Dashboard.getInstance().putData(Constants.Dashboard.INTAKE_CURRENT_KEY, intakeMotor.getSupplyCurrent());
         if (intakeMotor.getSupplyCurrent()  < Constants.Intake.INTAKE_CRUISE_CURRENT_AMPS + 1 && intakeMotor.getSupplyCurrent() > 1){
-            //reusing status mode, just because we want white
             LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CURRENT_LIMITING);
-        } else if (LEDSubsystem.getInstance().getLEDStatusMode() == LEDStatusMode.NO_AUTO && !LEDSubsystem.getInstance().getRobotDisabled()){
+        } else if (LEDSubsystem.getInstance().getLEDStatusMode() == LEDStatusMode.CURRENT_LIMITING && !LEDSubsystem.getInstance().getRobotDisabled()){
             LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF);
         }
     }
