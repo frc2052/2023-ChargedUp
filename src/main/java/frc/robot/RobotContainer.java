@@ -10,12 +10,11 @@ import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
-import frc.robot.auto.DynamicAutoConfiguration;
 import frc.robot.auto.DynamicAutoFactory;
-import frc.robot.auto.red.RedMiddleScoreOneBalance;
-import frc.robot.auto.red.RedScoreOneBalanceAuto;
 import frc.robot.auto.red.MiddleScoreOneExitBalance;
 import frc.robot.auto.red.RedLeftScoreTwoBalanceAuto;
+import frc.robot.auto.red.RedMiddleScoreOneBalance;
+import frc.robot.auto.red.RedScoreOneBalanceAuto;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.AprilTagAlignCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
@@ -24,9 +23,7 @@ import frc.robot.commands.elevator.ElevatorManualUpCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
-import frc.robot.io.Dashboard.Channel;
 import frc.robot.io.Dashboard.DriveMode;
-import frc.robot.io.Dashboard.GamePiece;
 import frc.robot.io.Dashboard.Grid;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
@@ -43,6 +40,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -132,6 +130,9 @@ public class RobotContainer {
             new AprilTagAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision)
         );
 
+        JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
+        xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));
+
         /*
          * LED button bindings
          */
@@ -209,35 +210,7 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         switch (Dashboard.getInstance().getAuto()) {
-            case DYNAMIC_AUTO_FACTORY:
-                return autoFactory.getAuto(
-                    new DynamicAutoConfiguration(
-                        Dashboard.getInstance().getStartingGrid(), 
-                        Dashboard.getInstance().getStartingNode(),
-                        Dashboard.getInstance().getExitChannel(),
-                        Dashboard.getInstance().getGamePiece(), 
-                        Dashboard.getInstance().scoreGamePiece(), 
-                        Dashboard.getInstance().getScoreGrid(), 
-                        Dashboard.getInstance().getScoreNode(),
-                        Dashboard.getInstance().endChargeStation()
-                    )
-                );
-            
-            case TEST_LEFT_SCORE_ONE_BALANCE:
-                return autoFactory.getAuto(
-                    new DynamicAutoConfiguration(
-                        Grid.LEFT_GRID, 
-                        Dashboard.getInstance().getStartingNode(),
-                        Channel.LEFT_CHANNEL,
-                        GamePiece.FAR_LEFT_GAME_PIECE, 
-                        false, 
-                        null, 
-                        null,
-                        Dashboard.getInstance().endChargeStation()
-                    )
-                );
-
-            case RED_LEFT_SCORE_ONE_BALANCE:
+            case SCORE_ONE_BALANCE:
                 return new RedScoreOneBalanceAuto(
                     Dashboard.getInstance().getStartingGrid(), 
                     Dashboard.getInstance().getStartingNode(), 
@@ -248,7 +221,7 @@ public class RobotContainer {
                     arm
                 );
 
-            case RED_LEFT_SCORE_TWO_BALANCE:
+            case SCORE_TWO_BALANCE:
                 return new RedLeftScoreTwoBalanceAuto(
                     Dashboard.getInstance().getStartingGrid(), 
                     Dashboard.getInstance().getStartingNode(),
@@ -261,7 +234,7 @@ public class RobotContainer {
 
             case MIDDLE_SCORE_ONE_EXIT:
                 return new MiddleScoreOneExitBalance(
-                    Dashboard.getInstance().getStartingGrid(), 
+                    Grid.MIDDLE_GRID, 
                     Dashboard.getInstance().getStartingNode(),
                     Dashboard.getInstance().endChargeStation(),
                     drivetrain, 
@@ -272,7 +245,7 @@ public class RobotContainer {
 
             case MIDDLE_SCORE_ONE_BALANCE:
                 return new RedMiddleScoreOneBalance(
-                    Dashboard.getInstance().getStartingGrid(),
+                    Grid.MIDDLE_GRID,
                     Dashboard.getInstance().getStartingNode(),
                     Dashboard.getInstance().endChargeStation(),
                     drivetrain, 
@@ -284,6 +257,34 @@ public class RobotContainer {
             case NO_AUTO:
             default:
                 return null;
+
+            //  case DYNAMIC_AUTO_FACTORY:
+            //     return autoFactory.getAuto(
+            //         new DynamicAutoConfiguration(
+            //             Dashboard.getInstance().getStartingGrid(), 
+            //             Dashboard.getInstance().getStartingNode(),
+            //             Dashboard.getInstance().getExitChannel(),
+            //             Dashboard.getInstance().getGamePiece(), 
+            //             Dashboard.getInstance().scoreGamePiece(), 
+            //             Dashboard.getInstance().getScoreGrid(), 
+            //             Dashboard.getInstance().getScoreNode(),
+            //             Dashboard.getInstance().endChargeStation()
+            //         )
+            //     );
+            
+            // case TEST_LEFT_SCORE_ONE_BALANCE:
+            //     return autoFactory.getAuto(
+            //         new DynamicAutoConfiguration(
+            //             Grid.LEFT_GRID, 
+            //             Dashboard.getInstance().getStartingNode(),
+            //             Channel.LEFT_CHANNEL,
+            //             GamePiece.FAR_LEFT_GAME_PIECE, 
+            //             false, 
+            //             null, 
+            //             null,
+            //             Dashboard.getInstance().endChargeStation()
+            //         )
+            //     );
         }
     }
 }

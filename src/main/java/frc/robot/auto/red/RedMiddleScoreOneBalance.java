@@ -72,7 +72,7 @@ public class RedMiddleScoreOneBalance extends AutoBase {
                 AutoTrajectoryConfig.chargeStationTrajectoryConfig.withStartVelocity(1), 
                 getLastEndingPose(),
                 chargeStationPose,
-                createRotation(0)
+                createRotation(180)
             );
             addCommands(chargePath);
 

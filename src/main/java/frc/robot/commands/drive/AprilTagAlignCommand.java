@@ -54,8 +54,8 @@ public class AprilTagAlignCommand extends DriveCommand {
             double yOffset = (node.ordinal() - 1) * Auto.NODE_WIDTH_INCHES;
 
             drivetrain.drive(
-                -xController.calculate(robotToTarget.getX(), Units.inchesToMeters(Constants.Auto.ROBOT_LENGTH_INCHES)),
-                -yController.calculate(robotToTarget.getY(), yOffset), 
+                0, // -xController.calculate(robotToTarget.getX(), Units.inchesToMeters(Constants.Auto.ROBOT_LENGTH_INCHES)),
+                0, // -yController.calculate(robotToTarget.getY(), yOffset), 
                 -rotationController.calculate(-vision.getTarget().getYaw(), 0), 
                 false
             );
