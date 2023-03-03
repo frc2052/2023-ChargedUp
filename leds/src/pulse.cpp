@@ -2,14 +2,16 @@
 #include "constants.h"
 #include "pulse.h"
 
-void Pulse::init(CRGB color, int millisOn, int millisOff) {
+void Pulse::init(CRGB color, int millisOn, int millisOff)
+{
     pulseColor = color;
     startPulseMillis = millis();
     msOn = millisOn;
     msOff = millisOff;
 }
 
-void Pulse::update() {    
+void Pulse::update()
+{    
     if (millis() - startPulseMillis < msOn)
     {
         fill_solid(g_leds, NUM_LEDS, pulseColor);

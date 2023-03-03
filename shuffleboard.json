@@ -10,7 +10,6 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "titleType": 0,
-        "titleType": 0,
         "tiles": {
           "0,0": {
             "size": [
@@ -21,8 +20,6 @@
               "_type": "Boolean Box",
               "_source0": "network_table:///SmartDashboard/Field Relative",
               "_title": "Field Relative",
-              "_glyph": 148,
-              "_showGlyph": false,
               "_glyph": 148,
               "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
@@ -40,9 +37,6 @@
               "_title": "Auto",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "Auto",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "2,0": {
@@ -53,9 +47,6 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Node",
-              "_title": "Node",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "Node",
               "_glyph": 148,
               "_showGlyph": false
@@ -72,9 +63,6 @@
               "_title": "Grid",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "Grid",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "4,0": {
@@ -85,9 +73,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Channel",
-              "_title": "Channel",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "Channel",
               "_glyph": 148,
               "_showGlyph": false
@@ -104,9 +89,6 @@
               "_title": "Game Piece",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "Game Piece",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "6,0": {
@@ -117,9 +99,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Drivetrain Rotation Degrees",
-              "_title": "Drivetrain Rotation Degrees",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "Drivetrain Rotation Degrees",
               "_glyph": 148,
               "_showGlyph": false
@@ -136,9 +115,6 @@
               "_title": "front left Offset Radians",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "front left Offset Radians",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "8,0": {
@@ -149,9 +125,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/front right Offset Radians",
-              "_title": "front right Offset Radians",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "front right Offset Radians",
               "_glyph": 148,
               "_showGlyph": false
@@ -168,9 +141,6 @@
               "_title": "back left Offset Radians",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "back left Offset Radians",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "0,1": {
@@ -181,9 +151,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/back right Offset Radians",
-              "_title": "back right Offset Radians",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "back right Offset Radians",
               "_glyph": 148,
               "_showGlyph": false
@@ -200,9 +167,6 @@
               "_title": "Elevator position",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "Elevator position",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "2,1": {
@@ -213,9 +177,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Auto Description",
-              "_title": "Auto Description",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "Auto Description",
               "_glyph": 148,
               "_showGlyph": false
@@ -232,9 +193,6 @@
               "_title": "Node Name",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "Node Name",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "4,1": {
@@ -245,9 +203,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Grid Name",
-              "_title": "Grid Name",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "Grid Name",
               "_glyph": 148,
               "_showGlyph": false
@@ -264,9 +219,6 @@
               "_title": "front left: Speed",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "front left: Speed",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "6,1": {
@@ -277,9 +229,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/front left: Desired Rotation",
-              "_title": "front left: Desired Rotation",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "front left: Desired Rotation",
               "_glyph": 148,
               "_showGlyph": false
@@ -296,9 +245,6 @@
               "_title": "front left: Rotation",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "front left: Rotation",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "8,1": {
@@ -309,9 +255,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/front right: Speed",
-              "_title": "front right: Speed",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "front right: Speed",
               "_glyph": 148,
               "_showGlyph": false
@@ -328,9 +271,6 @@
               "_title": "front right: Desired Rotation",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "front right: Desired Rotation",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "0,2": {
@@ -341,9 +281,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/front right: Rotation",
-              "_title": "front right: Rotation",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "front right: Rotation",
               "_glyph": 148,
               "_showGlyph": false
@@ -360,9 +297,6 @@
               "_title": "back left: Speed",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "back left: Speed",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "2,2": {
@@ -373,9 +307,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/back left: Desired Rotation",
-              "_title": "back left: Desired Rotation",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "back left: Desired Rotation",
               "_glyph": 148,
               "_showGlyph": false
@@ -392,9 +323,6 @@
               "_title": "back left: Rotation",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "back left: Rotation",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "4,2": {
@@ -405,9 +333,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/back right: Speed",
-              "_title": "back right: Speed",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "back right: Speed",
               "_glyph": 148,
               "_showGlyph": false
@@ -424,9 +349,6 @@
               "_title": "back right: Desired Rotation",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "back right: Desired Rotation",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "6,2": {
@@ -437,9 +359,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/back right: Rotation",
-              "_title": "back right: Rotation",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "back right: Rotation",
               "_glyph": 148,
               "_showGlyph": false
@@ -456,9 +375,6 @@
               "_title": "Drive Mode",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "Drive Mode",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "8,2": {
@@ -469,9 +385,6 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/DA: Node",
-              "_title": "DA: Node",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "DA: Node",
               "_glyph": 148,
               "_showGlyph": false
@@ -488,9 +401,6 @@
               "_title": "DA: Grid",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "DA: Grid",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "0,3": {
@@ -501,9 +411,6 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/DA: Channel",
-              "_title": "DA: Channel",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "DA: Channel",
               "_glyph": 148,
               "_showGlyph": false
@@ -520,9 +427,6 @@
               "_title": "DA: Game Piece",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "DA: Game Piece",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "2,3": {
@@ -533,9 +437,6 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/DA: Score Node",
-              "_title": "DA: Score Node",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "DA: Score Node",
               "_glyph": 148,
               "_showGlyph": false
@@ -552,9 +453,6 @@
               "_title": "DA: Score Grid",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "DA: Score Grid",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "4,3": {
@@ -565,9 +463,6 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/DA: Enter Channel",
-              "_title": "DA: Enter Channel",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "DA: Enter Channel",
               "_glyph": 148,
               "_showGlyph": false
@@ -582,8 +477,6 @@
               "_type": "Boolean Box",
               "_source0": "network_table:///SmartDashboard/DA: Score Game Piece",
               "_title": "DA: Score Game Piece",
-              "_glyph": 148,
-              "_showGlyph": false,
               "_glyph": 148,
               "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
@@ -601,8 +494,6 @@
               "_title": "DA: End Charge Station",
               "_glyph": 148,
               "_showGlyph": false,
-              "_glyph": 148,
-              "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -615,9 +506,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Elevator position",
-              "_title": "SmartDashboard/Elevator position",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "SmartDashboard/Elevator position",
               "_glyph": 148,
               "_showGlyph": false
@@ -634,9 +522,6 @@
               "_title": "intake CURRENT",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "intake CURRENT",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "9,3": {
@@ -647,9 +532,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/intake VELOCITY",
-              "_title": "intake VELOCITY",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "intake VELOCITY",
               "_glyph": 148,
               "_showGlyph": false
@@ -664,8 +546,6 @@
               "_type": "Boolean Box",
               "_source0": "network_table:///SmartDashboard/intake HAS GP",
               "_title": "intake HAS GP",
-              "_glyph": 148,
-              "_showGlyph": false,
               "_glyph": 148,
               "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
@@ -683,9 +563,6 @@
               "_title": "Intake Current",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "Intake Current",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "2,4": {
@@ -699,9 +576,6 @@
               "_title": "Elevator Position",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "Elevator Position",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "3,4": {
@@ -712,9 +586,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Pressure",
-              "_title": "Pressure",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "Pressure",
               "_glyph": 148,
               "_showGlyph": false
@@ -733,7 +604,6 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "titleType": 0,
-        "titleType": 0,
         "tiles": {
           "3,0": {
             "size": [
@@ -744,8 +614,6 @@
               "_type": "Camera Stream",
               "_source0": "camera_server://photonvision_Port_1181_MJPEG_Server",
               "_title": "photonvision_Port_1181_MJPEG_Server",
-              "_glyph": 148,
-              "_showGlyph": false,
               "_glyph": 148,
               "_showGlyph": false,
               "Crosshair/Show crosshair": true,
@@ -767,8 +635,6 @@
               "_type": "Camera Stream",
               "_source0": "camera_server://photonvision_Port_1182_MJPEG_Server",
               "_title": "photonvision_Port_1182_MJPEG_Server",
-              "_glyph": 148,
-              "_showGlyph": false,
               "_glyph": 148,
               "_showGlyph": false,
               "Crosshair/Show crosshair": true,
@@ -794,7 +660,6 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "titleType": 0,
-        "titleType": 0,
         "tiles": {
           "3,3": {
             "size": [
@@ -804,9 +669,6 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Drive Mode",
-              "_title": "SmartDashboard/Drive Mode",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "SmartDashboard/Drive Mode",
               "_glyph": 148,
               "_showGlyph": false
@@ -821,8 +683,6 @@
               "_type": "Boolean Box",
               "_source0": "network_table:///SmartDashboard/Camera Connected",
               "_title": "/SmartDashboard/Camera Connected",
-              "_glyph": 148,
-              "_showGlyph": false,
               "_glyph": 148,
               "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
@@ -840,9 +700,6 @@
               "_title": "/SmartDashboard/Auto",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "/SmartDashboard/Auto",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "8,3": {
@@ -853,9 +710,6 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Balance Drive",
-              "_title": "/SmartDashboard/Balance Drive",
-              "_glyph": 148,
-              "_showGlyph": false
               "_title": "/SmartDashboard/Balance Drive",
               "_glyph": 148,
               "_showGlyph": false
@@ -872,9 +726,6 @@
               "_title": "/SmartDashboard/Pitch of Robot",
               "_glyph": 148,
               "_showGlyph": false
-              "_title": "/SmartDashboard/Pitch of Robot",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "0,1": {
@@ -886,8 +737,6 @@
               "_type": "Simple Dial",
               "_source0": "network_table:///SmartDashboard/Pressure",
               "_title": "SmartDashboard/Pressure",
-              "_glyph": 148,
-              "_showGlyph": false,
               "_glyph": 148,
               "_showGlyph": false,
               "Range/Min": 0.0,
@@ -949,26 +798,6 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "7,0": {
-            "size": [
-              3,
-              3
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Intake Current",
-              "_title": "SmartDashboard/Intake Current",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Graph/Visible time": 5.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 20.0,
-              "Y-axis/Lower bound": 0.0,
-              "Y-axis/Unit": "ul",
-              "Visible data/SmartDashboard/Intake Current": true
-            }
-          },
           "3,0": {
             "size": [
               4,
@@ -1001,34 +830,6 @@
               "_title": "/SmartDashboard/Starting Grid",
               "_glyph": 148,
               "_showGlyph": false
-            }
-          },
-          "0,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Elevator Position",
-              "_title": "SmartDashboard/Elevator Position",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "6,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Elevator Limit Switch",
-              "_title": "SmartDashboard/Elevator Limit Switch",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
             }
           },
           "7,0": {

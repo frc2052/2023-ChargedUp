@@ -117,18 +117,18 @@ public class RobotContainer {
         Trigger autoBalance = new Trigger(() -> controlPanel.getY() > 0.5);
         autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
-        JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
-        JoystickButton aprilTagLeftNodeDriveButton = new JoystickButton(turnJoystick, 4);
-        JoystickButton aprilTagRightNodeDriveButton = new JoystickButton(turnJoystick, 5);
-        aprilTagDriveButton.and(aprilTagLeftNodeDriveButton).whileTrue(
-            new AprilTagAlignCommand(Node.LEFT_CONE, drivetrain, vision)
-        );
-        aprilTagDriveButton.and(aprilTagRightNodeDriveButton).whileTrue(
-            new AprilTagAlignCommand(Node.RIGHT_CONE, drivetrain, vision)
-        );
-        aprilTagDriveButton.whileTrue(
-            new AprilTagAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision)
-        );
+        // JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
+        // JoystickButton aprilTagLeftNodeDriveButton = new JoystickButton(turnJoystick, 4);
+        // JoystickButton aprilTagRightNodeDriveButton = new JoystickButton(turnJoystick, 5);
+        // aprilTagDriveButton.and(aprilTagLeftNodeDriveButton).whileTrue(
+        //     new AprilTagAlignCommand(Node.LEFT_CONE, drivetrain, vision)
+        // );
+        // aprilTagDriveButton.and(aprilTagRightNodeDriveButton).whileTrue(
+        //     new AprilTagAlignCommand(Node.RIGHT_CONE, drivetrain, vision)
+        // );
+        // aprilTagDriveButton.whileTrue(
+        //     new AprilTagAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision)
+        // );
 
         JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
         xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));
