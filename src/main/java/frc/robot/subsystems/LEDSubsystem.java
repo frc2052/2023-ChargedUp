@@ -44,6 +44,26 @@ public class LEDSubsystem extends SubsystemBase {
         return INSTANCE;
     }
 
+    public static enum LEDStatusMode {
+        OFF(0),
+        CONE(1),
+        CUBE(2),
+        DISABLED_RED_PULSE(3),
+        DISABLED_BLUE_PULSE(4),
+        NO_AUTO(5),
+        CURRENT_LIMITING(6);
+
+        private final int code;
+
+        private LEDStatusMode(int code) {
+            this.code = code;
+        }
+
+        public int getPositionTicks() {
+            return code;
+        }
+    }
+
     @Override
     public void periodic() {
         int code = 0;
@@ -88,6 +108,10 @@ public class LEDSubsystem extends SubsystemBase {
         }
     }
 
+    public LEDStatusMode getLEDStatusMode(){
+        return currentStatusMode;
+    }
+
     public void clearStatusMode() {
         currentStatusMode = LEDStatusMode.OFF;
     }
@@ -110,22 +134,7 @@ public class LEDSubsystem extends SubsystemBase {
         robotDisabled = false;
     }
 
-    public static enum LEDStatusMode {
-        OFF(0),
-        CONE(1),
-        CUBE(2),
-        DISABLED_RED_PULSE(3),
-        DISABLED_BLUE_PULSE(4),
-        NO_AUTO(5);
-
-        private final int code;
-
-        private LEDStatusMode(int code) {
-            this.code = code;
-        }
-
-        public int getPositionTicks() {
-            return code;
-        }
+    public boolean getRobotDisabled(){
+        return robotDisabled;
     }
 }

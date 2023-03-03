@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 
+import javax.lang.model.util.ElementScanner14;
+
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.io.Dashboard;
+import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonSRX intakeMotor;
@@ -47,6 +50,11 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         Dashboard.getInstance().putData(Constants.Dashboard.INTAKE_CURRENT_KEY, intakeMotor.getSupplyCurrent());
+        if (intakeMotor.getSupplyCurrent()  < Constants.Intake.INTAKE_CRUISE_CURRENT_AMPS + 1 && intakeMotor.getSupplyCurrent() > 1){
+            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CURRENT_LIMITING);
+        } else if (LEDSubsystem.getInstance().getLEDStatusMode() == LEDStatusMode.CURRENT_LIMITING && !LEDSubsystem.getInstance().getRobotDisabled()){
+            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF);
+        }
     }
 
     public void intakeIn() {
