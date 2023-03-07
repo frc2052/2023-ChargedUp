@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.io.Dashboard;
-import frc.robot.io.Dashboard.Autos;
+import frc.robot.io.Dashboard.Auto;
 
 /**
  * Subsystem to control the robot's LEDs, by determining what number should be encoded to DIO pins and
@@ -70,8 +70,8 @@ public class LEDSubsystem extends SubsystemBase {
         if(!disableLEDs) {
                 if (robotDisabled) {   // If disabled, finds gets the alliance color from the driver station and pulses that. Only pulses color if connected to station or FMS, else pulses default disabled color (Firefl status mode)
 
-                    Autos selected = Dashboard.getInstance().getAuto();
-                    if (selected == Autos.NO_AUTO){
+                    Auto selected = Dashboard.getInstance().getAuto();
+                    if (selected == Auto.NO_AUTO){
                         currentStatusMode = LEDStatusMode.NO_AUTO;
                     }
                     else if (DriverStation.getAlliance() == Alliance.Red) {

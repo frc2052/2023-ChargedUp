@@ -15,12 +15,13 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.Auto;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.PhotonVisionSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.VisionSubsystem.TargetNotFoundException;
 
-public class AprilTagAlignCommand extends DriveCommand {
+public class CubeAlignCommand extends DriveCommand {
     private final Node node;
 
-    private final PhotonVisionSubsystem vision;
+    private final VisionSubsystem vision;
 
     // PID constants should be tuned per robot
     private final double TRANSLATION_P = 0.1;
@@ -36,7 +37,7 @@ public class AprilTagAlignCommand extends DriveCommand {
 
     private SwerveControllerCommand alignWithTargetCommand;
 
-    public AprilTagAlignCommand(Node node, DrivetrainSubsystem drivetrain, PhotonVisionSubsystem vision) {
+    public CubeAlignCommand(Node node, DrivetrainSubsystem drivetrain, VisionSubsystem vision) {
         super(drivetrain);
         
         this.node = node;
@@ -60,13 +61,13 @@ public class AprilTagAlignCommand extends DriveCommand {
     @Override
     protected void drive() {
         try {
-            Translation2d robotToTarget = PhotonVisionSubsystem.getRobotToTargetTranslation(vision.getTarget());
+            Translation2d robotToTarget = VisionSubsystem.getRobotToTargetTranslation(vision.getTarget());
 
             double yOffsetInches = (node.ordinal() - 1) * Auto.NODE_WIDTH_INCHES;
 
             alignWithTargetCommand = new SwerveControllerCommand(
                 TrajectoryGenerator.generateTrajectory(
-                    new Pose2d(robotToTarget.getX(), robotToTarget.getY(), Rotation2d.fromDegrees(-vision.getTarget().getYaw())), 
+                    new Pose2d(robotToTarget.getX(), robotToTarget.getY(), new Rotation2d()), 
                     new ArrayList<Translation2d>(), 
                     new Pose2d(0, Units.inchesToMeters(yOffsetInches), new Rotation2d()),
                     new TrajectoryConfig(1, 1)
@@ -76,7 +77,13 @@ public class AprilTagAlignCommand extends DriveCommand {
                 translationController,
                 translationController,
                 rotationController,
-                () -> { return new Rotation2d(); },
+                () -> { 
+                    try {
+                        return Rotation2d.fromDegrees(-vision.getTarget().getYaw());
+                    } catch(TargetNotFoundException e) {
+                        return new Rotation2d();
+                    }
+                 },
                 drivetrain::setModuleStates, 
                 drivetrain
             );

@@ -2,7 +2,7 @@
   "tabPane": [
     {
       "title": "SmartDashboard",
-      "autoPopulate": true,
+      "autoPopulate": false,
       "autoPopulatePrefix": "SmartDashboard/",
       "widgetPane": {
         "gridSize": 128.0,
@@ -806,9 +806,9 @@
             "content": {
               "_type": "Camera Stream",
               "_source0": "camera_server://photonvision_Port_1181_MJPEG_Server",
-              "_title": "photonvision_Port_1181_MJPEG_Server",
-              "_glyph": 148,
-              "_showGlyph": false,
+              "_title": "Photon Vision",
+              "_glyph": 81,
+              "_showGlyph": true,
               "Crosshair/Show crosshair": true,
               "Crosshair/Crosshair color": "#FFFFFFFF",
               "Controls/Show controls": true,
@@ -840,7 +840,7 @@
             "content": {
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/Intake Current",
-              "_title": "SmartDashboard/Intake Current",
+              "_title": "Intake Current",
               "_glyph": 484,
               "_showGlyph": true,
               "Graph/Visible time": 5.0,

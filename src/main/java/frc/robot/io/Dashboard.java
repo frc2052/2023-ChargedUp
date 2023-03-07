@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.auto.AutoConfiguration;
 
 /** Add your docs here. */
 // Trying something different this year, instead of a normal class
@@ -22,7 +23,7 @@ public class Dashboard {
     // Creates sendable choosers
     private final SendableChooser<DriveMode> driveModeChooser;
 
-    private final SendableChooser<Autos> autoChooser;
+    private final SendableChooser<Auto> autoChooser;
     private final SendableChooser<Node> startingNodeChooser;
     private final SendableChooser<Grid> startingGridChooser;
     private final SendableChooser<Channel> exitChannelChooser;
@@ -38,11 +39,11 @@ public class Dashboard {
         driveModeChooser.setDefaultOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
         SmartDashboard.putData(Constants.Dashboard.DRIVE_MODE_KEY, driveModeChooser);
 
-        autoChooser = new SendableChooser<Autos>();
-        for (Autos auto : Autos.values()) {
+        autoChooser = new SendableChooser<Auto>();
+        for (Auto auto : Auto.values()) {
             autoChooser.addOption(auto.name, auto);
         }
-        autoChooser.setDefaultOption(Autos.NO_AUTO.name(), Autos.NO_AUTO);
+        autoChooser.setDefaultOption(Auto.NO_AUTO.name(), Auto.NO_AUTO);
         SmartDashboard.putData("Auto", autoChooser);
 
         startingNodeChooser = new SendableChooser<Node>();
@@ -115,7 +116,7 @@ public class Dashboard {
         return driveModeChooser.getSelected();      
     }
 
-    public Autos getAuto() {
+    public Auto getAuto() {
         return autoChooser.getSelected();
     }
 
@@ -151,6 +152,19 @@ public class Dashboard {
         return SmartDashboard.getBoolean("End Charge Station", true);
     }
 
+    public AutoConfiguration getAutoConfiguration() {
+        return new AutoConfiguration(
+            getStartingGrid(), 
+            getStartingNode(), 
+            getExitChannel(), 
+            getGamePiece(), 
+            scoreGamePiece(), 
+            getScoreGrid(), 
+            getScoreNode(), 
+            endChargeStation()
+        );
+    }
+
     public static Dashboard getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new Dashboard();
@@ -165,7 +179,7 @@ public class Dashboard {
         ROBOT_CENTRIC;
     }
 
-    public static enum Autos {
+    public static enum Auto {
         NO_AUTO("NO AUTO", "NO AUTO"),
         //DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description"),
         //TEST_LEFT_SCORE_ONE_BALANCE("Test Score One Balance", ""),
@@ -177,7 +191,7 @@ public class Dashboard {
         private final String name;
         private final String description;
 
-        private Autos(String name, String description) {
+        private Auto(String name, String description) {
             this.name = name;
             this.description = description;
         }

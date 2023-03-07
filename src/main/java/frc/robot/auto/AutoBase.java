@@ -13,9 +13,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
+import frc.robot.commands.elevator.ZeroElevator;
 import frc.robot.io.Dashboard.Grid;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
@@ -27,9 +29,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public abstract class AutoBase extends SequentialCommandGroup {
-    protected final Grid startGrid;
-    protected final Node startNode;
-    protected final boolean endChargeStation;
+    protected final AutoConfiguration autoConfiguration;
     protected final DrivetrainSubsystem drivetrain;
     protected final ElevatorSubsystem elevator;
     protected final IntakeSubsystem intake;
@@ -39,25 +39,23 @@ public abstract class AutoBase extends SequentialCommandGroup {
 
     /** Creates a new Auto. */
     public AutoBase(
-        Grid startGrid,
-        Node startNode,
-        boolean endChargeStation,
+        AutoConfiguration autoConfiguration,
         DrivetrainSubsystem drivetrain, 
         ElevatorSubsystem elevator, 
         IntakeSubsystem intake, 
         ArmSubsystem arm
     ) {
-        this.startGrid = startGrid;
-        this.startNode = startNode;
-        this.endChargeStation = endChargeStation;
+        this.autoConfiguration = autoConfiguration;
         this.drivetrain = drivetrain;
         this.elevator = elevator;
         this.intake = intake;
         this.arm = arm;
 
-        // if (!this.elevator.elevatorZeroed()) {
-        //     addCommands(new ZeroElevator(this.elevator));
-        // }
+        if (!DriverStation.isFMSAttached()) {
+            if (!this.elevator.elevatorZeroed()) {
+                addCommands(new ZeroElevator(this.elevator));
+            }
+        }
 
         init();
     }
@@ -142,11 +140,18 @@ public abstract class AutoBase extends SequentialCommandGroup {
     ) {
         lastEndingPose = endPose;
 
+        double flipYCoord = autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? -1.0 : 1.0;
+
+        List<Translation2d> adjustedMidpointList = new ArrayList<Translation2d>();
+        for (Translation2d midpoint : midpointList) {
+            adjustedMidpointList.add(new Translation2d(midpoint.getX(), midpoint.getY()));
+        }
+        
         return new SwerveControllerCommand(
             TrajectoryGenerator.generateTrajectory(
-                startPose,
-                midpointList,
-                endPose,
+                new Pose2d(startPose.getX(), startPose.getY() * flipYCoord, startPose.getRotation()),
+                adjustedMidpointList,
+                new Pose2d(endPose.getX(), endPose.getY() * flipYCoord, endPose.getRotation()),
                 trajectoryConfig.getTrajectoryConfig()
             ),
             drivetrain::getPosition,

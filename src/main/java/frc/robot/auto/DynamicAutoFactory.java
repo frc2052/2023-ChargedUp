@@ -31,8 +31,8 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PhotonVisionSubsystem;
-import frc.robot.subsystems.PhotonVisionSubsystem.TargetNotFoundException;
+import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.VisionSubsystem.TargetNotFoundException;
 
 /**
  * Generates auto path: score gamepiece, drive to pick up gamepiece, drive to grid, 
@@ -46,9 +46,9 @@ public class DynamicAutoFactory {
     private final ElevatorSubsystem elevator;
     private final IntakeSubsystem intake;
     private final ArmSubsystem arm;
-    private final PhotonVisionSubsystem vision;
+    private final VisionSubsystem vision;
 
-    public DynamicAutoFactory(DrivetrainSubsystem drivetrain,ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm, PhotonVisionSubsystem vision) {
+    public DynamicAutoFactory(DrivetrainSubsystem drivetrain,ElevatorSubsystem elevator, IntakeSubsystem intake, ArmSubsystem arm, VisionSubsystem vision) {
         this.drivetrain = drivetrain;
         this.elevator = elevator;
         this.intake = intake;
@@ -56,12 +56,10 @@ public class DynamicAutoFactory {
         this.vision = vision;
     }
 
-    public SequentialCommandGroup getAuto(DynamicAutoConfiguration configuration) {
+    public SequentialCommandGroup getAuto(AutoConfiguration configuration) {
         // Inline implementation of the abstract auto class to create an instance of auto.
         return new AutoBase(
-            configuration.getStartingGrid(), 
-            configuration.getStartingNode(),
-            configuration.endChargeStation(),
+            configuration,
             drivetrain, 
             elevator, 
             intake, 
@@ -176,7 +174,7 @@ public class DynamicAutoFactory {
                             new RunCommand(() -> {
                                 try {
                                     // Outtake within 1.0 meters of distance to grid
-                                    if (PhotonVisionSubsystem.getDistanceToTargetMeters(vision.getTarget()) < 1.0) {
+                                    if (VisionSubsystem.getDistanceToTargetMeters(vision.getTarget()) < 1.0) {
                                         intake.intakeOut();
                                     }
                                 } catch (TargetNotFoundException e) { }

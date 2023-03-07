@@ -94,6 +94,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         return currentPosition;
     }
 
+    public ElevatorPosition getPreviouPosition() {
+        return previousPosition;
+    }
+
     public boolean atPosition() {
         return Math.abs(
             currentPosition.getPositionTicks() - beltMotor.getSelectedSensorPosition()

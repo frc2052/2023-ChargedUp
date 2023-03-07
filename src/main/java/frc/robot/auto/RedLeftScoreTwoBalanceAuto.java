@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.auto.red;
+package frc.robot.auto;
 
 import java.util.List;
 
@@ -12,12 +12,9 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.auto.AutoTrajectoryConfig;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.commands.intake.IntakeStopCommand;
-import frc.robot.io.Dashboard.Grid;
-import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -27,28 +24,24 @@ import frc.robot.subsystems.IntakeSubsystem;
  * Left side score gamepiece, drive to pick up gamepiece, drive to grid, 
  * shoot without stopping, drive to charge station, and balance.
  */
-public class RedLeftScoreTwoBalanceAuto extends ScorePickUpAuto {
+public class RedLeftScoreTwoBalanceAuto extends ScorePickUpAutoBase {
     public RedLeftScoreTwoBalanceAuto(
-        Grid startGrid,
-        Node startNode,
-        boolean endChargeStation,
+        AutoConfiguration autoConfiguration,
         DrivetrainSubsystem drivetrain, 
         ElevatorSubsystem elevator, 
         IntakeSubsystem intake, 
         ArmSubsystem arm
     ) {
-        super(startGrid, startNode, endChargeStation, drivetrain, elevator, intake, arm);
+        super(autoConfiguration, drivetrain, elevator, intake, arm);
     }
     
     public void init() {
         super.init();
 
-        double flip = startGrid == Grid.LEFT_GRID ? -1.0 : 1.0;
-
-        Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, 2 * flip);
-        Translation2d nearChargeStationInterpolationPoint = createTranslation2dInches(18, 6 * flip);
-        Pose2d lineUpPose = createPose2dInches(24, 80 * flip, 270);
-        Pose2d chargeStationPose = createPose2dInches(100, 80 * flip, 180);
+        Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, 2);
+        Translation2d nearChargeStationInterpolationPoint = createTranslation2dInches(18, 6);
+        Pose2d lineUpPose = createPose2dInches(24, 80, 270);
+        Pose2d chargeStationPose = createPose2dInches(100, 80, 180);
        
         // Driving back to grid
         SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
@@ -67,7 +60,7 @@ public class RedLeftScoreTwoBalanceAuto extends ScorePickUpAuto {
 
         addCommands(new IntakeStopCommand(intake));
 
-        if (endChargeStation) {
+        if (autoConfiguration.endChargeStation()) {
             SwerveControllerCommand balancePath = createSwerveTrajectoryCommand(
                 AutoTrajectoryConfig.chargeStationTrajectoryConfig.withStartVelocity(2),
                 getLastEndingPose(), 

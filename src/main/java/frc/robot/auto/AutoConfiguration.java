@@ -10,7 +10,7 @@ import frc.robot.io.Dashboard.Grid;
 import frc.robot.io.Dashboard.Node;
 
 /** Add your docs here. */
-public class DynamicAutoConfiguration {
+public class AutoConfiguration {
     private final Grid startingGrid;
     private final Node startingNode; 
     private final Channel exitChannel;
@@ -20,7 +20,7 @@ public class DynamicAutoConfiguration {
     private final Node scoreNode;
     private final boolean endChargeStation;
     
-    public DynamicAutoConfiguration(
+    public AutoConfiguration(
         Grid startingGrid, 
         Node startingNode, 
         Channel exitChannel, 

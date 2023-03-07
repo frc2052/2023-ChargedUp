@@ -21,11 +21,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.io.Dashboard;
 
-public class PhotonVisionSubsystem extends SubsystemBase {
+public class VisionSubsystem extends SubsystemBase {
     private final PhotonCamera camera;
 
     private final PhotonPoseEstimator poseEstimator;
@@ -33,7 +34,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     
     private final Timer driveModeResetTimer;
 
-    public PhotonVisionSubsystem() {
+    public VisionSubsystem() {
         camera = new PhotonCamera(Constants.Camera.CAMERA_NAME);
 
         try {
@@ -49,23 +50,40 @@ public class PhotonVisionSubsystem extends SubsystemBase {
             Constants.Camera.CAMERA_POSITION_METERS
         );
 
-        camera.setPipelineIndex(0);
-        camera.setDriverMode(true);
-
         camera.setLED(VisionLEDMode.kOff);
 
         driveModeResetTimer = new Timer();
+
+        SmartDashboard.putNumber("Pipeline", 0);
     }
 
     @Override
     public void periodic() {
-        if (driveModeResetTimer.get() >= 1.0) {
-            camera.setDriverMode(true);
-        }
+        // if (driveModeResetTimer.get() >= 1.0) {
+        //     camera.setDriverMode(true);
+        //     driveModeResetTimer.stop();
+        // }
+
+        camera.setPipelineIndex((int)SmartDashboard.getNumber("Pipeline", 0));
+        //camera.setDriverMode(false);
 
         Dashboard.getInstance().putData("Camera Connected", camera.isConnected());
     }
 
+    public void enableLED() {
+        camera.setLED(VisionLEDMode.kOn);
+    }
+
+    public void disableLED() {
+        camera.setLED(VisionLEDMode.kOff);
+    }
+
+    public PhotonTrackedTarget getReflectiveTarget() throws TargetNotFoundException {
+        camera.setPipelineIndex(1);
+
+        return getTarget();
+    }
+    
     public PhotonTrackedTarget getTarget() throws TargetNotFoundException {
         camera.setDriverMode(false);
         driveModeResetTimer.reset();
