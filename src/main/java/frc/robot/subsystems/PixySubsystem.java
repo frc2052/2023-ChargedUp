@@ -26,7 +26,7 @@ public class PixySubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    System.out.println("******************************** PIXY  " + getXPct());
+    //System.out.println("******************************** PIXY  " + getXPct());
 
   }
 

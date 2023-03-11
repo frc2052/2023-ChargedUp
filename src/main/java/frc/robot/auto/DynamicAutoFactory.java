@@ -32,7 +32,6 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.VisionSubsystem.TargetNotFoundException;
 
 /**
  * Generates auto path: score gamepiece, drive to pick up gamepiece, drive to grid, 
@@ -69,10 +68,6 @@ public class DynamicAutoFactory {
             public void init() {
                 System.out.println(getBaseLineYInches(configuration.getStartingGrid(), configuration.getStartingNode()));
                 System.out.println(getMidChannelYInches(configuration.getExitChannel()));
-
-                // if (true) {
-                //     return;
-                // }
 
                 // Initial starting position of the robot across the front of the grids.
                 Pose2d initialPose = createPose2dInches(
@@ -172,12 +167,12 @@ public class DynamicAutoFactory {
                         ParallelDeadlineGroup gamePieceAndScoreGroup = new ParallelDeadlineGroup(
                             gamePiecetoScoreCommand, 
                             new RunCommand(() -> {
-                                try {
-                                    // Outtake within 1.0 meters of distance to grid
-                                    if (VisionSubsystem.getDistanceToTargetMeters(vision.getTarget()) < 1.0) {
-                                        intake.intakeOut();
-                                    }
-                                } catch (TargetNotFoundException e) { }
+                                // try {
+                                //     // Outtake within 1.0 meters of distance to grid
+                                //     if (VisionSubsystem.getDistanceToTargetMeters(vision.getTarget()) < 1.0) {
+                                //         intake.intakeOut();
+                                //     }
+                                // } catch (TargetNotFoundException e) { }
                             }, intake, vision)
                         );
                         addCommands(gamePieceAndScoreGroup);

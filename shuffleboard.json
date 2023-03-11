@@ -805,7 +805,7 @@
             ],
             "content": {
               "_type": "Camera Stream",
-              "_source0": "camera_server://photonvision_Port_1181_MJPEG_Server",
+              "_source0": "camera_server://photonvision_Port_1182_MJPEG_Server",
               "_title": "Photon Vision",
               "_glyph": 81,
               "_showGlyph": true,

@@ -27,102 +27,102 @@ import frc.robot.Constants;
 import frc.robot.io.Dashboard;
 
 public class VisionSubsystem extends SubsystemBase {
-    private final PhotonCamera camera;
+    // private final PhotonCamera camera;
 
-    private final PhotonPoseEstimator poseEstimator;
-    private static AprilTagFieldLayout fieldLayout;
+    // private final PhotonPoseEstimator poseEstimator;
+    // private static AprilTagFieldLayout fieldLayout;
     
-    private final Timer driveModeResetTimer;
+    // private final Timer driveModeResetTimer;
 
-    public VisionSubsystem() {
-        camera = new PhotonCamera(Constants.Camera.CAMERA_NAME);
+    // public VisionSubsystem() {
+    //     camera = new PhotonCamera(Constants.Camera.CAMERA_NAME);
 
-        try {
-            fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-        } catch (IOException e) {
-            DriverStation.reportError(e.getMessage(), e.getStackTrace());
-        }
+    //     try {
+    //         fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+    //     } catch (IOException e) {
+    //         DriverStation.reportError(e.getMessage(), e.getStackTrace());
+    //     }
 
-        poseEstimator = new PhotonPoseEstimator(
-            fieldLayout,
-            PoseStrategy.AVERAGE_BEST_TARGETS, 
-            camera,
-            Constants.Camera.CAMERA_POSITION_METERS
-        );
+    //     poseEstimator = new PhotonPoseEstimator(
+    //         fieldLayout,
+    //         PoseStrategy.AVERAGE_BEST_TARGETS, 
+    //         camera,
+    //         Constants.Camera.CAMERA_POSITION_METERS
+    //     );
 
-        camera.setLED(VisionLEDMode.kOff);
+    //     // camera.setLED(VisionLEDMode.kOff);
 
-        driveModeResetTimer = new Timer();
+    //     driveModeResetTimer = new Timer();
 
-        SmartDashboard.putNumber("Pipeline", 0);
-    }
+    //     //SmartDashboard.putNumber("Pipeline", 0);
+    // }
 
-    @Override
-    public void periodic() {
-        // if (driveModeResetTimer.get() >= 1.0) {
-        //     camera.setDriverMode(true);
-        //     driveModeResetTimer.stop();
-        // }
+    // @Override
+    // public void periodic() {
+    //     // if (driveModeResetTimer.get() >= 1.0) {
+    //     //     camera.setDriverMode(true);
+    //     //     driveModeResetTimer.stop();
+    //     // }
 
-        camera.setPipelineIndex((int)SmartDashboard.getNumber("Pipeline", 0));
-        //camera.setDriverMode(false);
+    //     //camera.setPipelineIndex((int)SmartDashboard.getNumber("Pipeline", 0));
+    //     //camera.setDriverMode(false);
 
-        Dashboard.getInstance().putData("Camera Connected", camera.isConnected());
-    }
+    //    // Dashboard.getInstance().putData("Camera Connected", camera.isConnected());
+    // }
 
-    public void enableLED() {
-        camera.setLED(VisionLEDMode.kOn);
-    }
+    // public void enableLED() {
+    //     camera.setLED(VisionLEDMode.kOn);
+    // }
 
-    public void disableLED() {
-        camera.setLED(VisionLEDMode.kOff);
-    }
+    // public void disableLED() {
+    //     camera.setLED(VisionLEDMode.kOff);
+    // }
 
-    public PhotonTrackedTarget getReflectiveTarget() throws TargetNotFoundException {
-        camera.setPipelineIndex(1);
+    // public PhotonTrackedTarget getReflectiveTarget() throws TargetNotFoundException {
+    //     //camera.setPipelineIndex(1);
 
-        return getTarget();
-    }
+    //     return getTarget();
+    // }
     
-    public PhotonTrackedTarget getTarget() throws TargetNotFoundException {
-        camera.setDriverMode(false);
-        driveModeResetTimer.reset();
+    // public PhotonTrackedTarget getTarget() throws TargetNotFoundException {
+    //     //camera.setDriverMode(false);
+    //     driveModeResetTimer.reset();
 
-        PhotonPipelineResult result = camera.getLatestResult();
+    //     PhotonPipelineResult result = camera.getLatestResult();
 
-        if (!result.hasTargets()) {
-            // If there aren't any targets stop any further vision processing.
-            throw new TargetNotFoundException();
-        }
+    //     if (!result.hasTargets()) {
+    //         // If there aren't any targets stop any further vision processing.
+    //         throw new TargetNotFoundException();
+    //     }
 
-        return result.getBestTarget();
-    }
+    //     return result.getBestTarget();
+    // }
 
-    /**
-     * @return Estimated distance from the camera to the april tag in meters.
-    */
-    public static double getDistanceToTargetMeters(PhotonTrackedTarget target) {
-        return PhotonUtils.calculateDistanceToTargetMeters(
-            Constants.Camera.CAMERA_POSITION_METERS.getZ(),
-            fieldLayout.getTagPose(target.getFiducialId()).get().getZ(),
-            Constants.Camera.CAMERA_POSITION_METERS.getRotation().getY(),
-            Units.degreesToRadians(target.getPitch())
-        );
-    }
+    // /**
+    //  * @return Estimated distance from the camera to the april tag in meters.
+    // */
+    // public static double getDistanceToTargetMeters(PhotonTrackedTarget target) {
+    //     return PhotonUtils.calculateDistanceToTargetMeters(
+    //         Constants.Camera.CAMERA_POSITION_METERS.getZ(),
+    //         fieldLayout.getTagPose(target.getFiducialId()).get().getZ(),
+    //         Constants.Camera.CAMERA_POSITION_METERS.getRotation().getY(),
+    //         Units.degreesToRadians(target.getPitch())
+    //     );
+    // }
 
-    public static Translation2d getRobotToTargetTranslation(PhotonTrackedTarget target) throws IOException {
-        // Offset of camera to target
-        Translation2d cameraToTarget = PhotonUtils.estimateCameraToTargetTranslation(
-            getDistanceToTargetMeters(target),
-            Rotation2d.fromDegrees(-target.getYaw())
-        );
+    // public static Translation2d getRobotToTargetTranslation(PhotonTrackedTarget target) throws IOException {
+    //     // Offset of camera to target
+    //     Translation2d cameraToTarget = PhotonUtils.estimateCameraToTargetTranslation(
+    //         getDistanceToTargetMeters(target),
+    //         Rotation2d.fromDegrees(-target.getYaw())
+    //     );
 
-        // Convert camera relative to robot relative
-        return new Translation2d(
-            cameraToTarget.getX() + Constants.Camera.CAMERA_POSITION_METERS.getX(), 
-            cameraToTarget.getY() + Constants.Camera.CAMERA_POSITION_METERS.getY()
-        );
-    }
+    //     // Convert camera relative to robot relative
+    //     return new Translation2d(
+    //         cameraToTarget.getX() + Constants.Camera.CAMERA_POSITION_METERS.getX(), 
+    //         cameraToTarget.getY() + Constants.Camera.CAMERA_POSITION_METERS.getY()
+    //     );
+    // }
 
-    public class TargetNotFoundException extends Exception { }
+    // public class TargetNotFoundException extends Exception { }
 }

@@ -24,6 +24,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.NewVisionSubsystem;
 import frc.robot.subsystems.PixySubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
@@ -57,6 +58,7 @@ public class RobotContainer {
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
     private final VisionSubsystem vision;
+    private final NewVisionSubsystem vision2;
     private final PixySubsystem pixy;
 
     private final AutoFactory autoFactory;
@@ -74,6 +76,7 @@ public class RobotContainer {
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
         vision = new VisionSubsystem();
+        vision2 = new NewVisionSubsystem();
         pixy = new PixySubsystem();
 
         new PneumaticsSubsystem();
@@ -133,6 +136,23 @@ public class RobotContainer {
         // aprilTagDriveButton.whileTrue(
         //     new AprilTagAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision)
         // );
+
+        JoystickButton leftTestButton = new JoystickButton(turnJoystick, 4);
+        JoystickButton rightTestButton = new JoystickButton(turnJoystick, 5);
+        leftTestButton.whileTrue(
+            new RunCommand(() -> {
+                vision2.enableLEDs();
+                System.out.println(vision2.getReflectiveTarget()); 
+            }, vision2)
+        );
+        leftTestButton.onFalse(
+            new RunCommand(() -> { 
+                vision2.disableLEDs();
+            }, vision2)
+        );
+        rightTestButton.whileTrue(
+            new RunCommand(() -> { System.out.println(vision2.getAprilTagTarget()); }, vision2)
+        );
 
         JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
         xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));

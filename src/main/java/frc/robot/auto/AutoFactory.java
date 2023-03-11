@@ -57,9 +57,10 @@ public class AutoFactory {
         currentAuto = autoSupplier.get();
         currentAutoConfiguration = autoConfigurationSupplier.get();
 
-        System.out.println("Precompiling " + currentAuto.getName() + " auto...");
         Timer compileTimer = new Timer();
         compileTimer.start();
+        
+        System.out.println("Precompiling " + currentAuto.getName() + " auto...");
 
         switch (currentAuto) {
             case SCORE_ONE_BALANCE:
@@ -103,7 +104,6 @@ public class AutoFactory {
                 compiledAuto = null;
         }
 
-        compileTimer.stop();
         System.out.println("Auto compiled in " + compileTimer.get() + "s");
     }
 

@@ -16,7 +16,6 @@ import frc.robot.Constants.Auto;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.VisionSubsystem.TargetNotFoundException;
 
 public class CubeAlignCommand extends DriveCommand {
     private final Node node;
@@ -60,36 +59,36 @@ public class CubeAlignCommand extends DriveCommand {
 
     @Override
     protected void drive() {
-        try {
-            Translation2d robotToTarget = VisionSubsystem.getRobotToTargetTranslation(vision.getTarget());
+        // try {
+        //     Translation2d robotToTarget = VisionSubsystem.getRobotToTargetTranslation(vision.getTarget());
 
-            double yOffsetInches = (node.ordinal() - 1) * Auto.NODE_WIDTH_INCHES;
+        //     double yOffsetInches = (node.ordinal() - 1) * Auto.NODE_WIDTH_INCHES;
 
-            alignWithTargetCommand = new SwerveControllerCommand(
-                TrajectoryGenerator.generateTrajectory(
-                    new Pose2d(robotToTarget.getX(), robotToTarget.getY(), new Rotation2d()), 
-                    new ArrayList<Translation2d>(), 
-                    new Pose2d(0, Units.inchesToMeters(yOffsetInches), new Rotation2d()),
-                    new TrajectoryConfig(1, 1)
-                ), 
-                drivetrain::getPosition,
-                DrivetrainSubsystem.getKinematics(),
-                translationController,
-                translationController,
-                rotationController,
-                () -> { 
-                    try {
-                        return Rotation2d.fromDegrees(-vision.getTarget().getYaw());
-                    } catch(TargetNotFoundException e) {
-                        return new Rotation2d();
-                    }
-                 },
-                drivetrain::setModuleStates, 
-                drivetrain
-            );
-        } catch (Exception e) {
-            end(true);
-        }
+        //     alignWithTargetCommand = new SwerveControllerCommand(
+        //         TrajectoryGenerator.generateTrajectory(
+        //             new Pose2d(robotToTarget.getX(), robotToTarget.getY(), new Rotation2d()), 
+        //             new ArrayList<Translation2d>(), 
+        //             new Pose2d(0, Units.inchesToMeters(yOffsetInches), new Rotation2d()),
+        //             new TrajectoryConfig(1, 1)
+        //         ), 
+        //         drivetrain::getPosition,
+        //         DrivetrainSubsystem.getKinematics(),
+        //         translationController,
+        //         translationController,
+        //         rotationController,
+        //         () -> { 
+        //             try {
+        //                 return Rotation2d.fromDegrees(-vision.getTarget().getYaw());
+        //             } catch(TargetNotFoundException e) {
+        //                 return new Rotation2d();
+        //             }
+        //          },
+        //         drivetrain::setModuleStates, 
+        //         drivetrain
+        //     );
+        // } catch (Exception e) {
+        //     end(true);
+        // }
     }
 
     @Override
