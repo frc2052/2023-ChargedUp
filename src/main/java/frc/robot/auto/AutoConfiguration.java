@@ -71,4 +71,21 @@ public class AutoConfiguration {
     public boolean endChargeStation() {
         return endChargeStation;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof AutoConfiguration) {
+            boolean equals = true;
+            equals &= ((AutoConfiguration) other).getStartingGrid() == startingGrid;
+            equals &= ((AutoConfiguration) other).getStartingNode() == startingNode;
+            equals &= ((AutoConfiguration) other).getExitChannel() == exitChannel;
+            equals &= ((AutoConfiguration) other).getGamePiece() == gamePiece;
+            equals &= ((AutoConfiguration) other).scoreGamePiece() == scoreGamePiece;
+            equals &= ((AutoConfiguration) other).getScoreGrid() == scoreGrid;
+            equals &= ((AutoConfiguration) other).getScoreNode() == scoreNode;
+            equals &= ((AutoConfiguration) other).endChargeStation() == endChargeStation;
+            return equals;
+        }
+        return false;
+    }
 }

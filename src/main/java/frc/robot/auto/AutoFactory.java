@@ -6,7 +6,7 @@ package frc.robot.auto;
 
 import java.util.function.Supplier;
 
-import edu.wpi.first.wpilibj.Timer;
+import frc.robot.io.Dashboard;
 import frc.robot.io.Dashboard.Auto;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -50,17 +50,14 @@ public class AutoFactory {
     }
 
     public void precompileAuto() {
-        if (autoSupplier.get() == currentAuto || !autoConfigurationSupplier.get().equals(currentAutoConfiguration)) {
+        if (autoSupplier.get() == currentAuto && autoConfigurationSupplier.get().equals(currentAutoConfiguration)) {
             return;
         }
 
+        Dashboard.getInstance().putData("Auto Compiled", false);
+
         currentAuto = autoSupplier.get();
         currentAutoConfiguration = autoConfigurationSupplier.get();
-
-        Timer compileTimer = new Timer();
-        compileTimer.start();
-        
-        System.out.println("Precompiling " + currentAuto.getName() + " auto...");
 
         switch (currentAuto) {
             case SCORE_ONE_BALANCE:
@@ -71,6 +68,7 @@ public class AutoFactory {
                     intake, 
                     arm
                 );
+                break;
 
             case SCORE_TWO_BALANCE:
                 compiledAuto =  new RedLeftScoreTwoBalanceAuto(
@@ -80,6 +78,7 @@ public class AutoFactory {
                     intake, 
                     arm
                 );
+                break;
 
             case MIDDLE_SCORE_ONE_EXIT:
                 compiledAuto =  new MiddleScoreOneExitBalance(
@@ -89,6 +88,7 @@ public class AutoFactory {
                     intake, 
                     arm
                 );
+                break;
 
             case MIDDLE_SCORE_ONE_BALANCE:
                 compiledAuto =  new RedMiddleScoreOneBalance(
@@ -98,13 +98,15 @@ public class AutoFactory {
                     intake, 
                     arm
                 );
+                break;
 
             case NO_AUTO:
             default:
                 compiledAuto = null;
+                break;
         }
 
-        System.out.println("Auto compiled in " + compileTimer.get() + "s");
+        Dashboard.getInstance().putData("Auto Compiled", true);
     }
 
     public AutoBase getCompiledAuto() {

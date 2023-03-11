@@ -86,13 +86,14 @@ public class MiddleScoreOneExitBalance extends AutoBase {
             );
             addCommands(overChargePath);
 
-            SwerveControllerCommand reverseOnChargePath = createSwerveTrajectoryCommand(
-                AutoTrajectoryConfig.chargeStationTrajectoryConfig, 
-                getLastEndingPose(),
-                chargeStationPose,
-                createRotation(0)
-            );
-            addCommands(reverseOnChargePath);
+            // TODO: Causes error
+            // SwerveControllerCommand reverseOnChargePath = createSwerveTrajectoryCommand(
+            //     AutoTrajectoryConfig.chargeStationTrajectoryConfig, 
+            //     getLastEndingPose(),
+            //     chargeStationPose,
+            //     createRotation(0)
+            // );
+            // addCommands(reverseOnChargePath);
 
             addCommands(new ChargeStationBalanceCommand(drivetrain));
         }

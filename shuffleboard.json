@@ -851,15 +851,28 @@
               "Y-axis/Unit": "Amps",
               "Visible data/SmartDashboard/Intake Current": true
             }
+          },
+          "7,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Pipeline",
+              "_title": "/SmartDashboard/Pipeline",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
     }
   ],
   "windowGeometry": {
-    "x": -6.400000095367432,
-    "y": 0.0,
-    "width": 1547.199951171875,
-    "height": 830.4000244140625
+    "x": -7.199999809265137,
+    "y": -7.199999809265137,
+    "width": 1550.4000244140625,
+    "height": 838.4000244140625
   }
 }
