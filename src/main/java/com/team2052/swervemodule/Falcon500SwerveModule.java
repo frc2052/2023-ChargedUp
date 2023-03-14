@@ -47,7 +47,7 @@ public class Falcon500SwerveModule extends SwerveModule {
 
         TalonFXConfiguration driveMotorConfiguration = new TalonFXConfiguration();
         driveMotorConfiguration.voltageCompSaturation = SwerveConstants.MAX_VOLTAGE_VOLTS;
-        driveMotorConfiguration.supplyCurrLimit.currentLimit = SwerveConstants.DRIVE_CURRENT_LIMIT_AMPS;
+        driveMotorConfiguration.supplyCurrLimit.currentLimit = SwerveConstants.DRIVE_FREE_CURRENT_LIMIT_AMPS;
         driveMotorConfiguration.supplyCurrLimit.enable = true;
 
         driveMotor = new TalonFX(driveMotorChannel);

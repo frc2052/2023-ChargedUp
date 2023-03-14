@@ -65,11 +65,11 @@ public class ElevatorSubsystem extends SubsystemBase {
             elevatorZeroed()
         );
 
-        if (elevatorZeroed() || beltMotor.getSelectedSensorPosition() < 0) {
+        if (elevatorZeroed() || beltMotor.getSelectedSensorPosition() <= 0) {
             zeroEncoder();
 
             // If the elevator is traveling downwards stop the belt motor and end the current command.
-            if (currentPosition.getPositionTicks() < previousPosition.getPositionTicks()) {
+            if (currentPosition.getPositionTicks() <= previousPosition.getPositionTicks()) {
                 stop();
             }
         }

@@ -140,11 +140,11 @@ public abstract class AutoBase extends SequentialCommandGroup {
     ) {
         lastEndingPose = endPose;
 
-        double flipYCoord = autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? -1.0 : 1.0;
+        double flipYCoord = autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? 1.0 : 1.0;
 
         List<Translation2d> adjustedMidpointList = new ArrayList<Translation2d>();
         for (Translation2d midpoint : midpointList) {
-            adjustedMidpointList.add(new Translation2d(midpoint.getX(), midpoint.getY()));
+            adjustedMidpointList.add(new Translation2d(midpoint.getX(), midpoint.getY() * flipYCoord));
         }
         
         return new SwerveControllerCommand(

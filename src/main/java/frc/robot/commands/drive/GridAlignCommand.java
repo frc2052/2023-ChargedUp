@@ -2,6 +2,8 @@ package frc.robot.commands.drive;
 
 import java.util.ArrayList;
 
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,12 +17,12 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.Auto;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.NewVisionSubsystem;
 
-public class CubeAlignCommand extends DriveCommand {
+public class GridAlignCommand extends DriveCommand {
     private final Node node;
 
-    private final VisionSubsystem vision;
+    private final NewVisionSubsystem vision;
 
     // PID constants should be tuned per robot
     private final double TRANSLATION_P = 0.1;
@@ -36,7 +38,7 @@ public class CubeAlignCommand extends DriveCommand {
 
     private SwerveControllerCommand alignWithTargetCommand;
 
-    public CubeAlignCommand(Node node, DrivetrainSubsystem drivetrain, VisionSubsystem vision) {
+    public GridAlignCommand(Node node, DrivetrainSubsystem drivetrain, NewVisionSubsystem vision) {
         super(drivetrain);
         
         this.node = node;
@@ -59,6 +61,33 @@ public class CubeAlignCommand extends DriveCommand {
 
     @Override
     protected void drive() {
+        PhotonTrackedTarget target = vision.getAprilTagTarget();
+
+        Translation2d robotToTarget = NewVisionSubsystem.getRobotToTargetTranslationMeters(target);
+            
+        double yOffsetInches = (node.ordinal() - 1) * Auto.NODE_WIDTH_INCHES;
+
+        if (target != null) {
+            alignWithTargetCommand = new SwerveControllerCommand(
+                TrajectoryGenerator.generateTrajectory(
+                    new Pose2d(robotToTarget.getX(), robotToTarget.getY(), new Rotation2d()), 
+                    new ArrayList<Translation2d>(), 
+                    new Pose2d(0, Units.inchesToMeters(yOffsetInches), new Rotation2d()),
+                    new TrajectoryConfig(1, 1)
+                ), 
+                drivetrain::getPosition,
+                DrivetrainSubsystem.getKinematics(),
+                translationController,
+                translationController,
+                rotationController,
+                () -> { 
+                    return Rotation2d.fromDegrees(-target.getYaw());   
+                },
+                drivetrain::setModuleStates, 
+                drivetrain
+            );
+        }
+
         // try {
         //     Translation2d robotToTarget = VisionSubsystem.getRobotToTargetTranslation(vision.getTarget());
 

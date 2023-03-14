@@ -34,7 +34,7 @@ public class NewVisionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        enableLEDs();
+        //enableLEDs();
 
         camera.setPipelineIndex((int) SmartDashboard.getNumber("Pipeline", 0));
         //camera.setDriverMode(false);
@@ -73,6 +73,10 @@ public class NewVisionSubsystem extends SubsystemBase {
     }
 
     public static double getDistanceToTargetMeters(PhotonTrackedTarget target) {
+        if (target == null) {
+            return 0;
+        }
+
         try {
             return PhotonUtils.calculateDistanceToTargetMeters(
                 Constants.Camera.CAMERA_POSITION_METERS.getZ(),
@@ -88,6 +92,10 @@ public class NewVisionSubsystem extends SubsystemBase {
     }
 
     public static Translation2d getRobotToTargetTranslationMeters(PhotonTrackedTarget target) {
+        if (target == null) {
+            return new Translation2d();
+        }
+
         // Offset of camera to target
         Translation2d cameraToTarget = PhotonUtils.estimateCameraToTargetTranslation(
             getDistanceToTargetMeters(target),

@@ -13,12 +13,14 @@ import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.auto.AutoFactory;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
+import frc.robot.commands.drive.GridAlignCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
 import frc.robot.io.Dashboard.DriveMode;
+import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -151,7 +153,7 @@ public class RobotContainer {
             }, vision2)
         );
         rightTestButton.whileTrue(
-            new RunCommand(() -> { System.out.println(vision2.getAprilTagTarget()); }, vision2)
+            new GridAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision2)
         );
 
         JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
