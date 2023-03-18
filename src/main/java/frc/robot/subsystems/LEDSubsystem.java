@@ -51,7 +51,9 @@ public class LEDSubsystem extends SubsystemBase {
         DISABLED_RED_PULSE(3),
         DISABLED_BLUE_PULSE(4),
         NO_AUTO(5),
-        CURRENT_LIMITING(6);
+        CURRENT_LIMITING(6),
+        PIXY_CAM_LIGHT(7),
+        RAINBOW(8);
 
         private final int code;
 

@@ -4,27 +4,40 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.io.Dashboard;
 
 public class PixySubsystem extends SubsystemBase {
     /** Creates a new PixySubsystem. */
+    double minPixyVoltage = 1.5;
+    double maxPixyVoltage = 2.7;
+    double lastKnownPosition = 0;
 
-    //AnalogInput pixyX = new AnalogInput(0);
+    AnalogInput pixyX = new AnalogInput(0);
 
-    AnalogPotentiometer pixyX = new AnalogPotentiometer(0, 2, 0);
+    //AnalogPotentiometer pixyX = new AnalogPotentiometer(0, 2, 0);
 
     public PixySubsystem() {
         //pixyX.setAverageBits(8);
     }
 
+    public void updateConePosition()    {
 
-    public double getXPct() {
+        double pos = pixyX.getVoltage();
 
-        double xVal = pixyX.get();    
+        if (pos < minPixyVoltage){
+            pos = minPixyVoltage;
+        } else if (pos > maxPixyVoltage) {
+            pos = maxPixyVoltage;
+        }
 
-        return xVal;
+        //Takes the current voltage and subtracts the minimum voltage, multiplies by our range, then divides by our voltage range, subtracting 6 to output the distance from center
+        lastKnownPosition = (pos - minPixyVoltage) * 12 / (maxPixyVoltage - minPixyVoltage) - 6;
+    }
+
+    public double getLastKnownPosition(){
+        return lastKnownPosition;
     }
 
 
@@ -33,8 +46,8 @@ public class PixySubsystem extends SubsystemBase {
         // This method will be called once per scheduler run
 
 
-        Dashboard.getInstance().putData("Pixy Cam Voltage", getXPct());
+        Dashboard.getInstance().putData("Pixy Cam Cone Offset", lastKnownPosition);
         
-        // Dashboard.getInstance().putData("Pixy Cam Average Voltage", pixyX.getAverageVoltage());
+        Dashboard.getInstance().putData("Pixy Cam Voltage", pixyX.getVoltage());
     }
 }

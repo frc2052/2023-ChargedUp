@@ -59,7 +59,13 @@ public class NewVisionSubsystem extends SubsystemBase {
     public PhotonTrackedTarget getReflectiveTarget() {
         camera.setPipelineIndex(1);
 
-        return getTarget();
+        PhotonPipelineResult result = camera.getLatestResult();
+
+        if (result.hasTargets()) {
+            return result.getBestTarget();
+        }
+
+        return null;
     }
 
     private PhotonTrackedTarget getTarget() {

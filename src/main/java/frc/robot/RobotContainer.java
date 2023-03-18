@@ -11,6 +11,7 @@ import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.auto.AutoFactory;
+import frc.robot.commands.UpdatePixyConePosition;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.drive.GridAlignCommand;
@@ -166,7 +167,8 @@ public class RobotContainer {
         JoystickButton LEDConeButton = new JoystickButton(controlPanel, 1);
         JoystickButton LEDCubeButton = new JoystickButton (controlPanel, 6);
 
-        LEDOffButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
+        //LEDOffButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
+        LEDOffButton.whileTrue(new UpdatePixyConePosition(pixy));
         LEDConeButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CONE)));
         LEDCubeButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CUBE)));
 
