@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -132,7 +133,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        beltMotor.set(TalonFXControlMode.PercentOutput, 0.0);
+        beltMotor.set(TalonFXControlMode.PercentOutput, 0.0, DemandType.ArbitraryFeedForward, Constants.Elevator.FEED_FORWARD);
     }
 
     public static enum ElevatorPosition {

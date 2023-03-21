@@ -56,6 +56,8 @@ public final class Constants {
         public static final double BELT_MOTOR_I = 0;
         public static final double BELT_MOTOR_D = 0;
 
+        public static final double FEED_FORWARD = 0.0;
+
         private static final int FALCON500_TICKS_PER_ROTATION = 2048;
         public static final double BELT_MOTOR_CRUISE_VELOCITY = 5.0 * FALCON500_TICKS_PER_ROTATION;
         public static final double BELT_MOTOR_MAX_ACCELERATION = 5.0 * FALCON500_TICKS_PER_ROTATION;

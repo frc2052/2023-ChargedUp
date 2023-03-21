@@ -13,15 +13,17 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.Auto;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.NewVisionSubsystem;
 
-public class GridAlignCommand extends DriveCommand {
+public class GridAlignCommand extends CommandBase {
     private final Node node;
 
+    private final DrivetrainSubsystem drivetrain;
     private final NewVisionSubsystem vision;
 
     // PID constants should be tuned per robot
@@ -39,14 +41,12 @@ public class GridAlignCommand extends DriveCommand {
     private SwerveControllerCommand alignWithTargetCommand;
 
     public GridAlignCommand(Node node, DrivetrainSubsystem drivetrain, NewVisionSubsystem vision) {
-        super(drivetrain);
-        
         this.node = node;
 
+        this.drivetrain = drivetrain;
         this.vision = vision;
 
         translationController = new PIDController(TRANSLATION_P, TRANSLATION_I, TRANSLATION_D);
-        translationController.setTolerance(0.05);
 
         rotationController = new ProfiledPIDController(
             ROTATION_P, 
@@ -56,12 +56,12 @@ public class GridAlignCommand extends DriveCommand {
         );
         rotationController.setTolerance(0.1);
 
-        addRequirements(this.vision);
+        addRequirements(drivetrain, vision);
     }
 
     @Override
-    protected void drive() {
-        PhotonTrackedTarget target = vision.getAprilTagTarget();
+    public void initialize() {
+        PhotonTrackedTarget target = vision.getReflectiveTarget();
 
         Translation2d robotToTarget = NewVisionSubsystem.getRobotToTargetTranslationMeters(target);
             
@@ -81,7 +81,8 @@ public class GridAlignCommand extends DriveCommand {
                 translationController,
                 rotationController,
                 () -> { 
-                    return Rotation2d.fromDegrees(-target.getYaw());   
+                    return new Rotation2d();
+                    //return Rotation2d.fromDegrees(-target.getYaw());   
                 },
                 drivetrain::setModuleStates, 
                 drivetrain
@@ -127,5 +128,10 @@ public class GridAlignCommand extends DriveCommand {
         }
 
         return alignWithTargetCommand.isFinished();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        drivetrain.stop();
     }
 }

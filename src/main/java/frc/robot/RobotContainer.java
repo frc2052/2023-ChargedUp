@@ -35,6 +35,7 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -145,7 +146,13 @@ public class RobotContainer {
         leftTestButton.whileTrue(
             new RunCommand(() -> {
                 vision2.enableLEDs();
-                System.out.println(vision2.getReflectiveTarget()); 
+                Dashboard.getInstance().putData(
+                    "Limelight Y Inches",
+                    Units.metersToInches(
+                        NewVisionSubsystem.getDistanceToTargetMeters(vision2.getReflectiveTarget())
+                        //NewVisionSubsystem.getRobotToTargetTranslationMeters(vision2.getReflectiveTarget()).getX()
+                    )
+                );
             }, vision2)
         );
         leftTestButton.onFalse(
@@ -153,9 +160,9 @@ public class RobotContainer {
                 vision2.disableLEDs();
             }, vision2)
         );
-        rightTestButton.whileTrue(
-            new GridAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision2)
-        );
+        // rightTestButton.whileTrue(
+        //     new GridAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision2)
+        // );
 
         JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
         xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));

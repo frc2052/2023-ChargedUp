@@ -23,7 +23,6 @@ public class PixySubsystem extends SubsystemBase {
     }
 
     public void updateConePosition()    {
-
         double pos = pixyX.getVoltage();
 
         if (pos < minPixyVoltage){
@@ -44,7 +43,6 @@ public class PixySubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-
 
         Dashboard.getInstance().putData("Pixy Cam Cone Offset", lastKnownPosition);
         

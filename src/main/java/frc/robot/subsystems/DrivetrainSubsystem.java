@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.io.Dashboard;
+import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private final NeoSwerverModule frontLeftModule;
@@ -160,6 +161,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void xWheels() {
+        LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.RAINBOW);
         frontLeftModule.setState(0, Rotation2d.fromDegrees(45));
         frontRightModule.setState(0, Rotation2d.fromDegrees(-45));
         backLeftModule.setState(0, Rotation2d.fromDegrees(-45));

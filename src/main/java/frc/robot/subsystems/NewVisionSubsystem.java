@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
@@ -14,6 +15,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -36,7 +38,6 @@ public class NewVisionSubsystem extends SubsystemBase {
     public void periodic() {
         //enableLEDs();
 
-        camera.setPipelineIndex((int) SmartDashboard.getNumber("Pipeline", 0));
         //camera.setDriverMode(false);
 
         Dashboard.getInstance().putData("Camera Connected", camera.isConnected());
@@ -84,14 +85,20 @@ public class NewVisionSubsystem extends SubsystemBase {
         }
 
         try {
-            return PhotonUtils.calculateDistanceToTargetMeters(
-                Constants.Camera.CAMERA_POSITION_METERS.getZ(),
-                AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile).getTagPose(
-                    target.getFiducialId()
-                ).get().getZ(),
-                Constants.Camera.CAMERA_POSITION_METERS.getRotation().getY(),
-                Units.degreesToRadians(target.getPitch())
+            Optional<Pose3d> targetPose = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile).getTagPose(
+                target.getFiducialId()
             );
+
+            if (!targetPose.isEmpty()) {
+                return PhotonUtils.calculateDistanceToTargetMeters(
+                    Constants.Camera.CAMERA_POSITION_METERS.getZ(),
+                    targetPose.get().getZ(),
+                    Constants.Camera.CAMERA_POSITION_METERS.getRotation().getY(),
+                    Units.degreesToRadians(target.getPitch())
+                );
+            } else {
+                return 0;
+            }
         } catch (IOException e) {
             return 0;
         }
