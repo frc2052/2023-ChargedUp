@@ -11,10 +11,10 @@ import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.auto.AutoFactory;
-import frc.robot.commands.UpdatePixyConePosition;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.drive.GridAlignCommand;
+import frc.robot.commands.drive.HorizontalAlignmentCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
@@ -27,9 +27,8 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
-import frc.robot.subsystems.NewVisionSubsystem;
-import frc.robot.subsystems.PixySubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.PixySubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
@@ -37,6 +36,8 @@ import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -62,10 +63,11 @@ public class RobotContainer {
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
     private final VisionSubsystem vision;
-    private final NewVisionSubsystem vision2;
     private final PixySubsystem pixy;
 
     private final AutoFactory autoFactory;
+
+    private final PowerDistribution pdh;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -80,10 +82,12 @@ public class RobotContainer {
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
         vision = new VisionSubsystem();
-        vision2 = new NewVisionSubsystem();
         pixy = new PixySubsystem();
 
         new PneumaticsSubsystem();
+
+        pdh = new PowerDistribution(16, ModuleType.kRev);
+        pdh.setSwitchableChannel(true);
 
         autoFactory = new AutoFactory(
             () -> Dashboard.getInstance().getAuto(),
@@ -119,6 +123,10 @@ public class RobotContainer {
      * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joystick}.
      */
     private void configureBindings() {
+        JoystickButton cameraResetButton = new JoystickButton(driveJoystick, 11);
+        cameraResetButton.onTrue(new InstantCommand(() -> pdh.setSwitchableChannel(false)));
+        cameraResetButton.onFalse(new InstantCommand(() -> pdh.setSwitchableChannel(true)));
+
         /*
          * Drivetrain button bindings
          */
@@ -128,41 +136,41 @@ public class RobotContainer {
         Trigger autoBalance = new Trigger(() -> controlPanel.getY() > 0.5);
         autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
-        // JoystickButton aprilTagDriveButton = new JoystickButton(turnJoystick, 1);
-        // JoystickButton aprilTagLeftNodeDriveButton = new JoystickButton(turnJoystick, 4);
-        // JoystickButton aprilTagRightNodeDriveButton = new JoystickButton(turnJoystick, 5);
-        // aprilTagDriveButton.and(aprilTagLeftNodeDriveButton).whileTrue(
-        //     new AprilTagAlignCommand(Node.LEFT_CONE, drivetrain, vision)
+        JoystickButton leftNodeDriveButton = new JoystickButton(turnJoystick, 4);
+        JoystickButton middleNodeDriveButton = new JoystickButton(turnJoystick, 3);
+        JoystickButton rightNodeDriveButton = new JoystickButton(turnJoystick, 5);
+        leftNodeDriveButton.whileTrue(
+            new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, true)
+        );
+        middleNodeDriveButton.whileTrue(
+            new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, false)
+        );
+
+        // JoystickButton leftTestButton = new JoystickButton(turnJoystick, 4);
+        // JoystickButton rightTestButton = new JoystickButton(turnJoystick, 5);
+        // leftTestButton.whileTrue(
+        //     new RunCommand(() -> {
+        //         vision.enableLEDs();
+        //         Dashboard.getInstance().putData(
+        //             "Limelight Y Inches",
+        //             Units.metersToInches(
+        //                 VisionSubsystem.getDistanceToTargetMeters(vision.getReflectiveTarget())
+        //                 //NewVisionSubsystem.getRobotToTargetTranslationMeters(vision2.getReflectiveTarget()).getX()
+        //             )
+        //         );
+        //     }, vision)
         // );
-        // aprilTagDriveButton.and(aprilTagRightNodeDriveButton).whileTrue(
-        //     new AprilTagAlignCommand(Node.RIGHT_CONE, drivetrain, vision)
+        // leftTestButton.onFalse(
+        //     new RunCommand(() -> { 
+        //         vision.disableLEDs();
+        //     }, vision)
         // );
-        // aprilTagDriveButton.whileTrue(
-        //     new AprilTagAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision)
+        // rightTestButton.whileTrue(
+        //     new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, true)
         // );
 
-        JoystickButton leftTestButton = new JoystickButton(turnJoystick, 4);
-        JoystickButton rightTestButton = new JoystickButton(turnJoystick, 5);
-        leftTestButton.whileTrue(
-            new RunCommand(() -> {
-                vision2.enableLEDs();
-                Dashboard.getInstance().putData(
-                    "Limelight Y Inches",
-                    Units.metersToInches(
-                        NewVisionSubsystem.getDistanceToTargetMeters(vision2.getReflectiveTarget())
-                        //NewVisionSubsystem.getRobotToTargetTranslationMeters(vision2.getReflectiveTarget()).getX()
-                    )
-                );
-            }, vision2)
-        );
-        leftTestButton.onFalse(
-            new RunCommand(() -> { 
-                vision2.disableLEDs();
-            }, vision2)
-        );
-        // rightTestButton.whileTrue(
-        //     new GridAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision2)
-        // );
+        JoystickButton testGridAlignment = new JoystickButton(turnJoystick, 10);
+        testGridAlignment.whileTrue(new GridAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision, pixy));
 
         JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
         xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));
@@ -174,8 +182,7 @@ public class RobotContainer {
         JoystickButton LEDConeButton = new JoystickButton(controlPanel, 1);
         JoystickButton LEDCubeButton = new JoystickButton (controlPanel, 6);
 
-        //LEDOffButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
-        LEDOffButton.whileTrue(new UpdatePixyConePosition(pixy));
+        LEDOffButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
         LEDConeButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CONE)));
         LEDCubeButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CUBE)));
 
@@ -237,7 +244,7 @@ public class RobotContainer {
         drivetrain.zeroGyro();
         drivetrain.resetOdometry(new Pose2d());
     }
-
+    
     public void precompileAuto() {
         autoFactory.precompileAuto();
     }

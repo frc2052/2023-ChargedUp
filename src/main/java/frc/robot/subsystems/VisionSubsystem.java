@@ -5,17 +5,17 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -27,102 +27,135 @@ import frc.robot.Constants;
 import frc.robot.io.Dashboard;
 
 public class VisionSubsystem extends SubsystemBase {
-    // private final PhotonCamera camera;
-
-    // private final PhotonPoseEstimator poseEstimator;
-    // private static AprilTagFieldLayout fieldLayout;
+    private final PhotonCamera camera;
     
-    // private final Timer driveModeResetTimer;
+    private PhotonTrackedTarget lastResult;
+    private Timer lastTargetTime;
 
-    // public VisionSubsystem() {
-    //     camera = new PhotonCamera(Constants.Camera.CAMERA_NAME);
+    /** Creates a new NewVisionSubsystem. */
+    public VisionSubsystem() {
+        camera = new PhotonCamera(Constants.Camera.CAMERA_NAME);
+        
+        lastTargetTime = new Timer();
+        lastTargetTime.start();
 
-    //     try {
-    //         fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-    //     } catch (IOException e) {
-    //         DriverStation.reportError(e.getMessage(), e.getStackTrace());
-    //     }
+        SmartDashboard.putNumber("Pipeline", 0);
 
-    //     poseEstimator = new PhotonPoseEstimator(
-    //         fieldLayout,
-    //         PoseStrategy.AVERAGE_BEST_TARGETS, 
-    //         camera,
-    //         Constants.Camera.CAMERA_POSITION_METERS
-    //     );
+        disableLEDs();
+    }
 
-    //     // camera.setLED(VisionLEDMode.kOff);
+    @Override
+    public void periodic() {
+        Dashboard.getInstance().putData("Camera Connected", camera.isConnected());
+    }
 
-    //     driveModeResetTimer = new Timer();
+    public void enableLEDs() {
+        camera.setLED(VisionLEDMode.kOn);
+    }
 
-    //     //SmartDashboard.putNumber("Pipeline", 0);
-    // }
+    public void disableLEDs() {
+        camera.setLED(VisionLEDMode.kOff);
+    }
 
-    // @Override
-    // public void periodic() {
-    //     // if (driveModeResetTimer.get() >= 1.0) {
-    //     //     camera.setDriverMode(true);
-    //     //     driveModeResetTimer.stop();
-    //     // }
+    public VisionLEDMode getLEDMode() {
+        return camera.getLEDMode();
+    }
 
-    //     //camera.setPipelineIndex((int)SmartDashboard.getNumber("Pipeline", 0));
-    //     //camera.setDriverMode(false);
+    public PhotonTrackedTarget getAprilTagTarget() {
+        camera.setPipelineIndex(1);
 
-    //    // Dashboard.getInstance().putData("Camera Connected", camera.isConnected());
-    // }
+        return getTarget();
+    }
 
-    // public void enableLED() {
-    //     camera.setLED(VisionLEDMode.kOn);
-    // }
+    public PhotonTrackedTarget getReflectiveTarget() {
+        camera.setPipelineIndex(0);
 
-    // public void disableLED() {
-    //     camera.setLED(VisionLEDMode.kOff);
-    // }
+        return getTarget();
 
-    // public PhotonTrackedTarget getReflectiveTarget() throws TargetNotFoundException {
-    //     //camera.setPipelineIndex(1);
+        // PhotonPipelineResult result = camera.getLatestResult();
 
-    //     return getTarget();
-    // }
-    
-    // public PhotonTrackedTarget getTarget() throws TargetNotFoundException {
-    //     //camera.setDriverMode(false);
-    //     driveModeResetTimer.reset();
+        // PhotonTrackedTarget bestTarget = null;
 
-    //     PhotonPipelineResult result = camera.getLatestResult();
+        // if (result.hasTargets()) {
+        //     for (PhotonTrackedTarget target : result.getTargets()) {
+        //         if (bestTarget == null) {
+        //             bestTarget = target;
+        //         } else if (bestTarget.getPitch() > target.getPitch()) {
+        //             bestTarget = target;
+        //         }
+        //     }
+        // }
 
-    //     if (!result.hasTargets()) {
-    //         // If there aren't any targets stop any further vision processing.
-    //         throw new TargetNotFoundException();
-    //     }
+        // return bestTarget;
+    }
 
-    //     return result.getBestTarget();
-    // }
+    private PhotonTrackedTarget getTarget() {
+        PhotonPipelineResult result = camera.getLatestResult();
 
-    // /**
-    //  * @return Estimated distance from the camera to the april tag in meters.
-    // */
-    // public static double getDistanceToTargetMeters(PhotonTrackedTarget target) {
-    //     return PhotonUtils.calculateDistanceToTargetMeters(
-    //         Constants.Camera.CAMERA_POSITION_METERS.getZ(),
-    //         fieldLayout.getTagPose(target.getFiducialId()).get().getZ(),
-    //         Constants.Camera.CAMERA_POSITION_METERS.getRotation().getY(),
-    //         Units.degreesToRadians(target.getPitch())
-    //     );
-    // }
+        if (result.hasTargets()) {
+            PhotonTrackedTarget bestResult = result.getBestTarget();
 
-    // public static Translation2d getRobotToTargetTranslation(PhotonTrackedTarget target) throws IOException {
-    //     // Offset of camera to target
-    //     Translation2d cameraToTarget = PhotonUtils.estimateCameraToTargetTranslation(
-    //         getDistanceToTargetMeters(target),
-    //         Rotation2d.fromDegrees(-target.getYaw())
-    //     );
+            if (bestResult.getPitch() < 5) {
+                lastResult = bestResult;
+                lastTargetTime.reset();
+            } else if (lastTargetTime.get() <= 0.25) {
+                return lastResult;
+            }
+        }
 
-    //     // Convert camera relative to robot relative
-    //     return new Translation2d(
-    //         cameraToTarget.getX() + Constants.Camera.CAMERA_POSITION_METERS.getX(), 
-    //         cameraToTarget.getY() + Constants.Camera.CAMERA_POSITION_METERS.getY()
-    //     );
-    // }
+        if (lastTargetTime.get() <= 0.25) {
+            return lastResult;
+        }
 
-    // public class TargetNotFoundException extends Exception { }
+        return null;
+    }
+
+    public static double getDistanceToTargetMeters(PhotonTrackedTarget target) {
+        if (target == null) {
+            return 0;
+        }
+
+        try {
+            Optional<Pose3d> targetPose = AprilTagFieldLayout.loadFromResource(
+                AprilTagFields.k2023ChargedUp.m_resourceFile
+            ).getTagPose(target.getFiducialId());
+
+            double targetHeightMeters = 0;
+
+            if (!targetPose.isEmpty()) {
+                targetHeightMeters = targetPose.get().getZ();
+            } else {
+                targetHeightMeters = Units.inchesToMeters(24);
+            }
+
+            return PhotonUtils.calculateDistanceToTargetMeters(
+                Constants.Camera.CAMERA_POSITION_METERS.getZ(),
+                targetHeightMeters,
+                Constants.Camera.CAMERA_POSITION_METERS.getRotation().getY(),
+                Units.degreesToRadians(target.getPitch())
+            );
+        } catch (IOException e) {
+            DriverStation.reportError(e.getMessage(), e.getStackTrace());
+        }
+
+        return 0;
+    }
+
+    public static Translation2d getRobotToTargetTranslationMeters(PhotonTrackedTarget target) {
+        if (target == null) {
+            return new Translation2d();
+        }
+
+        // Offset of camera to target
+        Translation2d cameraToTarget = PhotonUtils.estimateCameraToTargetTranslation(
+            getDistanceToTargetMeters(target),
+            Rotation2d.fromDegrees(-target.getYaw())
+        );
+
+        // Convert camera relative to robot relative
+        return new Translation2d(
+            cameraToTarget.getX() + Constants.Camera.CAMERA_POSITION_METERS.getX(), 
+            cameraToTarget.getY() + Constants.Camera.CAMERA_POSITION_METERS.getY()
+        );
+    }
 }

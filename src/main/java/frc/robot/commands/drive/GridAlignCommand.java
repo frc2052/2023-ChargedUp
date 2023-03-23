@@ -18,13 +18,14 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.Auto;
 import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.NewVisionSubsystem;
+import frc.robot.subsystems.PixySubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 public class GridAlignCommand extends CommandBase {
     private final Node node;
 
     private final DrivetrainSubsystem drivetrain;
-    private final NewVisionSubsystem vision;
+    private final VisionSubsystem vision;
 
     // PID constants should be tuned per robot
     private final double TRANSLATION_P = 0.1;
@@ -40,7 +41,12 @@ public class GridAlignCommand extends CommandBase {
 
     private SwerveControllerCommand alignWithTargetCommand;
 
-    public GridAlignCommand(Node node, DrivetrainSubsystem drivetrain, NewVisionSubsystem vision) {
+    public GridAlignCommand(
+        Node node, 
+        DrivetrainSubsystem drivetrain, 
+        VisionSubsystem vision,
+        PixySubsystem pixy
+    ) {
         this.node = node;
 
         this.drivetrain = drivetrain;
@@ -61,9 +67,9 @@ public class GridAlignCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        PhotonTrackedTarget target = vision.getReflectiveTarget();
+        PhotonTrackedTarget target = vision.getAprilTagTarget();
 
-        Translation2d robotToTarget = NewVisionSubsystem.getRobotToTargetTranslationMeters(target);
+        Translation2d robotToTarget = VisionSubsystem.getRobotToTargetTranslationMeters(target);
             
         double yOffsetInches = (node.ordinal() - 1) * Auto.NODE_WIDTH_INCHES;
 

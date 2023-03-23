@@ -48,11 +48,13 @@ public class LEDSubsystem extends SubsystemBase {
         OFF(0),
         CONE(1),
         CUBE(2),
-        DISABLED_RED_PULSE(3),
-        DISABLED_BLUE_PULSE(4),
+        DISABLED_RED_PULSE(8),
+        DISABLED_BLUE_PULSE(9),
         NO_AUTO(5),
         CURRENT_LIMITING(6),
-        RAINBOW(7);
+        RAINBOW(7),
+        LAVA(3),
+        WATER(4);
 
         private final int code;
 
@@ -76,9 +78,9 @@ public class LEDSubsystem extends SubsystemBase {
                         currentStatusMode = LEDStatusMode.NO_AUTO;
                     }
                     else if (DriverStation.getAlliance() == Alliance.Red) {
-                        currentStatusMode = LEDStatusMode.DISABLED_RED_PULSE;
+                        currentStatusMode = LEDStatusMode.LAVA;
                     } else if (DriverStation.getAlliance() == Alliance.Blue) {
-                        currentStatusMode = LEDStatusMode.DISABLED_BLUE_PULSE;
+                        currentStatusMode = LEDStatusMode.WATER;
                     } else {
                         currentStatusMode = LEDStatusMode.OFF; // Reaches here if DriverStation.getAlliance returns Invalid, which just means it can't determine our alliance and we do cool default effect
                     }
@@ -92,7 +94,7 @@ public class LEDSubsystem extends SubsystemBase {
         }
 
         // Code for encoding the code to binary on the digitalOutput pins
-        //System.out.println("Sending LED Code" + code + "************************");
+        Dashboard.getInstance().putData("Sending LED Code", code);
         codeChannel1.set((code & 1) > 0);   // 2^0
         codeChannel2.set((code & 2) > 0);   // 2^1
         codeChannel3.set((code & 4) > 0);   // 2^2

@@ -9,17 +9,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.io.Dashboard;
 
 public class PixySubsystem extends SubsystemBase {
-    /** Creates a new PixySubsystem. */
     double minPixyVoltage = 1.5;
     double maxPixyVoltage = 2.7;
     double lastKnownPosition = 0;
 
-    AnalogInput pixyX = new AnalogInput(0);
-
-    //AnalogPotentiometer pixyX = new AnalogPotentiometer(0, 2, 0);
+    AnalogInput pixyX;
 
     public PixySubsystem() {
-        //pixyX.setAverageBits(8);
+        pixyX = new AnalogInput(0);
     }
 
     public void updateConePosition()    {
@@ -35,10 +32,9 @@ public class PixySubsystem extends SubsystemBase {
         lastKnownPosition = (pos - minPixyVoltage) * 12 / (maxPixyVoltage - minPixyVoltage) - 6;
     }
 
-    public double getLastKnownPosition(){
+    public double getLastKnownPositionInches(){
         return lastKnownPosition;
     }
-
 
     @Override
     public void periodic() {

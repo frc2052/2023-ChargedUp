@@ -5,6 +5,8 @@
 
 package frc.robot.io;
 
+import java.util.function.Function;
+
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 //import edu.wpi.first.util.sendable.Sendable;
@@ -91,6 +93,8 @@ public class Dashboard {
         SmartDashboard.putData("Score Grid", scoreGridChooser);
 
         SmartDashboard.putBoolean("End Charge Station", true);
+
+        SmartDashboard.putNumber("Score Offset Degrees", 0);
     }
 
     // updates dashboard with needed information
@@ -101,6 +105,8 @@ public class Dashboard {
     public <V> void putData(String key, V value) {
         if (value instanceof Float) {
             SmartDashboard.putNumber(key, (Float) value);
+        } else if (value instanceof Integer) {
+            SmartDashboard.putNumber(key, (Integer) value);
         } else if (value instanceof Number) {
             SmartDashboard.putNumber(key, (Double) value);
         } else if (value instanceof String) {
@@ -110,6 +116,10 @@ public class Dashboard {
         } else if (value instanceof Sendable) {
             Shuffleboard.getTab("main").add(key, (Sendable) value);
         }
+    }
+
+    public double getScoreOffsetDegrees() {
+        return SmartDashboard.getNumber("Score Offset Degrees", 0);
     }
 
     public DriveMode getDriveMode() {
