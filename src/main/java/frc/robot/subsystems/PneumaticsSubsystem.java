@@ -17,11 +17,11 @@ public class PneumaticsSubsystem extends SubsystemBase {
         pneumaticHub = new PneumaticHub(Constants.Compressor.PNEUMATIC_HUB_ID);
 
         // Min and max recharge pressure, pressure maxes out at 115
-        pneumaticHub.enableCompressorAnalog(100, 120);
+        pneumaticHub.enableCompressorAnalog(Constants.Compressor.COMPRESSOR_MIN_PRESSURE, Constants.Compressor.COMPRESSOR_MAX_PRESSURE);
     }
 
     @Override
     public void periodic() {
-        Dashboard.getInstance().putData("Pressure", pneumaticHub.getPressure(0));
+        Dashboard.getInstance().putData(Constants.Dashboard.PRESSURE_KEY, pneumaticHub.getPressure(0));
     }
 }

@@ -34,7 +34,6 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -123,10 +122,6 @@ public class RobotContainer {
      * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joystick}.
      */
     private void configureBindings() {
-        JoystickButton cameraResetButton = new JoystickButton(driveJoystick, 11);
-        cameraResetButton.onTrue(new InstantCommand(() -> pdh.setSwitchableChannel(false)));
-        cameraResetButton.onFalse(new InstantCommand(() -> pdh.setSwitchableChannel(true)));
-
         /*
          * Drivetrain button bindings
          */
@@ -138,42 +133,25 @@ public class RobotContainer {
 
         JoystickButton leftNodeDriveButton = new JoystickButton(turnJoystick, 4);
         JoystickButton middleNodeDriveButton = new JoystickButton(turnJoystick, 3);
-        JoystickButton rightNodeDriveButton = new JoystickButton(turnJoystick, 5);
         leftNodeDriveButton.whileTrue(
-            new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, true)
-        );
-        middleNodeDriveButton.whileTrue(
             new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, false)
         );
-
-        // JoystickButton leftTestButton = new JoystickButton(turnJoystick, 4);
-        // JoystickButton rightTestButton = new JoystickButton(turnJoystick, 5);
-        // leftTestButton.whileTrue(
-        //     new RunCommand(() -> {
-        //         vision.enableLEDs();
-        //         Dashboard.getInstance().putData(
-        //             "Limelight Y Inches",
-        //             Units.metersToInches(
-        //                 VisionSubsystem.getDistanceToTargetMeters(vision.getReflectiveTarget())
-        //                 //NewVisionSubsystem.getRobotToTargetTranslationMeters(vision2.getReflectiveTarget()).getX()
-        //             )
-        //         );
-        //     }, vision)
-        // );
-        // leftTestButton.onFalse(
-        //     new RunCommand(() -> { 
-        //         vision.disableLEDs();
-        //     }, vision)
-        // );
-        // rightTestButton.whileTrue(
-        //     new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, true)
-        // );
+        middleNodeDriveButton.whileTrue(
+            new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, true)
+        );
 
         JoystickButton testGridAlignment = new JoystickButton(turnJoystick, 10);
         testGridAlignment.whileTrue(new GridAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision, pixy));
 
         JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
         xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));
+        
+        /*
+         * Camera button bindings
+         */
+        JoystickButton cameraResetButton = new JoystickButton(driveJoystick, 11);
+        cameraResetButton.onTrue(new InstantCommand(() -> pdh.setSwitchableChannel(false)));
+        cameraResetButton.onFalse(new InstantCommand(() -> pdh.setSwitchableChannel(true)));
 
         /*
          * LED button bindings

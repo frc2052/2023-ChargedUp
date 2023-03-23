@@ -38,10 +38,6 @@ public class PixySubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
-
         Dashboard.getInstance().putData("Pixy Cam Cone Offset", lastKnownPosition);
-        
-        Dashboard.getInstance().putData("Pixy Cam Voltage", pixyX.getVoltage());
     }
 }

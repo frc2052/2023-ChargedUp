@@ -5,11 +5,8 @@
 
 package frc.robot.io;
 
-import java.util.function.Function;
-
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-//import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -40,6 +37,8 @@ public class Dashboard {
         driveModeChooser.addOption(DriveMode.ROBOT_CENTRIC.name(), DriveMode.ROBOT_CENTRIC);
         driveModeChooser.setDefaultOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
         SmartDashboard.putData(Constants.Dashboard.DRIVE_MODE_KEY, driveModeChooser);
+
+        SmartDashboard.putNumber("Score Offset Inches", 0);
 
         autoChooser = new SendableChooser<Auto>();
         for (Auto auto : Auto.values()) {
@@ -93,8 +92,6 @@ public class Dashboard {
         SmartDashboard.putData("Score Grid", scoreGridChooser);
 
         SmartDashboard.putBoolean("End Charge Station", true);
-
-        SmartDashboard.putNumber("Score Offset Degrees", 0);
     }
 
     // updates dashboard with needed information
@@ -118,12 +115,12 @@ public class Dashboard {
         }
     }
 
-    public double getScoreOffsetDegrees() {
-        return SmartDashboard.getNumber("Score Offset Degrees", 0);
-    }
-
     public DriveMode getDriveMode() {
         return driveModeChooser.getSelected();      
+    }
+
+    public double getScoreOffsetDegrees() {
+        return SmartDashboard.getNumber("Score Offset Inches", 0);
     }
 
     public Auto getAuto() {

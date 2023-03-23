@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.io.Dashboard;
 import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
 public class DrivetrainSubsystem extends SubsystemBase {
@@ -101,11 +100,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Dashboard.getInstance().putData(
-            "Pitch of Robot",
-            navx.getPitch()
-        );
-
         debug();
     }
 
@@ -246,9 +240,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * be the offsets for each SwerveModule respectively.
      */
     public void debug() {
-        Dashboard.getInstance().putData("Odometry X", odometry.getPoseMeters().getX());
-        Dashboard.getInstance().putData("Odometry Y", odometry.getPoseMeters().getY());
-
         frontLeftModule.debug();
         frontRightModule.debug();   
         backLeftModule.debug();

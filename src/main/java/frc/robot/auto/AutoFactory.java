@@ -6,6 +6,7 @@ package frc.robot.auto;
 
 import java.util.function.Supplier;
 
+import frc.robot.Constants;
 import frc.robot.io.Dashboard;
 import frc.robot.io.Dashboard.Auto;
 import frc.robot.subsystems.ArmSubsystem;
@@ -54,7 +55,7 @@ public class AutoFactory {
             return;
         }
 
-        Dashboard.getInstance().putData("Auto Compiled", false);
+        Dashboard.getInstance().putData(Constants.Dashboard.AUTO_COMPILED_KEY, false);
 
         currentAuto = autoSupplier.get();
         currentAutoConfiguration = autoConfigurationSupplier.get();
@@ -106,7 +107,7 @@ public class AutoFactory {
                 break;
         }
 
-        Dashboard.getInstance().putData("Auto Compiled", true);
+        Dashboard.getInstance().putData(Constants.Dashboard.AUTO_COMPILED_KEY, true);
     }
 
     public AutoBase getCompiledAuto() {

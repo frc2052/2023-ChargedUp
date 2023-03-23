@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.List;
+
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -7,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.music.Orchestra;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,6 +25,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private ElevatorPosition previousPosition;
     private ElevatorPosition currentPosition;
+
+    private final Orchestra warningSound;
 
     public ElevatorSubsystem() {
         ErrorCode error;
@@ -50,6 +55,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         previousPosition = ElevatorPosition.STARTING;
         currentPosition = ElevatorPosition.STARTING;
 
+        warningSound = new Orchestra(List.of(beltMotor), "warning");
+
         // Assume the elevator will start at the lowest possible position.
         zeroEncoder();
     }
@@ -62,9 +69,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         );
 
         Dashboard.getInstance().putData(
-            "Elevator Limit Switch", 
+            Constants.Dashboard.ELEVATOR_LIMIT_SWITCH_KEY, 
             elevatorZeroed()
         );
+
+        // For testing: play warning sound if elevator isn't zeroed but the encoder is.
+        if (!elevatorZeroed() && beltMotor.getSelectedSensorPosition() <= 0) {
+            warningSound.play();
+        } else {
+            warningSound.stop();
+        }
 
         if (elevatorZeroed() || beltMotor.getSelectedSensorPosition() <= 0) {
             zeroEncoder();
@@ -121,12 +135,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void manualUp() {
-        beltMotor.set(TalonFXControlMode.PercentOutput, 0.1);
+        beltMotor.set(TalonFXControlMode.PercentOutput, Constants.Elevator.MANUAL_UP_SPEED);
     }
 
     public void manualDown() {
         if (!elevatorZeroed()) {
-            beltMotor.set(TalonFXControlMode.PercentOutput, -0.15);
+            beltMotor.set(TalonFXControlMode.PercentOutput, Constants.Elevator.MANUAL_DOWN_SPEED);
         } else {
             stop();
         }

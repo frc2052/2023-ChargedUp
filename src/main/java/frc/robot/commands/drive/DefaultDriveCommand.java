@@ -55,16 +55,4 @@ public class DefaultDriveCommand extends DriveCommand {
             fieldCentricSupplier.getAsBoolean()
         );
     }
-
-    private double slewAxis(SlewRateLimiter limiter, double value) {
-        return limiter.calculate(Math.copySign(Math.pow(value, 2), value));
-    }
-
-    private double deadBand(double value) {
-        if (Math.abs(value) <= 0.075) {
-            return 0.0;
-        }
-        // Limit the value to always be in the range of [-1.0, 1.0]
-        return Math.copySign(Math.min(1.0, Math.abs(value)), value);
-    }
 }

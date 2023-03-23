@@ -4,6 +4,7 @@
 
 package frc.robot.commands.drive;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -29,5 +30,17 @@ public abstract class DriveCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         drivetrain.stop();
+    }
+
+    protected double slewAxis(SlewRateLimiter limiter, double value) {
+        return limiter.calculate(Math.copySign(Math.pow(value, 2), value));
+    }
+
+    protected double deadBand(double value) {
+        if (Math.abs(value) <= 0.075) {
+            return 0.0;
+        }
+        // Limit the value to always be in the range of [-1.0, 1.0]
+        return Math.copySign(Math.min(1.0, Math.abs(value)), value);
     }
 }

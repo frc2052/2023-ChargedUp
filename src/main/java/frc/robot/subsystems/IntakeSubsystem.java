@@ -4,9 +4,6 @@
 
 package frc.robot.subsystems;
 
-
-import javax.lang.model.util.ElementScanner14;
-
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;

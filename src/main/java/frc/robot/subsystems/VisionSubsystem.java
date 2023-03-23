@@ -21,7 +21,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.io.Dashboard;
@@ -39,14 +38,12 @@ public class VisionSubsystem extends SubsystemBase {
         lastTargetTime = new Timer();
         lastTargetTime.start();
 
-        SmartDashboard.putNumber("Pipeline", 0);
-
         disableLEDs();
     }
 
     @Override
     public void periodic() {
-        Dashboard.getInstance().putData("Camera Connected", camera.isConnected());
+        Dashboard.getInstance().putData(Constants.Dashboard.CAMERA_CONNECTION_KEY, camera.isConnected());
     }
 
     public void enableLEDs() {
@@ -57,36 +54,16 @@ public class VisionSubsystem extends SubsystemBase {
         camera.setLED(VisionLEDMode.kOff);
     }
 
-    public VisionLEDMode getLEDMode() {
-        return camera.getLEDMode();
-    }
-
     public PhotonTrackedTarget getAprilTagTarget() {
-        camera.setPipelineIndex(1);
+        camera.setPipelineIndex(Constants.Camera.APRIL_TAG_PIPELINE);
 
         return getTarget();
     }
 
     public PhotonTrackedTarget getReflectiveTarget() {
-        camera.setPipelineIndex(0);
+        camera.setPipelineIndex(Constants.Camera.REFLECTIVE_TAPE_PIPELINE);
 
         return getTarget();
-
-        // PhotonPipelineResult result = camera.getLatestResult();
-
-        // PhotonTrackedTarget bestTarget = null;
-
-        // if (result.hasTargets()) {
-        //     for (PhotonTrackedTarget target : result.getTargets()) {
-        //         if (bestTarget == null) {
-        //             bestTarget = target;
-        //         } else if (bestTarget.getPitch() > target.getPitch()) {
-        //             bestTarget = target;
-        //         }
-        //     }
-        // }
-
-        // return bestTarget;
     }
 
     private PhotonTrackedTarget getTarget() {
@@ -98,8 +75,6 @@ public class VisionSubsystem extends SubsystemBase {
             if (bestResult.getPitch() < 5) {
                 lastResult = bestResult;
                 lastTargetTime.reset();
-            } else if (lastTargetTime.get() <= 0.25) {
-                return lastResult;
             }
         }
 
