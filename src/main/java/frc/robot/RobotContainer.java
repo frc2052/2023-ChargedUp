@@ -13,6 +13,7 @@ import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.auto.AutoFactory;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
+import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
 import frc.robot.commands.drive.GridAlignCommand;
 import frc.robot.commands.drive.HorizontalAlignmentCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
@@ -33,6 +34,9 @@ import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
+
+import org.photonvision.common.hardware.VisionLEDMode;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -134,7 +138,11 @@ public class RobotContainer {
         JoystickButton leftNodeDriveButton = new JoystickButton(turnJoystick, 4);
         JoystickButton middleNodeDriveButton = new JoystickButton(turnJoystick, 3);
         leftNodeDriveButton.whileTrue(
-            new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, false)
+            new DumbHorizontalAlignmentCommand(
+                drivetrain, vision, pixy,
+                () -> driveJoystick.getY(),
+                () -> turnJoystick.getX()
+            )
         );
         middleNodeDriveButton.whileTrue(
             new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, true)
@@ -152,6 +160,15 @@ public class RobotContainer {
         JoystickButton cameraResetButton = new JoystickButton(driveJoystick, 11);
         cameraResetButton.onTrue(new InstantCommand(() -> pdh.setSwitchableChannel(false)));
         cameraResetButton.onFalse(new InstantCommand(() -> pdh.setSwitchableChannel(true)));
+
+        JoystickButton ledToggleButton = new JoystickButton(turnJoystick, 6);
+        ledToggleButton.onTrue(new InstantCommand(() -> {
+            if (vision.getLedMode() == VisionLEDMode.kOn) {
+                vision.disableLEDs();
+            } else {
+                vision.enableLEDs();
+            }
+        }));
 
         /*
          * LED button bindings

@@ -55,7 +55,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         previousPosition = ElevatorPosition.STARTING;
         currentPosition = ElevatorPosition.STARTING;
 
-        warningSound = new Orchestra(List.of(beltMotor), "warning");
+        warningSound = new Orchestra(List.of(beltMotor));
 
         // Assume the elevator will start at the lowest possible position.
         zeroEncoder();
@@ -75,9 +75,12 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         // For testing: play warning sound if elevator isn't zeroed but the encoder is.
         if (!elevatorZeroed() && beltMotor.getSelectedSensorPosition() <= 0) {
-            warningSound.play();
+            if (!warningSound.isPlaying()) {
+                // warningSound.loadMusic("warning.mid");
+                // warningSound.play();
+            }
         } else {
-            warningSound.stop();
+            // warningSound.stop();
         }
 
         if (elevatorZeroed() || beltMotor.getSelectedSensorPosition() <= 0) {

@@ -54,6 +54,10 @@ public class VisionSubsystem extends SubsystemBase {
         camera.setLED(VisionLEDMode.kOff);
     }
 
+    public VisionLEDMode getLedMode() {
+        return camera.getLEDMode();
+    }
+
     public PhotonTrackedTarget getAprilTagTarget() {
         camera.setPipelineIndex(Constants.Camera.APRIL_TAG_PIPELINE);
 

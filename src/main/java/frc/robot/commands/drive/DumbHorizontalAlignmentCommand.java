@@ -4,19 +4,26 @@
 
 package frc.robot.commands.drive;
 
+import java.util.function.DoubleSupplier;
+
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PixySubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
-public class DumbHorizontalAlignmentCommand extends CommandBase {
-    private final DrivetrainSubsystem drivetrain;
+public class DumbHorizontalAlignmentCommand extends DriveCommand {
     private final VisionSubsystem vision;
     private final PixySubsystem pixy;
+    
+    private final DoubleSupplier xSupplier;
+    private final DoubleSupplier rotationSupplier;
+
+    private final SlewRateLimiter xLimiter;
+    private final SlewRateLimiter rotationLimiter;
     
     private final PIDController yController;
 
@@ -26,18 +33,27 @@ public class DumbHorizontalAlignmentCommand extends CommandBase {
     public DumbHorizontalAlignmentCommand(
         DrivetrainSubsystem drivetrain, 
         VisionSubsystem vision,
-        PixySubsystem pixy
+        PixySubsystem pixy,
+        DoubleSupplier xSupplier,
+        DoubleSupplier rotationSupplier
     ) {
-        this.drivetrain = drivetrain;
+        super(drivetrain);
+
         this.vision = vision;
         this.pixy = pixy;
 
-        yController = new PIDController(0.02, 0, 0.001);
-        yController.setTolerance(0.75);
+        this.xSupplier = xSupplier;
+        this.rotationSupplier = rotationSupplier;
+
+        xLimiter = new SlewRateLimiter(2);
+        rotationLimiter = new SlewRateLimiter(2);
+
+        yController = new PIDController(0.01, 0, 0);
+        yController.setTolerance(0.25);
 
         ledEnableTimer = new Timer();
 
-        addRequirements(this.drivetrain, this.vision, this.pixy);
+        addRequirements(this.vision, this.pixy);
     }
 
     // Called when the command is initially scheduled.
@@ -51,34 +67,33 @@ public class DumbHorizontalAlignmentCommand extends CommandBase {
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void execute() {
+    public void drive() {
         // Max target yaw
-        double minConeAlignedYawDegrees = -3;
-        double maxConeAlignedYawDegrees = 12;
+        double minConeAlignedYawDegrees = -3.8;
+        double maxConeAlignedYawDegrees = 11.7;
 
         double conePositionInches = pixy.getLastKnownPositionInches() + 6;
+        double conePosPct = conePositionInches / 12;
 
         PhotonTrackedTarget target = vision.getReflectiveTarget();
 
+        double angleDelta = maxConeAlignedYawDegrees - minConeAlignedYawDegrees;
+        double offsetAngle = angleDelta * conePosPct;
+        double goalYaw = minConeAlignedYawDegrees + offsetAngle;
+
         if (target != null) {
-            double goalYaw = (conePositionInches * (maxConeAlignedYawDegrees - minConeAlignedYawDegrees)) / 12;
+            System.out.println("goal: " + goalYaw);
 
             drivetrain.drive(
-                0,
+                slewAxis(xLimiter, deadBand(-xSupplier.getAsDouble())),
                 yController.calculate(target.getYaw(), goalYaw),
-                0,
+                slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble() * 0.25)),
                 false
             );
         } else {
             System.out.println("No target!");
             drivetrain.stop();
         }
-    }
-
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {
-        drivetrain.stop();
     }
 
     // Returns true when the command should end.

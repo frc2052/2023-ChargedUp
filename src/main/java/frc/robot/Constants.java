@@ -58,7 +58,7 @@ public final class Constants {
 
         public static final double MANUAL_UP_SPEED = 0.15;
         public static final double MANUAL_DOWN_SPEED = -0.15;
-        public static final double FEED_FORWARD = 0.06;
+        public static final double FEED_FORWARD = 0.05;
 
         private static final int FALCON500_TICKS_PER_ROTATION = 2048;
         public static final double BELT_MOTOR_CRUISE_VELOCITY = 5.0 * FALCON500_TICKS_PER_ROTATION;
@@ -97,7 +97,7 @@ public final class Constants {
         public static final String CAMERA_NAME = "2052_Cicada";
 
         public static final int APRIL_TAG_PIPELINE = 1;
-        public static final int REFLECTIVE_TAPE_PIPELINE = 1;
+        public static final int REFLECTIVE_TAPE_PIPELINE = 0;
 
         public static final Transform3d CAMERA_POSITION_METERS = new Transform3d(
             new Translation3d(Units.inchesToMeters(6), Units.inchesToMeters(3.675), Units.inchesToMeters(41.75)), 
