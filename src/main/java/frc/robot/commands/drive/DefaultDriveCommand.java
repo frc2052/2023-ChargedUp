@@ -7,18 +7,24 @@ package frc.robot.commands.drive;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class DefaultDriveCommand extends DriveCommand {
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
     private final DoubleSupplier rotationSupplier;
+    private final BooleanSupplier gyroControlSupplier;
     private final BooleanSupplier fieldCentricSupplier;
     
     private final SlewRateLimiter xLimiter;
     private final SlewRateLimiter yLimiter;
     private final SlewRateLimiter rotationLimiter;
+
+    private final ProfiledPIDController gyroRotationController;
 
     /**
      * Creates a new defaultDriveCommand.
@@ -31,6 +37,7 @@ public class DefaultDriveCommand extends DriveCommand {
         DoubleSupplier xSupplier, 
         DoubleSupplier ySupplier, 
         DoubleSupplier rotationSupplier,
+        BooleanSupplier gyroControlSupplier,
         BooleanSupplier fieldCentricSupplier,
         DrivetrainSubsystem drivetrain
     ) {
@@ -39,7 +46,14 @@ public class DefaultDriveCommand extends DriveCommand {
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
         this.rotationSupplier = rotationSupplier;
+        this.gyroControlSupplier = gyroControlSupplier;
         this.fieldCentricSupplier = fieldCentricSupplier;
+
+        this.gyroRotationController = new ProfiledPIDController(
+            0.004, 0.001, 0,
+            new TrapezoidProfile.Constraints(0.25, 0.25)
+        );
+        gyroRotationController.setTolerance(0.1);
 
         xLimiter = new SlewRateLimiter(2);
         yLimiter = new SlewRateLimiter(2);
@@ -48,10 +62,17 @@ public class DefaultDriveCommand extends DriveCommand {
 
     @Override
     protected void drive() {
+        double rotation = slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble() * .75));
+        if (gyroControlSupplier.getAsBoolean()) {
+            double robotAngleDegrees = drivetrain.getRotation().getDegrees();
+            rotation = gyroRotationController.calculate(robotAngleDegrees, Math.copySign(180, robotAngleDegrees));
+            System.out.println(rotation);
+        }
+
         drivetrain.drive(
             slewAxis(xLimiter, deadBand(-xSupplier.getAsDouble())), 
             slewAxis(yLimiter, deadBand(-ySupplier.getAsDouble())),
-            slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble() * .75)),
+            rotation,
             fieldCentricSupplier.getAsBoolean()
         );
     }
