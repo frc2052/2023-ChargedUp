@@ -94,19 +94,6 @@
               "_showGlyph": false
             }
           },
-          "0,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Elevator Position",
-              "_title": "SmartDashboard/Elevator Position",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "0,2": {
             "size": [
               1,
@@ -200,6 +187,45 @@
               "_type": "Toggle Button",
               "_source0": "network_table:///SmartDashboard/Reset limelight",
               "_title": "SmartDashboard/Reset limelight",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///photonvision/2052_Cicada/targetYaw",
+              "_title": "photonvision/2052_Cicada/targetYaw",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator Position",
+              "_title": "SmartDashboard/Elevator Position",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Score Offset Inches",
+              "_title": "SmartDashboard/Score Offset Inches",
               "_glyph": 148,
               "_showGlyph": false
             }

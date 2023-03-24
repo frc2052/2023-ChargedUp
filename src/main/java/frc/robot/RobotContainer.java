@@ -137,7 +137,7 @@ public class RobotContainer {
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
         Trigger autoBalance = new Trigger(() -> controlPanel.getY() > 0.5);
-        autoBalance.whileTrue(new ChargeStationBalanceCommand(drivetrain));
+        autoBalance.whileTrue(new RunCommand(pixy::updateConePosition, pixy));
 
         JoystickButton leftNodeDriveButton = new JoystickButton(turnJoystick, 4);
         JoystickButton middleNodeDriveButton = new JoystickButton(turnJoystick, 3);

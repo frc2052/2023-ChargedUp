@@ -59,8 +59,6 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        pixy.updateConePosition();
-
         vision.enableLEDs();
         ledEnableTimer.start();
     }
