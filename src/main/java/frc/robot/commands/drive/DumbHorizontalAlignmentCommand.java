@@ -83,7 +83,7 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
             System.out.println("goal: " + goalYaw);
 
             drivetrain.drive(
-                slewAxis(xLimiter, deadBand(-xSupplier.getAsDouble())),
+                slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
                 yController.calculate(target.getYaw(), goalYaw),
                 slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble() * 0.25)),
                 false
@@ -92,6 +92,11 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
             System.out.println("No target!");
             drivetrain.stop();
         }
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        vision.disableLEDs();
     }
 
     // Returns true when the command should end.
@@ -103,4 +108,6 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
 
         return false;
     }
+
+
 }

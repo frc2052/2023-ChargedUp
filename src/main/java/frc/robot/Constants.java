@@ -58,7 +58,7 @@ public final class Constants {
 
         public static final double MANUAL_UP_SPEED = 0.15;
         public static final double MANUAL_DOWN_SPEED = -0.15;
-        public static final double FEED_FORWARD = 0.05;
+        public static final double FEED_FORWARD = 0.065;
 
         private static final int FALCON500_TICKS_PER_ROTATION = 2048;
         public static final double BELT_MOTOR_CRUISE_VELOCITY = 5.0 * FALCON500_TICKS_PER_ROTATION;
@@ -76,7 +76,7 @@ public final class Constants {
 
         public static final double INTAKE_IN_SPEED = 1.0;
         public static final double INTAKE_IN_SLOW_SPEED = 0.7;
-        public static final double INTAKE_OUT_SPEED = -0.4;
+        public static final double INTAKE_OUT_SPEED = -0.5;
 
         // Minimum allowable amps
         public static final double INTAKE_CRUISE_CURRENT_AMPS = 2.0;

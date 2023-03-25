@@ -35,11 +35,11 @@ public class ScoreCommand extends CommandBase {
     public void initialize() {
         arm.armOut();
 
-        if (elevator.getPosition() != ElevatorPosition.TOP_SCORE && elevator.getPosition() != ElevatorPosition.MID_SCORE) {
-            if (elevator.getPreviouPosition() == ElevatorPosition.TOP_SCORE || elevator.getPreviouPosition() == ElevatorPosition.MID_SCORE) {
-                elevator.setPosition(elevator.getPreviouPosition());
-            }
-        }
+        // if (elevator.getPosition() != ElevatorPosition.TOP_SCORE && elevator.getPosition() != ElevatorPosition.MID_SCORE) {
+        //     if (elevator.getPreviouPosition() == ElevatorPosition.TOP_SCORE || elevator.getPreviouPosition() == ElevatorPosition.MID_SCORE) {
+        //         elevator.setPosition(elevator.getPreviouPosition());
+        //     }
+        // }
     }
 
     @Override

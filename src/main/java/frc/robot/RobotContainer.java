@@ -136,8 +136,9 @@ public class RobotContainer {
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
-        Trigger autoBalance = new Trigger(() -> controlPanel.getY() > 0.5);
-        autoBalance.whileTrue(new RunCommand(pixy::updateConePosition, pixy));
+        Trigger coneScan = new Trigger(() -> controlPanel.getY() > 0.5);
+        coneScan.onTrue(new InstantCommand (() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
+        coneScan.whileTrue(new RunCommand(pixy::updateConePosition, pixy));
 
         JoystickButton leftNodeDriveButton = new JoystickButton(turnJoystick, 4);
         JoystickButton middleNodeDriveButton = new JoystickButton(turnJoystick, 3);
@@ -148,12 +149,12 @@ public class RobotContainer {
                 () -> turnJoystick.getX()
             )
         );
-        middleNodeDriveButton.whileTrue(
-            new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, true)
-        );
+        // middleNodeDriveButton.whileTrue(
+        //     new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, true)
+        // );
 
-        JoystickButton testGridAlignment = new JoystickButton(turnJoystick, 10);
-        testGridAlignment.whileTrue(new GridAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision, pixy));
+        // JoystickButton testGridAlignment = new JoystickButton(turnJoystick, 10);
+        // testGridAlignment.whileTrue(new GridAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision, pixy));
 
         JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
         xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));
@@ -161,9 +162,9 @@ public class RobotContainer {
         /*
          * Camera button bindings
          */
-        JoystickButton cameraResetButton = new JoystickButton(driveJoystick, 11);
-        cameraResetButton.onTrue(new InstantCommand(() -> pdh.setSwitchableChannel(false)));
-        cameraResetButton.onFalse(new InstantCommand(() -> pdh.setSwitchableChannel(true)));
+        // JoystickButton cameraResetButton = new JoystickButton(driveJoystick, 11);
+        // cameraResetButton.onTrue(new InstantCommand(() -> pdh.setSwitchableChannel(false)));
+        // cameraResetButton.onFalse(new InstantCommand(() -> pdh.setSwitchableChannel(true)));
 
         JoystickButton ledToggleButton = new JoystickButton(turnJoystick, 6);
         ledToggleButton.onTrue(new InstantCommand(() -> {
