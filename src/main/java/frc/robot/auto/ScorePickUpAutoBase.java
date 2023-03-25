@@ -9,6 +9,7 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -20,7 +21,7 @@ import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
-import frc.robot.io.Dashboard.Node;
+import frc.robot.auto.AutoFactory.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -43,17 +44,20 @@ public class ScorePickUpAutoBase extends AutoBase {
     public void init() {
         Pose2d initialPose = createPose2dInches(
             0, 
-            getLeftStartingYOffsetInches(
+            getStartingYOffsetInches(
                 autoConfiguration.getStartingGrid(), 
                 autoConfiguration.getStartingNode()
             ), 
             0
         );
-        Translation2d chargeStationMidpoint = createTranslation2dInches(18, 6);
-        Pose2d startPickUpPose = createPose2dInches(64, 4, 0);
-        Pose2d pickUpPose = createPose2dInches(194, 12, 0);
 
-        drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
+        Translation2d chargeStationMidpoint = createTranslation2dInches(18, -10);
+        Pose2d startPickUpPose = createPose2dInches(64, -10, 0);
+        Pose2d pickUpPose = createPose2dInches(194, -14, 0);
+
+        addCommands(new InstantCommand(() -> { 
+            drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
+        }, drivetrain));
 
         // Score first time
         if (autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE) {
@@ -88,8 +92,7 @@ public class ScorePickUpAutoBase extends AutoBase {
 
         ParallelDeadlineGroup pickUpGroup = new ParallelDeadlineGroup(
             pickupPath,
-            new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator),
-            new ArmOutCommand(arm),
+            new ArmOutCommand(arm).andThen(new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator)),
             new IntakeInCommand(intake)
         );
         addCommands(pickUpGroup);

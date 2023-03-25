@@ -11,7 +11,7 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "7,3": {
+          "3,3": {
             "size": [
               2,
               1
@@ -19,27 +19,12 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Drive Mode",
-              "_title": "SmartDashboard/Drive Mode",
+              "_title": "Drive Mode",
               "_glyph": 148,
               "_showGlyph": false
             }
           },
-          "3,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Camera Connected",
-              "_title": "/SmartDashboard/Camera Connected",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "1,0": {
+          "0,0": {
             "size": [
               2,
               1
@@ -47,7 +32,36 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Auto",
-              "_title": "/SmartDashboard/Auto",
+              "_title": "Auto",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Simple Dial",
+              "_source0": "network_table:///SmartDashboard/Pressure",
+              "_title": "Pressure",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Range/Min": 0.0,
+              "Range/Max": 120.0,
+              "Visuals/Show value": true
+            }
+          },
+          "0,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Starting Node",
+              "_title": "Starting Node",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -58,43 +72,14 @@
               1
             ],
             "content": {
-              "_type": "Simple Dial",
-              "_source0": "network_table:///SmartDashboard/Pressure",
-              "_title": "SmartDashboard/Pressure",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Range/Min": 0.0,
-              "Range/Max": 120.0,
-              "Visuals/Show value": true
-            }
-          },
-          "1,2": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "ComboBox Chooser",
-              "_source0": "network_table:///SmartDashboard/Starting Node",
-              "_title": "SmartDashboard/Starting Node",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "1,3": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
               "_type": "Toggle Switch",
               "_source0": "network_table:///SmartDashboard/End Charge Station",
-              "_title": "SmartDashboard/End Charge Station",
+              "_title": "End Charge Station?",
               "_glyph": 148,
               "_showGlyph": false
             }
           },
-          "0,2": {
+          "8,2": {
             "size": [
               1,
               1
@@ -102,16 +87,16 @@
             "content": {
               "_type": "Boolean Box",
               "_source0": "network_table:///SmartDashboard/Elevator Limit Switch",
-              "_title": "SmartDashboard/Elevator Limit Switch",
+              "_title": "Limit Switch Hit",
               "_glyph": 148,
               "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "3,0": {
+          "2,0": {
             "size": [
-              4,
+              3,
               3
             ],
             "content": {
@@ -130,7 +115,7 @@
               "imageHeight": 0
             }
           },
-          "1,1": {
+          "0,1": {
             "size": [
               2,
               1
@@ -138,12 +123,12 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Starting Grid",
-              "_title": "/SmartDashboard/Starting Grid",
+              "_title": "Starting Grid",
               "_glyph": 148,
               "_showGlyph": false
             }
           },
-          "0,0": {
+          "1,3": {
             "size": [
               1,
               1
@@ -151,14 +136,14 @@
             "content": {
               "_type": "Boolean Box",
               "_source0": "network_table:///SmartDashboard/Auto Compiled",
-              "_title": "/SmartDashboard/Auto Compiled",
+              "_title": "Auto Compiled",
               "_glyph": 148,
               "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "7,0": {
+          "5,0": {
             "size": [
               3,
               3
@@ -178,33 +163,7 @@
               "Visible data/SmartDashboard/Intake Current": true
             }
           },
-          "4,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Toggle Button",
-              "_source0": "network_table:///SmartDashboard/Reset limelight",
-              "_title": "SmartDashboard/Reset limelight",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "5,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///photonvision/2052_Cicada/targetYaw",
-              "_title": "photonvision/2052_Cicada/targetYaw",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "0,1": {
+          "9,2": {
             "size": [
               1,
               1
@@ -212,9 +171,41 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Elevator Position",
-              "_title": "SmartDashboard/Elevator Position",
+              "_title": "Elevator Pos",
               "_glyph": 148,
               "_showGlyph": false
+            }
+          },
+          "2,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Camera Connected",
+              "_title": "/SmartDashboard/Camera Connected",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "8,0": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Gyro",
+              "_source0": "network_table:///Shuffleboard/Odometry/navX-Sensor[4]",
+              "_title": "Shuffleboard/Odometry/navX-Sensor[4]",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Visuals/Major tick spacing": 45.0,
+              "Visuals/Starting angle": 180.0,
+              "Visuals/Show tick mark ring": true,
+              "Visuals/Counter clockwise": false
             }
           },
           "6,3": {
@@ -224,8 +215,8 @@
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Score Offset Inches",
-              "_title": "SmartDashboard/Score Offset Inches",
+              "_source0": "network_table:///SmartDashboard/Odometry Degrees",
+              "_title": "SmartDashboard/Odometry Degrees",
               "_glyph": 148,
               "_showGlyph": false
             }

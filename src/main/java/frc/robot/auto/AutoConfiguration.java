@@ -4,10 +4,10 @@
 
 package frc.robot.auto;
 
-import frc.robot.io.Dashboard.Channel;
-import frc.robot.io.Dashboard.GamePiece;
-import frc.robot.io.Dashboard.Grid;
-import frc.robot.io.Dashboard.Node;
+import frc.robot.auto.AutoFactory.Channel;
+import frc.robot.auto.AutoFactory.GamePiece;
+import frc.robot.auto.AutoFactory.Grid;
+import frc.robot.auto.AutoFactory.Node;
 
 /** Add your docs here. */
 public class AutoConfiguration {

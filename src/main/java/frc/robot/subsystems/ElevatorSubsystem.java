@@ -74,9 +74,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         );
 
         // For testing: play warning sound if elevator isn't zeroed but the encoder is.
-        if (!elevatorZeroed() && beltMotor.getSelectedSensorPosition() <= 0) {
+        if (!elevatorZeroed() && beltMotor.getSelectedSensorPosition() <= Constants.Elevator.BELT_MOTOR_DEAD_ZONE_TICKS) {
             if (!warningSound.isPlaying()) {
-                // warningSound.loadMusic("warning.mid");
+                // warningSound.loadMusic("warning3.chrp");
                 // warningSound.play();
             }
         } else {
@@ -155,6 +155,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public static enum ElevatorPosition {
         STARTING(0),
+        GROUND_PICKUP(1000),
         FLOOR_CUBE(7200),
         FLOOR_CONE(20000),
         BABY_BIRD(16000),

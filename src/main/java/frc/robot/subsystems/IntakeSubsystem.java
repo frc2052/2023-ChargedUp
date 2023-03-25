@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.io.Dashboard;
@@ -19,6 +20,8 @@ import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonSRX intakeMotor;
 
+    private final Timer currentLimitTimer;
+    
     /** Creates a new Intake. */
     public IntakeSubsystem() {
         ErrorCode error;
@@ -42,16 +45,29 @@ public class IntakeSubsystem extends SubsystemBase {
 
         intakeMotor.setNeutralMode(NeutralMode.Brake);
         intakeMotor.setInverted(true);
+
+        currentLimitTimer = new Timer();
+        currentLimitTimer.start();
     }
 
     @Override
     public void periodic() {
         Dashboard.getInstance().putData(Constants.Dashboard.INTAKE_CURRENT_KEY, intakeMotor.getSupplyCurrent());
-        if (intakeMotor.getSupplyCurrent() < Constants.Intake.INTAKE_CRUISE_CURRENT_AMPS + 1 && intakeMotor.getSupplyCurrent() > 1){
-            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CURRENT_LIMITING);
+
+        if (intakeMotor.getSupplyCurrent() - Constants.Intake.INTAKE_CRUISE_CURRENT_AMPS <= 1) {
+            currentLimitTimer.reset();
+            if (currentLimitTimer.get() >= Constants.Intake.INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS) {
+                LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CURRENT_LIMITING);
+            }
         } else if (LEDSubsystem.getInstance().getLEDStatusMode() == LEDStatusMode.CURRENT_LIMITING && !LEDSubsystem.getInstance().getRobotDisabled()){
             LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF);
         }
+
+        // if (intakeMotor.getSupplyCurrent() < Constants.Intake.INTAKE_CRUISE_CURRENT_AMPS + 1 && intakeMotor.getSupplyCurrent() > 1){
+        //     LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CURRENT_LIMITING);
+        // } else if (LEDSubsystem.getInstance().getLEDStatusMode() == LEDStatusMode.CURRENT_LIMITING && !LEDSubsystem.getInstance().getRobotDisabled()){
+        //     LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF);
+        // }
     }
 
     public void intakeIn() {

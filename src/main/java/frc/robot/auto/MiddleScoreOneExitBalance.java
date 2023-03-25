@@ -34,7 +34,7 @@ public class MiddleScoreOneExitBalance extends AutoBase {
         Pose2d initialPose = createPose2dInches(
             Constants.Auto.ROBOT_LENGTH_INCHES / 2, 
             // Recenter offset to zero is the middle node
-            getLeftStartingYOffsetInches(
+            getStartingYOffsetInches(
                 autoConfiguration.getScoreGrid(), 
                 autoConfiguration.getStartingNode()
             ) - (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES), 

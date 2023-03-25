@@ -16,9 +16,9 @@ import frc.robot.subsystems.IntakeSubsystem;
 /**
  * Left side score gamepiece, drive to pick up gamepiece, drive to chargestation, and balance.
  */
-public class RedScoreOneBalanceAuto extends ScorePickUpAutoBase {
+public class ScoreOneBalanceAuto extends ScorePickUpAutoBase {
     /** Creates a new scoretwoandbalence. */
-    public RedScoreOneBalanceAuto(
+    public ScoreOneBalanceAuto(
         AutoConfiguration autoConfiguration,
         DrivetrainSubsystem drivetrain, 
         ElevatorSubsystem elevator, 
@@ -32,8 +32,8 @@ public class RedScoreOneBalanceAuto extends ScorePickUpAutoBase {
     public void init() {
         super.init(); 
 
-        Pose2d lineUpPose = createPose2dInches(170, 74, 180);
-        Pose2d chargeStationPose = createPose2dInches(60, 74, 180);
+        Pose2d lineUpPose = createPose2dInches(170, -74, 180);
+        Pose2d chargeStationPose = createPose2dInches(60, -74, 180);
 
         if (autoConfiguration.endChargeStation()) {
             // Drive to lineup w/ charge station

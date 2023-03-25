@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.io.Dashboard;
-import frc.robot.io.Dashboard.Auto;
+import frc.robot.auto.AutoFactory.Auto;
 
 /**
  * Subsystem to control the robot's LEDs, by determining what number should be encoded to DIO pins and
@@ -48,13 +48,13 @@ public class LEDSubsystem extends SubsystemBase {
         OFF(0),
         CONE(1),
         CUBE(2),
-        DISABLED_RED_PULSE(8),
-        DISABLED_BLUE_PULSE(9),
+        DISABLED_RED_PULSE(3),
+        DISABLED_BLUE_PULSE(4),
         NO_AUTO(5),
         CURRENT_LIMITING(6),
         RAINBOW(7),
-        LAVA(3),
-        WATER(4);
+        LAVA(8),
+        WATER(9);
 
         private final int code;
 
@@ -71,23 +71,22 @@ public class LEDSubsystem extends SubsystemBase {
     public void periodic() {
         int code = 0;
         if(!disableLEDs) {
-                if (robotDisabled) {   // If disabled, finds gets the alliance color from the driver station and pulses that. Only pulses color if connected to station or FMS, else pulses default disabled color (Firefl status mode)
-
-                    Auto selected = Dashboard.getInstance().getAuto();
-                    if (selected == Auto.NO_AUTO){
-                        currentStatusMode = LEDStatusMode.NO_AUTO;
-                    }
-                    else if (DriverStation.getAlliance() == Alliance.Red) {
-                        currentStatusMode = LEDStatusMode.LAVA;
-                    } else if (DriverStation.getAlliance() == Alliance.Blue) {
-                        currentStatusMode = LEDStatusMode.WATER;
-                    } else {
-                        currentStatusMode = LEDStatusMode.OFF; // Reaches here if DriverStation.getAlliance returns Invalid, which just means it can't determine our alliance and we do cool default effect
-                    }
+            if (robotDisabled) {
+                // If disabled, finds gets the alliance color from the driver station and pulses that. Only pulses color if connected to station or FMS, else pulses default disabled color (Firefl status mode)
+                Auto selected = Dashboard.getInstance().getAuto();
+                if (selected == Auto.NO_AUTO){
+                    currentStatusMode = LEDStatusMode.NO_AUTO;
                 }
+                else if (DriverStation.getAlliance() == Alliance.Red) {
+                    currentStatusMode = LEDStatusMode.LAVA;
+                } else if (DriverStation.getAlliance() == Alliance.Blue) {
+                    currentStatusMode = LEDStatusMode.WATER;
+                } else {
+                    currentStatusMode = LEDStatusMode.OFF; // Reaches here if DriverStation.getAlliance returns Invalid, which just means it can't determine our alliance and we do cool default effect
+                }
+            }
 
-                code = currentStatusMode.code;
-
+            code = currentStatusMode.code;
         } else {
             //LEDs are disabled
             code = 0;

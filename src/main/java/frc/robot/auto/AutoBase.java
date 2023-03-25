@@ -14,12 +14,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.commands.elevator.ZeroElevator;
-import frc.robot.io.Dashboard.Grid;
-import frc.robot.io.Dashboard.Node;
+import frc.robot.auto.AutoFactory.Grid;
+import frc.robot.auto.AutoFactory.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -57,7 +58,7 @@ public abstract class AutoBase extends SequentialCommandGroup {
             }
         }
 
-        init();
+        addCommands(new InstantCommand(drivetrain::zeroGyro, drivetrain));
     }
 
     public abstract void init();
@@ -74,11 +75,11 @@ public abstract class AutoBase extends SequentialCommandGroup {
         return new Translation2d(Units.inchesToMeters(xInches), Units.inchesToMeters(yInches));
     }
 
-    public double getLeftStartingYOffsetInches(Grid startGrid, Node startNode) {
+    public double getStartingYOffsetInches(Grid startGrid, Node startNode) {
         if (startGrid == Grid.LEFT_GRID) {
-            return startNode.ordinal() * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
+            return -startNode.ordinal() * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
         } else {
-            return (2 - startNode.ordinal()) * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
+            return -(2 - startNode.ordinal()) * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
         }
     }
 
@@ -140,13 +141,13 @@ public abstract class AutoBase extends SequentialCommandGroup {
     ) {
         lastEndingPose = endPose;
 
-        double flipYCoord = autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? 1.0 : 1.0;
+        double flipYCoord = autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? -1.0 : 1.0;
 
         List<Translation2d> adjustedMidpointList = new ArrayList<Translation2d>();
         for (Translation2d midpoint : midpointList) {
             adjustedMidpointList.add(new Translation2d(midpoint.getX(), midpoint.getY() * flipYCoord));
         }
-        
+
         return new SwerveControllerCommand(
             TrajectoryGenerator.generateTrajectory(
                 new Pose2d(startPose.getX(), startPose.getY() * flipYCoord, startPose.getRotation()),

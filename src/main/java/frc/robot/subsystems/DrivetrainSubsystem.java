@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.io.Dashboard;
 import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
 public class DrivetrainSubsystem extends SubsystemBase {
@@ -83,8 +84,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         navx = new AHRS(SPI.Port.kMXP, (byte) 200);
-        navx.reset();
         navxOffset = new Rotation2d();
+
+        zeroGyro();
 
         odometry = new SwerveDriveOdometry(
             kinematics, 
@@ -100,7 +102,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        Dashboard.getInstance().putData("Rotation Degrees", getRotation().getDegrees());
+        Dashboard.getInstance().putData("Odometry Degrees", odometry.getPoseMeters().getTranslation().getY());
+
         debug();
+        
+        odometry.update(getRotation(), getModulePositions());
     }
 
     /**
@@ -185,8 +192,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
             swerveModuleStates[3].speedMetersPerSecond, 
             hasVelocity ? swerveModuleStates[3].angle : backRightModule.getState().angle
         );
-        
-        field.setRobotPose(odometry.update(getRotation(), getModulePositions()));
     }
 
     private SwerveModulePosition[] getModulePositions() {
@@ -205,6 +210,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public void zeroGyro() {
         navx.reset();
+        navxOffset = new Rotation2d();
     }
 
     public static SwerveDriveKinematics getKinematics() {

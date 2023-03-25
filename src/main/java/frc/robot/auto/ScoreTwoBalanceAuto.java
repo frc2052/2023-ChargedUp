@@ -24,8 +24,8 @@ import frc.robot.subsystems.IntakeSubsystem;
  * Left side score gamepiece, drive to pick up gamepiece, drive to grid, 
  * shoot without stopping, drive to charge station, and balance.
  */
-public class RedLeftScoreTwoBalanceAuto extends ScorePickUpAutoBase {
-    public RedLeftScoreTwoBalanceAuto(
+public class ScoreTwoBalanceAuto extends ScorePickUpAutoBase {
+    public ScoreTwoBalanceAuto(
         AutoConfiguration autoConfiguration,
         DrivetrainSubsystem drivetrain, 
         ElevatorSubsystem elevator, 
@@ -38,10 +38,10 @@ public class RedLeftScoreTwoBalanceAuto extends ScorePickUpAutoBase {
     public void init() {
         super.init();
 
-        Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, 2);
-        Translation2d nearChargeStationInterpolationPoint = createTranslation2dInches(18, 6);
-        Pose2d lineUpPose = createPose2dInches(24, 80, 270);
-        Pose2d chargeStationPose = createPose2dInches(100, 80, 180);
+        Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, -2);
+        Translation2d nearChargeStationInterpolationPoint = createTranslation2dInches(18, -6);
+        Pose2d lineUpPose = createPose2dInches(24, -80, 270);
+        Pose2d chargeStationPose = createPose2dInches(100, -80, 180);
        
         // Driving back to grid
         SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(

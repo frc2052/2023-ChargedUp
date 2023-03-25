@@ -11,6 +11,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.auto.AutoConfiguration;
+import frc.robot.auto.AutoFactory.Auto;
+import frc.robot.auto.AutoFactory.Channel;
+import frc.robot.auto.AutoFactory.GamePiece;
+import frc.robot.auto.AutoFactory.Grid;
+import frc.robot.auto.AutoFactory.Node;
 
 /** Add your docs here. */
 // Trying something different this year, instead of a normal class
@@ -42,7 +47,7 @@ public class Dashboard {
 
         autoChooser = new SendableChooser<Auto>();
         for (Auto auto : Auto.values()) {
-            autoChooser.addOption(auto.name, auto);
+            autoChooser.addOption(auto.getName(), auto);
         }
         autoChooser.setDefaultOption(Auto.NO_AUTO.name(), Auto.NO_AUTO);
         SmartDashboard.putData("Auto", autoChooser);
@@ -96,7 +101,7 @@ public class Dashboard {
 
     // updates dashboard with needed information
     public void updateDashboard() {
-        SmartDashboard.putString("Auto Description", getAuto().description);
+        SmartDashboard.putString("Auto Description", getAuto().getDescription());
     }
 
     public <V> void putData(String key, V value) {
@@ -184,62 +189,5 @@ public class Dashboard {
     public static enum DriveMode {
         FIELD_CENTRIC,
         ROBOT_CENTRIC;
-    }
-
-    public static enum Auto {
-        NO_AUTO("NO AUTO", "NO AUTO"),
-        //DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description"),
-        //TEST_LEFT_SCORE_ONE_BALANCE("Test Score One Balance", ""),
-        SCORE_ONE_BALANCE("Score One Balance", "Description"),
-        SCORE_TWO_BALANCE("Score Two Balance", "Description"),
-        MIDDLE_SCORE_ONE_EXIT("Middle Score One Exit", "Description"),
-        MIDDLE_SCORE_ONE_BALANCE("Middle Score One Balance", "Description");
-
-        private final String name;
-        private final String description;
-
-        private Auto(String name, String description) {
-            this.name = name;
-            this.description = description;
-        }
-  
-        public String getName() {
-            return name;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-    }
-
-    public static enum Grid {
-        LEFT_GRID,
-        MIDDLE_GRID,
-        RIGHT_GRID;
-    }
-
-    public static enum Node {
-        LEFT_CONE,
-        MIDDLE_CUBE,
-        RIGHT_CONE;
-    }
-
-    public static enum Row {
-        HYBRID,
-        MIDDLE,
-        HIGH
-    }
-    // Path around the charge station either on the left or right side
-    public static enum Channel {
-        LEFT_CHANNEL,
-        RIGHT_CHANNEL;
-    }
-
-    public static enum GamePiece {
-        FAR_LEFT_GAME_PIECE,
-        MIDDLE_LEFT_GAME_PIECE,
-        MIDDLE_RIGHT_GAME_PIECE,
-        FAR_RIGHT_GAME_PIECE,
-        NO_GAME_PIECE;
     }
 }

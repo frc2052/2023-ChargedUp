@@ -67,6 +67,8 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
         LEDSubsystem.getInstance().enableLEDs();
         LEDSubsystem.getInstance().robotDisabled();
+
+        robotContainer.forceRecompile();
     }
 
     @Override
@@ -82,8 +84,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        robotContainer.zeroOdometry();
-
         autonomousCommand = robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)

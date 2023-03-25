@@ -14,15 +14,12 @@ import frc.robot.auto.AutoFactory;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
-import frc.robot.commands.drive.GridAlignCommand;
-import frc.robot.commands.drive.HorizontalAlignmentCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
 import frc.robot.io.Dashboard.DriveMode;
-import frc.robot.io.Dashboard.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -37,7 +34,6 @@ import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
 import org.photonvision.common.hardware.VisionLEDMode;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -99,7 +95,8 @@ public class RobotContainer {
             elevator, 
             intake, 
             arm,
-            vision
+            vision,
+            pixy
         );
 
         JoystickButton gyroRotationControllerButton = new JoystickButton(turnJoystick, 8);
@@ -139,6 +136,9 @@ public class RobotContainer {
         Trigger coneScan = new Trigger(() -> controlPanel.getY() > 0.5);
         coneScan.onTrue(new InstantCommand (() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
         coneScan.whileTrue(new RunCommand(pixy::updateConePosition, pixy));
+
+        JoystickButton chargeStationAutoBalanceButton = new JoystickButton(driveJoystick, 7);
+        chargeStationAutoBalanceButton.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
         JoystickButton leftNodeDriveButton = new JoystickButton(turnJoystick, 4);
         JoystickButton middleNodeDriveButton = new JoystickButton(turnJoystick, 3);
@@ -194,7 +194,7 @@ public class RobotContainer {
         JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 10);
         JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 5);
         
-        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator));
+        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator));
         elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
         elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
         elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
@@ -239,12 +239,11 @@ public class RobotContainer {
         driverIntakeOutButton.or(controlPanelIntakeOutButton).whileTrue(new IntakeOutCommand(intake));
         driverIntakeOutButton.or(controlPanelIntakeOutButton).onFalse(new IntakeStopCommand(intake));
     }
-
-    public void zeroOdometry() {
-        drivetrain.zeroGyro();
-        drivetrain.resetOdometry(new Pose2d());
-    }
     
+    public void forceRecompile() {
+        autoFactory.forceRecompile();
+    }
+
     public void precompileAuto() {
         autoFactory.precompileAuto();
     }
