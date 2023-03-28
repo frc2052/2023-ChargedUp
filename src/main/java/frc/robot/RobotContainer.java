@@ -141,7 +141,7 @@ public class RobotContainer {
         chargeStationAutoBalanceButton.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
         JoystickButton leftNodeDriveButton = new JoystickButton(turnJoystick, 4);
-        JoystickButton middleNodeDriveButton = new JoystickButton(turnJoystick, 3);
+        JoystickButton middleNodeDriveButton = new JoystickButton(turnJoystick, 5);
         leftNodeDriveButton.whileTrue(
             new SequentialCommandGroup(
                 new GyroAlignmentCommand(drivetrain),
@@ -152,9 +152,9 @@ public class RobotContainer {
                 )
             )
         );
-        // middleNodeDriveButton.whileTrue(
-        //     new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, true)
-        // );
+        middleNodeDriveButton.whileTrue(
+            new ChargeStationBalanceCommand(drivetrain)
+        );
 
         JoystickButton testGridAlignment = new JoystickButton(driveJoystick, 10);
         testGridAlignment.whileTrue(new GyroAlignmentCommand(drivetrain));

@@ -4,6 +4,7 @@
 
 package frc.robot.commands.drive;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -46,13 +47,18 @@ public class ChargeStationBalanceCommand extends CommandBase {
     public void execute(){
         previousPitch = currentPitch;
         currentPitch = drivetrain.getNavx().getPitch();
-        boolean isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.125;
+        boolean isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.1 && Math.abs(currentPitch) < 10;
         boolean isLevel = Math.abs(drivetrain.getNavx().getPitch()) < 3;
+
+        if (DriverStation.getMatchTime() <= 0.25) {
+            drivetrain.xWheels();
+            return;
+        }
 
         if (!isDropping && !holding && !isLevel) {
             drivetrain.drive(
-                Math.copySign(0.175, (double) -(drivetrain.getNavx().getPitch())),
-                0,
+                Math.copySign(0.08, (double) -(drivetrain.getNavx().getPitch())),
+                Math.copySign(0.065, (double) -(drivetrain.getNavx().getPitch())),
                 0, 
                 false
             );
@@ -61,9 +67,8 @@ public class ChargeStationBalanceCommand extends CommandBase {
             if (balanceTimer.hasElapsed(0.5)) {
                 drivetrain.xWheels();
                 holding = true;
-                isLevel = true;
             //if the balance timer has NOT started and the bot is dropping, start timer
-            } else if (!(balanceTimer.hasElapsed(0.1)) && isDropping) {
+            } else if (balanceTimer.get() == 0 && isDropping) {
                 balanceTimer.start();
             } else if (!balanceTimer.hasElapsed(1)) {
                 //do nothing still dropping

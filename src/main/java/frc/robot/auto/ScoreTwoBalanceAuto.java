@@ -38,7 +38,7 @@ public class ScoreTwoBalanceAuto extends ScorePickUpAutoBase {
     public void init() {
         super.init();
 
-        Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, -2);
+        Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, -8);
         Translation2d nearChargeStationInterpolationPoint = createTranslation2dInches(18, -6);
         Pose2d lineUpPose = createPose2dInches(24, -80, 270);
         Pose2d chargeStationPose = createPose2dInches(100, -80, 180);
@@ -54,7 +54,7 @@ public class ScoreTwoBalanceAuto extends ScorePickUpAutoBase {
 
         ParallelDeadlineGroup driveBackAndScoreGroup = new ParallelDeadlineGroup(
             driveBackPath,
-            new IntakeOutCommand(intake).beforeStarting(new WaitCommand(4))
+            new IntakeOutCommand(intake).beforeStarting(new WaitCommand(3))
         );
         addCommands(driveBackAndScoreGroup);
 

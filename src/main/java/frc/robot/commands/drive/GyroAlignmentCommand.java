@@ -33,8 +33,6 @@ public class GyroAlignmentCommand extends DriveCommand {
         );
     }
 
-
-
     @Override
     public boolean isFinished() {
         return Math.abs(gyroDegrees - 180) <= 1;
