@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
@@ -74,11 +75,24 @@ public class VisionSubsystem extends SubsystemBase {
         PhotonPipelineResult result = camera.getLatestResult();
 
         if (result.hasTargets()) {
-            PhotonTrackedTarget bestResult = result.getBestTarget();
+            PhotonTrackedTarget bestTarget = null;
+            
+            for (PhotonTrackedTarget target : result.targets) {
+                if (target.getPitch() < 5) {
+                    if (bestTarget == null) {
+                        bestTarget = target;
+                    }
 
-            if (bestResult.getPitch() < 5) {
-                lastResult = bestResult;
+                    if (Math.abs(target.getYaw() - 5.11) < Math.abs(bestTarget.getYaw() - 5.11)) {
+                        bestTarget = target;
+                    }
+                }
+            }
+
+            if (bestTarget != null) {
+                lastResult = bestTarget;
                 lastTargetTime.reset();
+                return bestTarget;
             }
         }
 

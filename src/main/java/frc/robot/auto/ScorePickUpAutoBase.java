@@ -10,10 +10,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
@@ -51,9 +49,11 @@ public class ScorePickUpAutoBase extends AutoBase {
             0
         );
 
+        Pose2d tinyBackupPose2d = createPose2dInches(6, -10, 0);
+
         Translation2d chargeStationMidpoint = createTranslation2dInches(18, -10);
-        Pose2d startPickUpPose = createPose2dInches(64, -10, 0);
-        Pose2d pickUpPose = createPose2dInches(194, -14, 0);
+        Pose2d startPickUpPose = createPose2dInches(92, -14, 0);
+        Pose2d pickUpPose = createPose2dInches(194, -18, 0);
 
         addCommands(new InstantCommand(() -> { 
             drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
@@ -66,25 +66,30 @@ public class ScorePickUpAutoBase extends AutoBase {
             addCommands(new TopScoreCommand(elevator, arm));
         }
 
+        SwerveControllerCommand tinyBackupCommand = createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(1), 
+            initialPose, 
+            tinyBackupPose2d,
+            createRotation(180)
+        );
+
         SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(2), 
-            initialPose,
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartAndEndVelocity(1, 2), 
+            getLastEndingPose(),
             List.of(chargeStationMidpoint),
             startPickUpPose,
             createRotation(0)
         );
 
-        ParallelCommandGroup retractGroup = new ParallelCommandGroup(
-            new ScoreCommand(intake, arm, elevator, autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE).withTimeout(
-                autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5
-            ),
-            backupPath.beforeStarting(new WaitCommand(0.5))
-        );
-        addCommands(retractGroup);
+        addCommands(new ScoreCommand(intake, arm, elevator, autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE).withTimeout(
+            autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5
+        ));
+        addCommands(tinyBackupCommand);
+        addCommands(backupPath);
 
         // Drive to approach cone
         SwerveControllerCommand pickupPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig.withStartVelocity(2), 
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(2), 
             getLastEndingPose(), 
             pickUpPose,
             createRotation(0)

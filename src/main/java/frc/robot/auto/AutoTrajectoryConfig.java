@@ -8,7 +8,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class AutoTrajectoryConfig {
     public static final AutoTrajectoryConfig defaultTrajectoryConfig = new AutoTrajectoryConfig(
-        new TrajectoryConfig(2.5, 1.5).setKinematics(DrivetrainSubsystem.getKinematics()),
+        new TrajectoryConfig(3, 2).setKinematics(DrivetrainSubsystem.getKinematics()),
         new PIDController(1, 0, 0),
         new ProfiledPIDController(
             2, 0, 0,
@@ -19,8 +19,8 @@ public class AutoTrajectoryConfig {
         )
     );
 
-    public static final AutoTrajectoryConfig fastTurnSlowDriveTrajectoryConfig = new AutoTrajectoryConfig(
-        new TrajectoryConfig(2.5, 1.5).setKinematics(DrivetrainSubsystem.getKinematics()),
+    public static final AutoTrajectoryConfig fastTurnDriveTrajectoryConfig = new AutoTrajectoryConfig(
+        new TrajectoryConfig(3, 2).setKinematics(DrivetrainSubsystem.getKinematics()),
         new PIDController(1, 0, 0),
         new ProfiledPIDController(
             4, 0, 0,

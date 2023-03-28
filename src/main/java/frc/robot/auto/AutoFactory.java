@@ -120,6 +120,18 @@ public class AutoFactory {
                 );
                 break;
             
+            case VISION_SCORE:
+                compiledAuto = new VisionScoreAuto(
+                    currentAutoConfiguration, 
+                    drivetrain, 
+                    elevator, 
+                    intake, 
+                    arm, 
+                    vision, 
+                    pixy
+                );
+                break;
+
             case HUNGRY_HUNGRY_HIPPO:
                 compiledAuto = new HungryHungryHippoAuto(
                     currentAutoConfiguration, 
@@ -159,6 +171,7 @@ public class AutoFactory {
         SCORE_TWO_UPPER("Score Two Upper", "Description"),
         MIDDLE_SCORE_ONE_EXIT("Middle Score One Exit", "Description"),
         MIDDLE_SCORE_ONE_BALANCE("Middle Score One Balance", "Description"),
+        VISION_SCORE("VISION SCORE", "D"),
         HUNGRY_HUNGRY_HIPPO("Hungry Hungry Hippo", "Nom nom");
 
         private final String name;

@@ -9,6 +9,8 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
@@ -50,36 +52,42 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
 
         Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, -2);
         Translation2d nearChargeStationInterpolationPoint = createTranslation2dInches(18, -6);
+        
+        Translation2d channelInterpolationMipoint = createTranslation2dInches(36, -12);
 
         Pose2d lineUpPose = createPose2dInches(
-            10, 
-            getStartingYOffsetInches(autoConfiguration.getStartingGrid(), Node.LEFT_CONE), 
-            180
+            12, 
+            getStartingYOffsetInches(autoConfiguration.getStartingGrid(), Node.RIGHT_CONE), 
+            225
         );
-        Pose2d scorePose = createPose2dInches(5, 0, 0);
+        Pose2d scorePose = createPose2dInches(6, 0, 0);
 
         // Driving back to grid
         SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(2),
-            getLastEndingPose(), 
-            List.of(farChargeStationInterpolationPoint), 
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig,
+            getLastEndingPose(),
+            List.of(channelInterpolationMipoint),
             lineUpPose, 
             createRotation(180)
         );
-        addCommands(driveBackPath);
 
-        addCommands(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
+        ParallelCommandGroup driveBackGroup = new ParallelCommandGroup(
+            driveBackPath,
+            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator).andThen(new InstantCommand(() -> { pixy.updateConePosition(); }))
+        );
+
+        addCommands(driveBackGroup);
 
         addCommands(
             new DumbHorizontalAlignmentCommand(
                 drivetrain,
                 vision,
                 pixy, 
-                () -> 0, 
+                () -> 0.4,
                 () -> 0
-            ).withTimeout(4)
+            ).withTimeout(1.5)
         );
-
+        
         addCommands(new TopScoreCommand(elevator, arm));
         addCommands(new ScoreCommand(intake, arm, elevator).withTimeout(0.5));
     }

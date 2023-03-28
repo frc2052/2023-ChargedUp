@@ -38,7 +38,7 @@ public class ScoreOneBalanceAuto extends ScorePickUpAutoBase {
         if (autoConfiguration.endChargeStation()) {
             // Drive to lineup w/ charge station
             SwerveControllerCommand lineupPath = createSwerveTrajectoryCommand(
-                AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig, 
+                AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig, 
                 getLastEndingPose(), 
                 lineUpPose, 
                 createRotation(180)

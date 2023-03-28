@@ -79,18 +79,46 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
         double offsetAngle = angleDelta * conePosPct;
         double goalYaw = minConeAlignedYawDegrees + offsetAngle;
 
-        if (target != null) {
-            System.out.println("goal: " + goalYaw);
+        double gyroDegrees = drivetrain.getRotation().getDegrees();
+        double rotation;
 
+        if (180 - Math.abs(gyroDegrees) >= 12) {
+            rotation = slewAxis(rotationLimiter, Math.copySign(0.7, gyroDegrees));
             drivetrain.drive(
                 slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
-                yController.calculate(target.getYaw(), goalYaw),
-                slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble() * 0.25)),
+                0,
+                rotation / Math.PI,
+                false
+            );
+        } else if (180 - Math.abs(gyroDegrees) >= 8) {
+            rotation = slewAxis(rotationLimiter, Math.copySign(0.3, gyroDegrees));
+            drivetrain.drive(
+                slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
+                0,
+                rotation / Math.PI,
+                false
+            );
+        } else if (180 - Math.abs(gyroDegrees) >= 2) {
+            rotation = slewAxis(rotationLimiter, Math.copySign(0.2, gyroDegrees));
+            drivetrain.drive(
+                slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
+                0,
+                rotation / Math.PI,
                 false
             );
         } else {
-            System.out.println("No target!");
+            rotation = slewAxis(rotationLimiter, 0);
+            if (target != null) {
+                drivetrain.drive(
+                slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
+                yController.calculate(target.getYaw(), goalYaw),
+                0,
+                false
+            ); 
+            } else {
+                System.out.println("No target!");
             drivetrain.stop();
+            }
         }
     }
 

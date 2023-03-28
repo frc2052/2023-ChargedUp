@@ -54,20 +54,20 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         Dashboard.getInstance().putData(Constants.Dashboard.INTAKE_CURRENT_KEY, intakeMotor.getSupplyCurrent());
 
-        if (intakeMotor.getSupplyCurrent() - Constants.Intake.INTAKE_CRUISE_CURRENT_AMPS <= 1) {
-            currentLimitTimer.reset();
-            if (currentLimitTimer.get() >= Constants.Intake.INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS) {
-                LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CURRENT_LIMITING);
-            }
-        } else if (LEDSubsystem.getInstance().getLEDStatusMode() == LEDStatusMode.CURRENT_LIMITING && !LEDSubsystem.getInstance().getRobotDisabled()){
-            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF);
-        }
-
-        // if (intakeMotor.getSupplyCurrent() < Constants.Intake.INTAKE_CRUISE_CURRENT_AMPS + 1 && intakeMotor.getSupplyCurrent() > 1){
-        //     LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CURRENT_LIMITING);
+        // if (intakeMotor.getSupplyCurrent() - Constants.Intake.INTAKE_CRUISE_CURRENT_AMPS <= 1) {
+        //     currentLimitTimer.reset();
+        //     if (currentLimitTimer.get() >= Constants.Intake.INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS) {
+        //         LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CURRENT_LIMITING);
+        //     }
         // } else if (LEDSubsystem.getInstance().getLEDStatusMode() == LEDStatusMode.CURRENT_LIMITING && !LEDSubsystem.getInstance().getRobotDisabled()){
         //     LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF);
         // }
+
+        if (intakeMotor.getSupplyCurrent() < Constants.Intake.INTAKE_CRUISE_CURRENT_AMPS + 1 && intakeMotor.getSupplyCurrent() > 1){
+            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CURRENT_LIMITING);
+        } else if (LEDSubsystem.getInstance().getLEDStatusMode() == LEDStatusMode.CURRENT_LIMITING && !LEDSubsystem.getInstance().getRobotDisabled()){
+            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF);
+        }
     }
 
     public void intakeIn() {

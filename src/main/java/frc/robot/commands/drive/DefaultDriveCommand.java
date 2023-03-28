@@ -24,7 +24,7 @@ public class DefaultDriveCommand extends DriveCommand {
     private final SlewRateLimiter yLimiter;
     private final SlewRateLimiter rotationLimiter;
 
-    private final ProfiledPIDController gyroPIDController;
+    //private final ProfiledPIDController gyroPIDController;
 
     /**
      * Creates a new defaultDriveCommand.
@@ -49,29 +49,41 @@ public class DefaultDriveCommand extends DriveCommand {
         this.gyroControlSupplier = gyroControlSupplier;
         this.fieldCentricSupplier = fieldCentricSupplier;
 
-        this.gyroPIDController = new ProfiledPIDController(
-            0.001, 0, 0,
-            new TrapezoidProfile.Constraints(Math.PI, Math.PI)
-        );
-        gyroPIDController.enableContinuousInput(-Math.PI, Math.PI);
-        gyroPIDController.setTolerance(Units.degreesToRadians(2));
+        // this.gyroPIDController = new ProfiledPIDController(
+        //     0.001, 0, 0,
+        //         new TrapezoidProfile.Constraints(Math.PI, Math.PI)
+        // );
+        // gyroPIDController.enableContinuousInput(-Math.PI, Math.PI);
+        // gyroPIDController.setTolerance(Units.degreesToRadians(2));
 
         xLimiter = new SlewRateLimiter(2);
         yLimiter = new SlewRateLimiter(2);
-        rotationLimiter = new SlewRateLimiter(2);
+        rotationLimiter = new SlewRateLimiter(6);
     }
 
     @Override
     protected void drive() {
         double rotation;
         if (gyroControlSupplier.getAsBoolean()) {
-            rotation = gyroPIDController.calculate(
-                drivetrain.getRotation().getRadians(),
-                Units.degreesToRadians(180)
-            );
-            System.out.println(rotation);
+            // rotation = gyroPIDController.calculate(
+            //     drivetrain.getRotation().getRadians(),
+            //     Units.degreesToRadians(180)
+            // );
+            // System.out.println(rotation);
+
+            double gyroDegrees = drivetrain.getRotation().getDegrees();
+
+            if (180 - Math.abs(gyroDegrees) >= 12) {
+                rotation = slewAxis(rotationLimiter, Math.copySign(0.7, gyroDegrees));
+            } else if (180 - Math.abs(gyroDegrees) >= 8) {
+                rotation = slewAxis(rotationLimiter, Math.copySign(0.3, gyroDegrees));
+            } else if (180 - Math.abs(gyroDegrees) >= 2) {
+                rotation = slewAxis(rotationLimiter, Math.copySign(0.2, gyroDegrees));
+            } else {
+                rotation = slewAxis(rotationLimiter, 0);
+            }
         } else {
-            rotation = slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble() * .75));
+            rotation = slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble()));
         }
 
         drivetrain.drive(

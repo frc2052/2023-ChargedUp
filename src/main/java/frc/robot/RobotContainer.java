@@ -162,17 +162,14 @@ public class RobotContainer {
         /*
          * Camera button bindings
          */
-        // JoystickButton cameraResetButton = new JoystickButton(driveJoystick, 11);
-        // cameraResetButton.onTrue(new InstantCommand(() -> pdh.setSwitchableChannel(false)));
-        // cameraResetButton.onFalse(new InstantCommand(() -> pdh.setSwitchableChannel(true)));
+        JoystickButton cameraResetButton = new JoystickButton(turnJoystick, 11);
+        JoystickButton cameraResetButtonSafety = new JoystickButton(turnJoystick, 10);
+        cameraResetButton.and(cameraResetButtonSafety).onTrue(new InstantCommand(() -> pdh.setSwitchableChannel(false)));
+        cameraResetButton.and(cameraResetButtonSafety).onFalse(new InstantCommand(() -> pdh.setSwitchableChannel(true)));
 
         JoystickButton ledToggleButton = new JoystickButton(turnJoystick, 6);
         ledToggleButton.onTrue(new InstantCommand(() -> {
-            if (vision.getLedMode() == VisionLEDMode.kOn) {
-                vision.disableLEDs();
-            } else {
-                vision.enableLEDs();
-            }
+            vision.enableLEDs();
         }));
 
         /*
