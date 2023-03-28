@@ -208,7 +208,7 @@
               "Visuals/Counter clockwise": false
             }
           },
-          "6,3": {
+          "5,3": {
             "size": [
               1,
               1
@@ -217,6 +217,19 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Odometry Degrees",
               "_title": "SmartDashboard/Odometry Degrees",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Pixy Cam Cone Offset",
+              "_title": "/SmartDashboard/Pixy Cam Cone Offset",
               "_glyph": 148,
               "_showGlyph": false
             }

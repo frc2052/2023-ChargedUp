@@ -79,46 +79,19 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
         double offsetAngle = angleDelta * conePosPct;
         double goalYaw = minConeAlignedYawDegrees + offsetAngle;
 
-        double gyroDegrees = drivetrain.getRotation().getDegrees();
-        double rotation;
+        if (target != null) {
+            
+            System.out.println("Targeting");
 
-        if (180 - Math.abs(gyroDegrees) >= 12) {
-            rotation = slewAxis(rotationLimiter, Math.copySign(0.7, gyroDegrees));
             drivetrain.drive(
-                slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
-                0,
-                rotation / Math.PI,
-                false
-            );
-        } else if (180 - Math.abs(gyroDegrees) >= 8) {
-            rotation = slewAxis(rotationLimiter, Math.copySign(0.3, gyroDegrees));
-            drivetrain.drive(
-                slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
-                0,
-                rotation / Math.PI,
-                false
-            );
-        } else if (180 - Math.abs(gyroDegrees) >= 2) {
-            rotation = slewAxis(rotationLimiter, Math.copySign(0.2, gyroDegrees));
-            drivetrain.drive(
-                slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
-                0,
-                rotation / Math.PI,
-                false
-            );
-        } else {
-            rotation = slewAxis(rotationLimiter, 0);
-            if (target != null) {
-                drivetrain.drive(
                 slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
                 yController.calculate(target.getYaw(), goalYaw),
                 0,
                 false
             ); 
-            } else {
-                System.out.println("No target!");
+        } else {
+            System.out.println("No target!");
             drivetrain.stop();
-            }
         }
     }
 
@@ -130,12 +103,6 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (ledEnableTimer.get() <= 0.5) {
-            return false;
-        }
-
         return false;
     }
-
-
 }

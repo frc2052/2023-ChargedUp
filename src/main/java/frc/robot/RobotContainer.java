@@ -14,6 +14,7 @@ import frc.robot.auto.AutoFactory;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
+import frc.robot.commands.drive.GyroAlignmentCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
@@ -32,14 +33,13 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
-import org.photonvision.common.hardware.VisionLEDMode;
-
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -143,18 +143,21 @@ public class RobotContainer {
         JoystickButton leftNodeDriveButton = new JoystickButton(turnJoystick, 4);
         JoystickButton middleNodeDriveButton = new JoystickButton(turnJoystick, 3);
         leftNodeDriveButton.whileTrue(
-            new DumbHorizontalAlignmentCommand(
-                drivetrain, vision, pixy,
-                () -> driveJoystick.getY(),
-                () -> turnJoystick.getX()
+            new SequentialCommandGroup(
+                new GyroAlignmentCommand(drivetrain),
+                new DumbHorizontalAlignmentCommand(
+                    drivetrain, vision, pixy,
+                    () -> driveJoystick.getY(),
+                    () -> turnJoystick.getX()
+                )
             )
         );
         // middleNodeDriveButton.whileTrue(
         //     new HorizontalAlignmentCommand(() -> driveJoystick.getY(), drivetrain, vision, pixy, true)
         // );
 
-        // JoystickButton testGridAlignment = new JoystickButton(turnJoystick, 10);
-        // testGridAlignment.whileTrue(new GridAlignCommand(Node.MIDDLE_CUBE, drivetrain, vision, pixy));
+        JoystickButton testGridAlignment = new JoystickButton(driveJoystick, 10);
+        testGridAlignment.whileTrue(new GyroAlignmentCommand(drivetrain));
 
         JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
         xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));
