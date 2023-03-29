@@ -18,6 +18,7 @@ public class NewChargeStationBalanceCommand extends CommandBase {
     private boolean isDropping;
 
     private Timer dropTimer;
+    private Timer slowdownTimer;
 
     private double previousPitch;
     private double currentPitch;
@@ -26,81 +27,73 @@ public class NewChargeStationBalanceCommand extends CommandBase {
     public NewChargeStationBalanceCommand(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
 
+        slowdownTimer = new Timer();
         dropTimer = new Timer();
         
         addRequirements(drivetrain);
     }
 
-    public void reset() {
-        previousPitch = 0;
-        currentPitch = 0;
-        dropTimer.stop();
-        dropTimer.reset();
-    }
+    // public void reset() {
+    //     previousPitch = 0;
+    //     currentPitch = 0;
+    //     dropTimer.stop();
+    //     dropTimer.reset();
+    // }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
         balanced = false;
+        flipped = false;
         previousPitch = 0;
         currentPitch = 0;
+
+        slowdownTimer.start();
+        slowdownTimer.reset();
     }
 
     @Override
     public void execute(){
         previousPitch = currentPitch;
         currentPitch = drivetrain.getNavx().getPitch();
-        isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.1 && Math.abs(currentPitch) < 10;
+        isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.05 && Math.abs(currentPitch) < 10;
         balanced = Math.abs(currentPitch) < Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES;
 
         //check if the match is almost done and x wheels if so
-        if (DriverStation.getMatchTime() <= 0.25) {
-            drivetrain.xWheels();
-            return;
-        }
+        // if (DriverStation.getMatchTime() <= 0.25) {
+        //     drivetrain.xWheels();
+        //     return;
+        // }
 
-        if (!balanced && !flipped && !isDropping) {
-
-            drivetrain.drive(
-                Math.copySign(0.08, (double) -(drivetrain.getNavx().getPitch())),
-                Math.copySign(0.065, (double) -(drivetrain.getNavx().getPitch())),
-                0, 
-                false
-            );
-
-            if (!(Math.copySign(1, currentPitch) == Math.copySign(1, previousPitch))){
-                flipped = !flipped;
+            // if (previousPitch != 0 && Math.copySign(1, currentPitch) != Math.copySign(1, previousPitch)) {
+            //     System.out.println("Flipped!");
+            //     flipped = true;
+            // }
+        if (!balanced) {
+            if (slowdownTimer.hasElapsed(2) || isDropping){
+                drivetrain.drive(
+                    Math.copySign(0.04, (double) -(drivetrain.getNavx().getPitch())),
+                    Math.copySign(0.04, (double) -(drivetrain.getNavx().getPitch())),
+                    0, 
+                    false
+                );
+            } else {
+                drivetrain.drive(
+                    Math.copySign(0.15, (double) -(drivetrain.getNavx().getPitch())),
+                    Math.copySign(0.0, (double) -(drivetrain.getNavx().getPitch())),
+                    0, 
+                    false
+                );
             }
 
-            if (dropTimer.hasElapsed(1) && !balanced){
-                dropTimer.reset();
-            } else if (dropTimer.hasElapsed(0.5) && balanced) {
-                drivetrain.xWheels();
-                return;
-            } else if (dropTimer.get() == 0 && isDropping) {
-                dropTimer.start();
-            }
-        } else if (!balanced && flipped && !isDropping) {
-
-            drivetrain.drive(
-                Math.copySign(0.06, (double) -(drivetrain.getNavx().getPitch())),
-                Math.copySign(0.04, (double) -(drivetrain.getNavx().getPitch())),
-                0, 
-                false
-            );
-
-            if (!(Math.copySign(1, currentPitch) == Math.copySign(1, previousPitch))){
-                flipped = !flipped;
-            }
-
-            if (dropTimer.hasElapsed(0.5) && balanced) {
-                drivetrain.xWheels();
-                return;
-            } else if (dropTimer.get() == 0 && isDropping) {
-                dropTimer.start();
-            } else if (dropTimer.hasElapsed(1) && !balanced){
-                dropTimer.reset();
-            }
+            // if (dropTimer.hasElapsed(0.5) && balanced) {
+            //     drivetrain.xWheels();
+            //     return;
+            // } else if (dropTimer.get() == 0 && isDropping) {
+            //     dropTimer.start();
+            // } else if (dropTimer.hasElapsed(1) && !balanced){
+            //     dropTimer.reset();
+            // }
         } else {
             drivetrain.xWheels();
         }

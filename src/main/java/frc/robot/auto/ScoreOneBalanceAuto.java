@@ -7,6 +7,7 @@ package frc.robot.auto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
+import frc.robot.commands.drive.NewChargeStationBalanceCommand;
 import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -57,7 +58,7 @@ public class ScoreOneBalanceAuto extends ScorePickUpAutoBase {
             addCommands(onChargePath);
             
             addCommands(new IntakeStopCommand(intake));
-            addCommands(new ChargeStationBalanceCommand(drivetrain));
+            addCommands(new NewChargeStationBalanceCommand(drivetrain));
         }
     };
 }

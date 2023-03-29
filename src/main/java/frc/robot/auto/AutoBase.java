@@ -79,13 +79,14 @@ public abstract class AutoBase extends SequentialCommandGroup {
         if (startGrid == Grid.LEFT_GRID) {
             return -startNode.ordinal() * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
         } else {
-            return -(2 - startNode.ordinal()) * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
+            return (2 - startNode.ordinal()) * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
         }
     }
 
     // Creates easy rotation 2d suppliers for the SwerveControllerCommands
     protected Supplier<Rotation2d> createRotation(double angleDegrees) {
-        return () -> { return Rotation2d.fromDegrees(angleDegrees); };
+        double val = autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? -1 : 1;
+        return () -> { return Rotation2d.fromDegrees(angleDegrees * val); };
     }
 
     protected SwerveControllerCommand createSwerveCommand(

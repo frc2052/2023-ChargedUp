@@ -15,6 +15,7 @@ import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
 import frc.robot.commands.drive.GyroAlignmentCommand;
+import frc.robot.commands.drive.NewChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
@@ -134,7 +135,7 @@ public class RobotContainer {
         coneScan.whileTrue(new RunCommand(pixy::updateConePosition, pixy));
 
         JoystickButton chargeStationAutoBalanceButton = new JoystickButton(driveJoystick, 7);
-        chargeStationAutoBalanceButton.whileTrue(new ChargeStationBalanceCommand(drivetrain));
+        chargeStationAutoBalanceButton.whileTrue(new NewChargeStationBalanceCommand(drivetrain));
 
         JoystickButton leftNodeDriveButton = new JoystickButton(turnJoystick, 4);
         JoystickButton middleNodeDriveButton = new JoystickButton(turnJoystick, 5);

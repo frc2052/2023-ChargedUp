@@ -19,6 +19,7 @@ import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
+import frc.robot.auto.AutoFactory.Grid;
 import frc.robot.auto.AutoFactory.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -73,7 +74,7 @@ public class ScorePickUpAutoBase extends AutoBase {
             AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(1), 
             initialPose, 
             tinyBackupPose2d,
-            createRotation(180)
+            createRotation(90)
         );
 
         SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
