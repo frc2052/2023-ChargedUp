@@ -49,6 +49,8 @@ public class VisionSubsystem extends SubsystemBase {
 
     public void enableLEDs() {
         camera.setLED(VisionLEDMode.kOn);
+        // Clear previous results from other tracking session
+        lastResult = null;
     }
 
     public void disableLEDs() {
@@ -90,13 +92,20 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             if (bestTarget != null) {
+                // Check if difference from previous target is more than 10 degrees return the last target
+                if (lastResult != null) {
+                    if (Math.abs(lastResult.getYaw() - bestTarget.getYaw()) >= 10 && lastTargetTime.get() <= 0.5) {
+                        return lastResult;
+                    }
+                }
+
                 lastResult = bestTarget;
                 lastTargetTime.reset();
                 return bestTarget;
             }
         }
 
-        if (lastTargetTime.get() <= 0.25) {
+        if (lastTargetTime.get() <= 0.5) {
             return lastResult;
         }
 

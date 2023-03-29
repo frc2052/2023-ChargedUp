@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
+import frc.robot.commands.drive.GyroAlignmentCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
@@ -53,14 +54,14 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
         Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, -2);
         Translation2d nearChargeStationInterpolationPoint = createTranslation2dInches(18, -6);
         
-        Translation2d channelInterpolationMipoint = createTranslation2dInches(36, -12);
+        Translation2d channelInterpolationMipoint = createTranslation2dInches(60, -12);
 
         Pose2d lineUpPose = createPose2dInches(
             12, 
             getStartingYOffsetInches(autoConfiguration.getStartingGrid(), Node.RIGHT_CONE), 
             225
         );
-        Pose2d scorePose = createPose2dInches(6, 0, 0);
+//        Pose2d scorePose = createPose2dInches(6, 0, 0);
 
         // Driving back to grid
         SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
@@ -78,14 +79,16 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
 
         addCommands(driveBackGroup);
 
+        addCommands(new GyroAlignmentCommand(drivetrain));
+
         addCommands(
             new DumbHorizontalAlignmentCommand(
                 drivetrain,
                 vision,
                 pixy, 
-                () -> 0.4,
+                () -> 0.25,
                 () -> 0
-            ).withTimeout(1.5)
+            ).withTimeout(1)
         );
         
         addCommands(new TopScoreCommand(elevator, arm));

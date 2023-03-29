@@ -38,10 +38,10 @@ public class HungryHungryHippoAuto extends ScorePickUpAutoBase {
     public void init() {
         super.init();
 
-        // Second cone pickup
+        // Second cone pickUp
         Translation2d secondLineUpMidpoint = createTranslation2dInches(185, -46);
         Pose2d secondPickUpPose = createPose2dInches(195, -46, 0);
-        // Third cone pickup
+        // Third cone pickUp
         Translation2d thirdLineUpMidpoint = createTranslation2dInches(185, -100);
         Pose2d thirdPickUpPose = createPose2dInches(195, -100, 0);
         // Drop off
@@ -62,8 +62,8 @@ public class HungryHungryHippoAuto extends ScorePickUpAutoBase {
         );
         addCommands(firstDropOffGroup);
 
-        // Drive and pickup second cone
-        SwerveControllerCommand secondPickupPath = createSwerveTrajectoryCommand(
+        // Drive and pickUp second cone
+        SwerveControllerCommand secondPickUpPath = createSwerveTrajectoryCommand(
             AutoTrajectoryConfig.defaultTrajectoryConfig, 
             getLastEndingPose(),
             List.of(farChargeStationInterpolationPoint, secondLineUpMidpoint),
@@ -72,7 +72,7 @@ public class HungryHungryHippoAuto extends ScorePickUpAutoBase {
         );
 
         ParallelDeadlineGroup secondPickUpGroup = new ParallelDeadlineGroup(
-            secondPickupPath,
+            secondPickUpPath,
             new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.5)).andThen(
                 new ParallelCommandGroup(
                     new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator),
@@ -95,8 +95,8 @@ public class HungryHungryHippoAuto extends ScorePickUpAutoBase {
         );
         addCommands(secondDropOffGroup);
 
-        // Drive and pickup third cone
-        SwerveControllerCommand thirdPickupPath = createSwerveTrajectoryCommand(
+        // Drive and pickUp third cone
+        SwerveControllerCommand thirdPickUpPath = createSwerveTrajectoryCommand(
             AutoTrajectoryConfig.defaultTrajectoryConfig, 
             getLastEndingPose(), 
             List.of(farChargeStationInterpolationPoint, thirdLineUpMidpoint),
@@ -105,7 +105,7 @@ public class HungryHungryHippoAuto extends ScorePickUpAutoBase {
         );
 
         ParallelDeadlineGroup thirdPickUpGroup = new ParallelDeadlineGroup(
-            thirdPickupPath,
+            thirdPickUpPath,
             new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.5)).andThen(
                 new ParallelCommandGroup(
                     new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator),
