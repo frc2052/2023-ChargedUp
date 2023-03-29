@@ -100,18 +100,8 @@ public class AutoFactory {
                 );
                 break;
 
-            case MIDDLE_SCORE_ONE_EXIT:
-                compiledAuto =  new MiddleScoreOneExitBalance(
-                    currentAutoConfiguration,
-                    drivetrain, 
-                    elevator, 
-                    intake, 
-                    arm
-                );
-                break;
-
             case MIDDLE_SCORE_ONE_BALANCE:
-                compiledAuto =  new MiddleScoreOneBalance(
+                compiledAuto =  new MiddleScoreOneExitBalance(
                     currentAutoConfiguration,
                     drivetrain, 
                     elevator, 

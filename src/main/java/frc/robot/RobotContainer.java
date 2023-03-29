@@ -191,12 +191,12 @@ public class RobotContainer {
          */
         Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getX() < -0.5);
         JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 12);
-        JoystickButton elevatorConeGroundPickupButton = new JoystickButton(controlPanel, 10);
+        JoystickButton elevatorConeGroundPickUpButton = new JoystickButton(controlPanel, 10);
         JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 5);
         
         elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator));
         elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
-        elevatorConeGroundPickupButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
+        elevatorConeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
         elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
 
         JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 3);

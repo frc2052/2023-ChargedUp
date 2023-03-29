@@ -49,7 +49,10 @@ public class ScorePickUpAutoBase extends AutoBase {
             0
         );
 
-        Pose2d tinyBackupPose2d = createPose2dInches(6, -10, 0);
+        Pose2d tinyBackupPose2d = createPose2dInches(6, getStartingYOffsetInches(
+            autoConfiguration.getStartingGrid(), 
+            autoConfiguration.getStartingNode()
+        ), 0);
 
         Translation2d chargeStationMidpoint = createTranslation2dInches(18, -10);
         Pose2d startPickUpPose = createPose2dInches(92, -14, 0);
@@ -88,7 +91,7 @@ public class ScorePickUpAutoBase extends AutoBase {
         addCommands(backupPath);
 
         // Drive to approach cone
-        SwerveControllerCommand pickupPath = createSwerveTrajectoryCommand(
+        SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
             AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(2), 
             getLastEndingPose(), 
             pickUpPose,
@@ -96,7 +99,7 @@ public class ScorePickUpAutoBase extends AutoBase {
         );
 
         ParallelDeadlineGroup pickUpGroup = new ParallelDeadlineGroup(
-            pickupPath,
+            pickUpPath,
             new ArmOutCommand(arm).andThen(new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator)),
             new IntakeInCommand(intake)
         );

@@ -19,6 +19,18 @@ public class AutoTrajectoryConfig {
         )
     );
 
+    public static final AutoTrajectoryConfig snailTrajectoryConfig = new AutoTrajectoryConfig(
+        new TrajectoryConfig(0.5, 0.5).setKinematics(DrivetrainSubsystem.getKinematics()),
+        new PIDController(0.5, 0, 0),
+        new ProfiledPIDController(
+            2, 0, 0,
+            new TrapezoidProfile.Constraints(
+                Math.PI, 
+                Math.PI
+            )
+        )
+    );
+
     public static final AutoTrajectoryConfig fastTurnDriveTrajectoryConfig = new AutoTrajectoryConfig(
         new TrajectoryConfig(3, 2).setKinematics(DrivetrainSubsystem.getKinematics()),
         new PIDController(1, 0, 0),
