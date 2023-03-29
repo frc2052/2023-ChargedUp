@@ -37,7 +37,7 @@
               "_showGlyph": false
             }
           },
-          "9,3": {
+          "7,3": {
             "size": [
               1,
               1
@@ -79,7 +79,7 @@
               "_showGlyph": false
             }
           },
-          "8,2": {
+          "8,3": {
             "size": [
               1,
               1
@@ -159,10 +159,11 @@
               "Y-axis/Automatic bounds": false,
               "Y-axis/Upper bound": 15.0,
               "Y-axis/Lower bound": 0.0,
-              "Y-axis/Unit": "A"
+              "Y-axis/Unit": "A",
+              "Visible data/SmartDashboard/Intake Current": true
             }
           },
-          "9,2": {
+          "9,3": {
             "size": [
               1,
               1
@@ -207,28 +208,15 @@
               "Visuals/Counter clockwise": false
             }
           },
-          "5,3": {
+          "6,3": {
             "size": [
               1,
               1
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Odometry Degrees",
-              "_title": "SmartDashboard/Odometry Degrees",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "8,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Pixy Cam Cone Offset",
-              "_title": "/SmartDashboard/Pixy Cam Cone Offset",
+              "_source0": "network_table:///SmartDashboard/Cone Offset",
+              "_title": "SmartDashboard/Cone Offset",
               "_glyph": 148,
               "_showGlyph": false
             }

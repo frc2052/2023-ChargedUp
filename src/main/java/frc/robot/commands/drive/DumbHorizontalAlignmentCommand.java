@@ -78,6 +78,11 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
     }
 
     @Override
+    protected double getRotation() {
+        return super.getRotation() * 0.25;
+    }
+
+    @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
 

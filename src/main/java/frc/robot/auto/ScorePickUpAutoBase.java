@@ -48,7 +48,7 @@ public class ScorePickUpAutoBase extends AutoBase {
         ), 0);
         Translation2d nearChargeStationMidpoint = createTranslation2dInches(48, -4);
         Translation2d farchargeStationMidpoint = createTranslation2dInches(130, -4);
-        Pose2d pickUpPose = createPose2dInches(194, -8, 0);
+        Pose2d pickUpPose = createPose2dInches(194, -10, 0);
 
         addCommands(new ResetOdometryCommand(drivetrain, initialPose));
 

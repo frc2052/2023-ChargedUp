@@ -18,6 +18,7 @@ import frc.robot.commands.drive.GyroAlignmentCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
+import frc.robot.auto.AutoFactory.Grid;
 import frc.robot.auto.AutoFactory.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -57,9 +58,17 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
         
         Translation2d channelInterpolationMipoint = createTranslation2dInches(60, -12);
 
+        System.out.println(getStartingYOffsetInches(
+            autoConfiguration.getStartingGrid(),
+            Node.MIDDLE_CUBE
+        ));
+
         Pose2d lineUpPose = createPose2dInches(
             12, 
-            getStartingYOffsetInches(autoConfiguration.getStartingGrid(), Node.RIGHT_CONE), 
+            getStartingYOffsetInches(
+                autoConfiguration.getStartingGrid(),
+                autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? Node.RIGHT_CONE : Node.LEFT_CONE
+            ) * (autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? 1 : -1), 
             225
         );
 //        Pose2d scorePose = createPose2dInches(6, 0, 0);
