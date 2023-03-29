@@ -14,23 +14,18 @@ public class GyroAlignmentCommand extends DriveCommand {
     private double gyroDegrees;
 
     public GyroAlignmentCommand(DrivetrainSubsystem drivetrain) {
-        super(drivetrain);
+        super(() -> 0, () -> 0, () -> 0, () -> false, drivetrain);
 
         rotationController = new PIDController(1, 0, 0);
         rotationController.enableContinuousInput(0, 360);
     }
     
     @Override
-    protected void drive() {
+    protected double getRotation() {
         // Forcing angle to be between [0, 360], PIDController thinks -180 isn't at setpoint of 180
         gyroDegrees = (drivetrain.getRotation().getDegrees() + 360) % 360;
 
-        drivetrain.drive(
-            0,
-            0,
-            rotationController.calculate(gyroDegrees, 180) / 180,
-            false
-        );
+        return rotationController.calculate(gyroDegrees, 180) / 180;
     }
 
     @Override

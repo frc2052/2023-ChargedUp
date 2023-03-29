@@ -47,7 +47,7 @@ public class Dashboard {
 
         autoChooser = new SendableChooser<Auto>();
         for (Auto auto : Auto.values()) {
-            autoChooser.addOption(auto.getName(), auto);
+            autoChooser.addOption(auto.name(), auto);
         }
         autoChooser.setDefaultOption(Auto.NO_AUTO.name(), Auto.NO_AUTO);
         SmartDashboard.putData("Auto", autoChooser);
@@ -99,11 +99,6 @@ public class Dashboard {
         SmartDashboard.putBoolean("End Charge Station", true);
     }
 
-    // updates dashboard with needed information
-    public void updateDashboard() {
-        SmartDashboard.putString("Auto Description", getAuto().getDescription());
-    }
-
     public <V> void putData(String key, V value) {
         if (value instanceof Float) {
             SmartDashboard.putNumber(key, (Float) value);
@@ -120,8 +115,8 @@ public class Dashboard {
         }
     }
 
-    public DriveMode getDriveMode() {
-        return driveModeChooser.getSelected();      
+    public boolean isFieldCentric() {
+        return driveModeChooser.getSelected() == DriveMode.FIELD_CENTRIC;      
     }
 
     public double getScoreOffsetDegrees() {

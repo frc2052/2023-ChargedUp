@@ -60,14 +60,22 @@ public class VisionSubsystem extends SubsystemBase {
         return camera.getLEDMode();
     }
 
-    public PhotonTrackedTarget getAprilTagTarget() {
-        camera.setPipelineIndex(Constants.Camera.APRIL_TAG_PIPELINE);
-
-        return getTarget();
+    public void toggleLEDs() {
+        if (getLedMode() == VisionLEDMode.kOff) {
+            enableLEDs();
+        } else {
+            disableLEDs();
+        }
     }
 
     public PhotonTrackedTarget getReflectiveTarget() {
         camera.setPipelineIndex(Constants.Camera.REFLECTIVE_TAPE_PIPELINE);
+
+        return getTarget();
+    }
+
+    public PhotonTrackedTarget getAprilTagTarget() {
+        camera.setPipelineIndex(Constants.Camera.APRIL_TAG_PIPELINE);
 
         return getTarget();
     }

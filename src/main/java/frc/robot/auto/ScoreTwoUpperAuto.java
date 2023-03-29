@@ -8,10 +8,8 @@ import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
 import frc.robot.commands.drive.GyroAlignmentCommand;
@@ -27,7 +25,7 @@ import frc.robot.subsystems.PixySubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
-/** Add your docs here. */
+@AutoDescription(description = "Score gamepiece, drive to pick up second gamepiece, and drive to score second gamepiece.")
 public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
     private final VisionSubsystem vision;
     private final PixySubsystem pixy;
@@ -50,46 +48,39 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
     @Override
     public void init() {
         super.init();
-
-        Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, -2);
-        Translation2d nearChargeStationInterpolationPoint = createTranslation2dInches(18, -6);
         
-        Translation2d channelInterpolationMipoint = createTranslation2dInches(60, -12);
+        Translation2d chargeStationInterpolationMipoint = createTranslation2dInches(60, -12);
 
-        Pose2d lineUpPose = createPose2dInches(
-            12, 
-            getStartingYOffsetInches(autoConfiguration.getStartingGrid(), Node.RIGHT_CONE), 
-            225
-        );
-//        Pose2d scorePose = createPose2dInches(6, 0, 0);
+        Pose2d lineUpPose = createPose2dInches(12, getStartingYOffsetInches(
+            autoConfiguration.getStartingGrid(), Node.RIGHT_CONE
+        ), 225);
 
-        // Driving back to grid
+        // Drive back to cable protector.
         SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig,
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withEndVelocity(1),
             getLastEndingPose(),
-            List.of(channelInterpolationMipoint),
-            lineUpPose, 
+            super.cableProtectorPoint, 
             createRotation(180)
         );
 
-        ParallelCommandGroup driveBackGroup = new ParallelCommandGroup(
+        ParallelDeadlineGroup driveBackGroup = new ParallelDeadlineGroup(
             driveBackPath,
-            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator).andThen(new InstantCommand(() -> { pixy.updateConePosition(); }))
+            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator).andThen(new RunCommand(pixy::updateConePosition))
         );
-
         addCommands(driveBackGroup);
 
-        addCommands(new GyroAlignmentCommand(drivetrain));
-
-        addCommands(
-            new DumbHorizontalAlignmentCommand(
-                drivetrain,
-                vision,
-                pixy, 
-                () -> 0.25,
-                () -> 0
-            ).withTimeout(1)
+        // Roughly line up with the scoring node.
+        SwerveControllerCommand lineUpPath = createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.defaultTrajectoryConfig.withStartVelocity(1),
+            getLastEndingPose(),
+            List.of(chargeStationInterpolationMipoint),
+            lineUpPose, 
+            createRotation(180)
         );
+        addCommands(lineUpPath);
+
+        addCommands(new GyroAlignmentCommand(drivetrain));
+        addCommands(new DumbHorizontalAlignmentCommand(() -> 0.25, () -> 0.0, drivetrain, vision, pixy).withTimeout(1));
         
         addCommands(new TopScoreCommand(elevator, arm));
         addCommands(new ScoreCommand(intake, arm, elevator).withTimeout(0.5));

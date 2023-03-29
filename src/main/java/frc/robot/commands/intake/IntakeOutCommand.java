@@ -10,14 +10,12 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class IntakeOutCommand extends CommandBase {
     private final IntakeSubsystem intake;
 
-    /** Creates a new ReverseIntake. */
     public IntakeOutCommand(IntakeSubsystem intake) {
         this.intake = intake;
 
         addRequirements(this.intake);
     }
 
-    // Called when the command is initially scheduled.
     @Override
     public void execute() {
         intake.intakeOut();

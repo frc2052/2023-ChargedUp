@@ -9,7 +9,6 @@ import java.util.function.DoubleSupplier;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PixySubsystem;
@@ -19,28 +18,22 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
     private final VisionSubsystem vision;
     private final PixySubsystem pixy;
     
-    private final DoubleSupplier xSupplier;
-    private final SlewRateLimiter xLimiter;
-    
     private final PIDController yController;
 
     private final Timer ledEnableTimer;
 
     /** Creates a new DumbHorizontalAlignmentCommand. */
     public DumbHorizontalAlignmentCommand(
+        DoubleSupplier xSupplier,
+        DoubleSupplier rotationSupplier,
         DrivetrainSubsystem drivetrain, 
         VisionSubsystem vision,
-        PixySubsystem pixy,
-        DoubleSupplier xSupplier,
-        DoubleSupplier rotationSupplier
+        PixySubsystem pixy
     ) {
-        super(drivetrain);
+        super(xSupplier, () -> 0, rotationSupplier, () -> true, drivetrain);
 
         this.vision = vision;
         this.pixy = pixy;
-
-        this.xSupplier = xSupplier;
-        xLimiter = new SlewRateLimiter(2);
 
         yController = new PIDController(1, 0, 0);
         yController.setTolerance(0.5);
@@ -59,7 +52,7 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void drive() {
+    protected double getY() {
         // Max target yaw
         double minConeAlignedYawDegrees = -3.8;
         double maxConeAlignedYawDegrees = 11.7;
@@ -76,27 +69,18 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
         if (target != null) {
             double targetYaw = target.getYaw();
 
-            drivetrain.drive(
-                slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
-                // Normalize to our camera FOV.
-                yController.calculate(targetYaw, goalYaw) / 75.76,
-                0,
-                false
-            ); 
+            return yController.calculate(targetYaw, goalYaw) / 75.76;
         } else {
             System.out.println("No target!");
 
-            drivetrain.drive(
-                slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
-                yController.calculate(0, 0),
-                0,
-                false
-            );
+            return yController.calculate(0, 0);
         }
     }
 
     @Override
     public void end(boolean interrupted) {
+        super.end(interrupted);
+
         vision.disableLEDs();
     }
 

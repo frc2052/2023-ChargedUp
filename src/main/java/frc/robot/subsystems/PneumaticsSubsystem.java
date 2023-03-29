@@ -12,7 +12,6 @@ import frc.robot.io.Dashboard;
 public class PneumaticsSubsystem extends SubsystemBase {
     private final PneumaticHub pneumaticHub;
 
-    /** Creates a new PneumaticsSubsystem. */
     public PneumaticsSubsystem() {
         pneumaticHub = new PneumaticHub(Constants.Compressor.PNEUMATIC_HUB_ID);
 

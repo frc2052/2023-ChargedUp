@@ -4,29 +4,66 @@
 
 package frc.robot.commands.drive;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-public abstract class DriveCommand extends CommandBase {
+public class DriveCommand extends CommandBase {
     protected final DrivetrainSubsystem drivetrain;
 
-    /** Creates a new DriveCommand. */
-    public DriveCommand(DrivetrainSubsystem drivetrain) {
+    private final DoubleSupplier xSupplier;
+    private final DoubleSupplier ySupplier;
+    private final DoubleSupplier rotationSupplier;
+    private final BooleanSupplier fieldCentricSupplier;
+    
+    private final SlewRateLimiter xLimiter;
+    private final SlewRateLimiter yLimiter;
+    private final SlewRateLimiter rotationLimiter;
+
+    /**
+     * @param xSupplier supplier for forward velocity.
+     * @param ySupplier supplier for sideways velocity.
+     * @param rotationSupplier supplier for angular velocity.
+     */
+    public DriveCommand(
+        DoubleSupplier xSupplier, 
+        DoubleSupplier ySupplier, 
+        DoubleSupplier rotationSupplier,
+        BooleanSupplier fieldCentricSupplier,
+        DrivetrainSubsystem drivetrain
+    ) {
         this.drivetrain = drivetrain;
 
-        addRequirements(this.drivetrain);
+        this.xSupplier = xSupplier;
+        this.ySupplier = ySupplier;
+        this.rotationSupplier = rotationSupplier;
+        this.fieldCentricSupplier = fieldCentricSupplier;
+
+        xLimiter = new SlewRateLimiter(2);
+        yLimiter = new SlewRateLimiter(2);
+        rotationLimiter = new SlewRateLimiter(6);
     }
 
-    // Called every time the scheduler runs while the command is scheduled.
+    protected double getX() {
+        return slewAxis(xLimiter, deadBand(-xSupplier.getAsDouble()));
+    }
+
+    protected double getY() {
+        return slewAxis(yLimiter, deadBand(-ySupplier.getAsDouble()));
+    }
+
+    protected double getRotation() {
+        return slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble()));
+    }
+
     @Override
     public void execute() {
-        drive();
+        drivetrain.drive(getY(), getX(), getRotation(), fieldCentricSupplier.getAsBoolean());
     }
 
-    protected abstract void drive();
-
-    // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         drivetrain.stop();

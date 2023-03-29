@@ -5,7 +5,6 @@
 package frc.robot.commands.score;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
@@ -17,10 +16,7 @@ public class MidScoreCommand extends ParallelCommandGroup {
     public MidScoreCommand(ElevatorSubsystem elevator, ArmSubsystem arm) {
         addCommands(
             new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator),
-            new SequentialCommandGroup(
-                new WaitCommand(0.75),
-                new ArmOutCommand(arm)
-            )
+            new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.75))
         );
     }
 }

@@ -7,16 +7,13 @@ package frc.robot.auto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
-import frc.robot.commands.drive.NewChargeStationBalanceCommand;
 import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
-/**
- * Left side score gamepiece, drive to pick up gamepiece, drive to chargestation, and balance.
- */
+@AutoDescription(description = "Score gamepiece, drive to pick up second gamepiece, and balance.")
 public class ScoreOneBalanceAuto extends ScorePickUpAutoBase {
     /** Creates a new scoretwoandbalence. */
     public ScoreOneBalanceAuto(
@@ -58,7 +55,7 @@ public class ScoreOneBalanceAuto extends ScorePickUpAutoBase {
             addCommands(onChargePath);
             
             addCommands(new IntakeStopCommand(intake));
-            addCommands(new NewChargeStationBalanceCommand(drivetrain));
+            addCommands(new ChargeStationBalanceCommand(drivetrain));
         }
     };
 }

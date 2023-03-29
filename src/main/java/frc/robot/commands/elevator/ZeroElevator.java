@@ -19,7 +19,6 @@ public class ZeroElevator extends CommandBase {
         elevator.manualDown();
     }
 
-    // Returns true when the command should end.
     @Override
     public boolean isFinished() {
         return elevator.elevatorZeroed();

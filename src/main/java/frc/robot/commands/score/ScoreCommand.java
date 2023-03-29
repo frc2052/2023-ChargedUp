@@ -15,41 +15,18 @@ public class ScoreCommand extends CommandBase {
     private final ArmSubsystem arm;
     private final ElevatorSubsystem elevator;
 
-    private final boolean inverted;
-
     public ScoreCommand(IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator) {
-        this(intake, arm, elevator, false);
-    }
-
-    public ScoreCommand(IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator, boolean inverted) {
         this.intake = intake;
         this.arm = arm;
         this.elevator = elevator;
-
-        this.inverted = inverted;
 
         addRequirements(this.intake, this.arm, this.elevator);
     }
 
     @Override
-    public void initialize() {
-        arm.armOut();
-
-        // if (elevator.getPosition() != ElevatorPosition.TOP_SCORE && elevator.getPosition() != ElevatorPosition.MID_SCORE) {
-        //     if (elevator.getPreviouPosition() == ElevatorPosition.TOP_SCORE || elevator.getPreviouPosition() == ElevatorPosition.MID_SCORE) {
-        //         elevator.setPosition(elevator.getPreviouPosition());
-        //     }
-        // }
-    }
-
-    @Override
     public void execute() {
         if (elevator.atPosition()) {
-            if (!inverted) {
-                intake.intakeOut();
-            } else {
-                intake.intakeIn();
-            }
+            intake.intakeOut();
         }
     }
 

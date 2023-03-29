@@ -9,23 +9,21 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 public class ElevatorPositionCommand extends CommandBase {
-    private final ElevatorPosition position;
-
     private final ElevatorSubsystem elevator;
+
+    private final ElevatorPosition position;
   
-    /** Creates a new ElevatorPositionCommand. */
     public ElevatorPositionCommand(
         ElevatorPosition position, 
         ElevatorSubsystem elevator
     ) {
-        this.position = position;
-
         this.elevator = elevator;
+
+        this.position = position;
 
         addRequirements(this.elevator);
     }
 
-    // Called when the command is initially scheduled.
     @Override
     public void initialize() {
         elevator.setPosition(position);
@@ -36,7 +34,6 @@ public class ElevatorPositionCommand extends CommandBase {
         elevator.stop();
     }
 
-    // Returns true when the command should end.
     @Override
     public boolean isFinished() {
         return elevator.atPosition();

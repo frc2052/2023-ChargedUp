@@ -96,15 +96,13 @@ public final class Constants {
     public static final class Camera {
         public static final String CAMERA_NAME = "2052_Cicada";
 
-        public static final int APRIL_TAG_PIPELINE = 1;
         public static final int REFLECTIVE_TAPE_PIPELINE = 0;
+        public static final int APRIL_TAG_PIPELINE = 1;
 
         public static final Transform3d CAMERA_POSITION_METERS = new Transform3d(
             new Translation3d(Units.inchesToMeters(6), Units.inchesToMeters(3.675), Units.inchesToMeters(41.75)), 
             new Rotation3d(0, Units.degreesToRadians(-5), 0)
         );
-
-        public static final double APRIL_TAG_HEIGHT_METERS = Units.inchesToMeters(8);
     }
 
     public static final class Compressor {
@@ -121,6 +119,8 @@ public final class Constants {
         public static final String PRESSURE_KEY = "Pressure";
         public static final String CAMERA_CONNECTION_KEY = "Camera Connected";
         public static final String AUTO_COMPILED_KEY = "Auto Compiled";
+        public static final String AUTO_DESCRIPTION_KEY = "Auto Description";
+        public static final String CONE_OFFSET_KEY = "Cone Offset";
     }
 
     public static final class Auto {

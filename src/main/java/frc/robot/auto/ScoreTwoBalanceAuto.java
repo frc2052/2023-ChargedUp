@@ -9,7 +9,6 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
@@ -20,10 +19,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
-/**
- * Left side score gamepiece, drive to pick up gamepiece, drive to grid, 
- * shoot without stopping, drive to charge station, and balance.
- */
+@AutoDescription(description = "Score gamepiece, drive to pick up second gamepiece, drive to grid and shoot without stopping, balance.")
 public class ScoreTwoBalanceAuto extends ScorePickUpAutoBase {
     public ScoreTwoBalanceAuto(
         AutoConfiguration autoConfiguration,
@@ -43,18 +39,28 @@ public class ScoreTwoBalanceAuto extends ScorePickUpAutoBase {
         Pose2d lineUpPose = createPose2dInches(24, -80, 270);
         Pose2d chargeStationPose = createPose2dInches(100, -80, 180);
        
-        // Driving back to grid
+        // Driving back to cable protector.
         SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(2),
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withEndVelocity(1),
             getLastEndingPose(), 
-            List.of(farChargeStationInterpolationPoint, nearChargeStationInterpolationPoint), 
-            lineUpPose, 
+            List.of(farChargeStationInterpolationPoint), 
+            super.cableProtectorPoint, 
             createRotation(180)
         );
 
+        // Drive back to the grid.
+        SwerveControllerCommand scorePath = createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.defaultTrajectoryConfig.withStartAndEndVelocity(1, 2),
+            getLastEndingPose(), 
+            List.of(nearChargeStationInterpolationPoint), 
+            lineUpPose, 
+            createRotation(180)
+        );
+        addCommands(driveBackPath);
+
         ParallelDeadlineGroup driveBackAndScoreGroup = new ParallelDeadlineGroup(
-            driveBackPath,
-            new IntakeOutCommand(intake).beforeStarting(new WaitCommand(3))
+            scorePath,
+            new IntakeOutCommand(intake).beforeStarting(new WaitCommand(1.5))
         );
         addCommands(driveBackAndScoreGroup);
 
@@ -71,7 +77,6 @@ public class ScoreTwoBalanceAuto extends ScorePickUpAutoBase {
             addCommands(balancePath);
 
             addCommands(new ChargeStationBalanceCommand(drivetrain));
-            addCommands(new RunCommand(() -> { drivetrain.xWheels(); }, drivetrain));
         }
     };
 }

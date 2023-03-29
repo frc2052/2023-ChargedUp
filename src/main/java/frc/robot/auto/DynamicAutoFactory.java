@@ -17,7 +17,7 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Constants;
 import frc.robot.commands.arm.ArmOutCommand;
-import frc.robot.commands.drive.ChargeStationBalanceCommand;
+import frc.robot.commands.drive._oldChargeStationBalanceCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.commands.score.MidScoreCommand;
@@ -225,7 +225,7 @@ public class DynamicAutoFactory {
                         );
                         addCommands(endChargeStationCommand);
                         
-                        addCommands(new ChargeStationBalanceCommand(drivetrain));
+                        addCommands(new _oldChargeStationBalanceCommand(drivetrain));
                     }
                 }
             }

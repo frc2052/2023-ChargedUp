@@ -88,6 +88,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
             // If the elevator is traveling downwards stop the belt motor and end the current command.
             if (currentPosition.getPositionTicks() <= previousPosition.getPositionTicks()) {
+                currentPosition = ElevatorPosition.STARTING;
                 stop();
             }
         }
@@ -101,7 +102,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         previousPosition = currentPosition;
         currentPosition = elevatorPosition;
         
-        // If the arm mechanism drags down the belt due to gravity add an arbitrary feed forward constant.
         beltMotor.set(
             ControlMode.MotionMagic,
             elevatorPosition.getPositionTicks()

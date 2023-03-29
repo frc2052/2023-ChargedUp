@@ -10,23 +10,22 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeInCommand extends CommandBase {
-    private final BooleanSupplier isArmOut;
-
     private final IntakeSubsystem intake;
+
+    private final BooleanSupplier isArmOut;
 
     public IntakeInCommand(IntakeSubsystem intake) {
         this(() -> true, intake);
     }
 
     public IntakeInCommand(BooleanSupplier isArmOut, IntakeSubsystem intake) {
-        this.isArmOut = isArmOut;
-       
         this.intake = intake;
+        
+        this.isArmOut = isArmOut;
 
         addRequirements(this.intake);
     }
 
-    // Called when the command is initially scheduled.
     @Override
     public void execute() {
         if (isArmOut.getAsBoolean()) {

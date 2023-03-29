@@ -6,14 +6,16 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.io.Dashboard;
 
 public class PixySubsystem extends SubsystemBase {
-    double minPixyVoltage = 1.5;
-    double maxPixyVoltage = 2.7;
-    double lastKnownPosition = 0;
+    private final double minPixyVoltage = 1.5;
+    private final double maxPixyVoltage = 2.7;
+    
+    private double lastKnownPosition = 0;
 
-    AnalogInput pixyX;
+    private final AnalogInput pixyX;
 
     public PixySubsystem() {
         pixyX = new AnalogInput(0);
@@ -28,7 +30,8 @@ public class PixySubsystem extends SubsystemBase {
             pos = maxPixyVoltage;
         }
 
-        //Takes the current voltage and subtracts the minimum voltage, multiplies by our range, then divides by our voltage range, subtracting 6 to output the distance from center
+        // Takes the current voltage and subtracts the minimum voltage, multiplies by our range, 
+        // then divides by our voltage range, subtracting 6 to output the distance from center.
         lastKnownPosition = (pos - minPixyVoltage) * 12 / (maxPixyVoltage - minPixyVoltage) - 6;
     }
 
@@ -38,6 +41,6 @@ public class PixySubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Dashboard.getInstance().putData("Pixy Cam Cone Offset", lastKnownPosition);
+        Dashboard.getInstance().putData(Constants.Dashboard.CONE_OFFSET_KEY, lastKnownPosition);
     }
 }

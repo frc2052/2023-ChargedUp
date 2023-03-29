@@ -24,9 +24,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import frc.robot.subsystems.IntakeSubsystem;
 
-/**
- * Middle score gamepiece, drive to chargestation, and balance.
- */
+@AutoDescription(description = "Score gamepiece, drive over charge station to pick up second gamepiece, and balance.")
 public class MiddleScoreOneBalance extends AutoBase {
     public MiddleScoreOneBalance(
         AutoConfiguration autoConfiguration,
@@ -39,15 +37,11 @@ public class MiddleScoreOneBalance extends AutoBase {
     }
     
     public void init() {
-        Pose2d initialPose = createPose2dInches(
-            0, 
-            // Recenter offset to zero is the middle node
-            getStartingYOffsetInches(
-                autoConfiguration.getScoreGrid(), 
-                autoConfiguration.getStartingNode()
-            ) + (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES), 
-            0
-        );
+        // Recenter offset to zero is the middle node
+        Pose2d initialPose = createPose2dInches(0, getStartingYOffsetInches(
+            autoConfiguration.getScoreGrid(), 
+            autoConfiguration.getStartingNode()
+        ) + (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES), 0);
         Pose2d lineUpPose = createPose2dInches(24, 0, 0);
         Pose2d chargeStationPose = createPose2dInches(100, 0, 0);
         Pose2d driveOverPose = createPose2dInches(172, 0, 0);
@@ -63,7 +57,7 @@ public class MiddleScoreOneBalance extends AutoBase {
         }
         
         addCommands(
-            new ScoreCommand(intake, arm, elevator, autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE).withTimeout(
+            new ScoreCommand(intake, arm, elevator).withTimeout(
                 autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5
             )
         );

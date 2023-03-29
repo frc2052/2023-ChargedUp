@@ -4,12 +4,12 @@
 
 package frc.robot.commands.drive;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
@@ -21,35 +21,23 @@ import frc.robot.subsystems.VisionSubsystem;
 public class SmartHorizontalAlignmentCommand extends DriveCommand {
     private final VisionSubsystem vision;
     private final PixySubsystem pixy;
-    
-    private final DoubleSupplier xSupplier;
-    private final DoubleSupplier rotationSupplier;
-
-    private final SlewRateLimiter xLimiter;
-    private final SlewRateLimiter rotationLimiter;
 
     private final PIDController yController;
 
     private final Timer ledEnableTimer;
 
-    /** Creates a new SmartHorizontalAlignmentCommand. */
     public SmartHorizontalAlignmentCommand(
-        DrivetrainSubsystem drivetrain, 
-        VisionSubsystem vision,
-        PixySubsystem pixy,
         DoubleSupplier xSupplier,
-        DoubleSupplier rotationSupplier
+        DoubleSupplier rotationSupplier, 
+        BooleanSupplier fieldCentricSupplier, 
+        DrivetrainSubsystem drivetrain,
+        VisionSubsystem vision,
+        PixySubsystem pixy
     ) {
-        super(drivetrain);
+        super(xSupplier, () -> 0, rotationSupplier, fieldCentricSupplier, drivetrain);
 
         this.vision = vision;
         this.pixy = pixy;
-
-        this.xSupplier = xSupplier;
-        this.rotationSupplier = rotationSupplier;
-
-        xLimiter = new SlewRateLimiter(2);
-        rotationLimiter = new SlewRateLimiter(2);
 
         yController = new PIDController(0.02, 0, 0.001);
         yController.setTolerance(0.5);
@@ -68,9 +56,8 @@ public class SmartHorizontalAlignmentCommand extends DriveCommand {
         ledEnableTimer.start();
     }
 
-    // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void drive() {
+    protected double getY() {
         PhotonTrackedTarget target = vision.getReflectiveTarget();
 
         if (target != null) {
@@ -80,21 +67,9 @@ public class SmartHorizontalAlignmentCommand extends DriveCommand {
             // Finds the PID target angle in degrees given a constant distance of 36 inches and the offset of the cone in the intake.
             double cameraConeOffsetDegrees = Math.copySign(-Math.toDegrees(Math.atan(Units.inchesToMeters(36) / Math.abs(Units.inchesToMeters(coneOffsetInches)))) + 90, coneOffsetInches);
 
-            System.out.println(cameraConeOffsetDegrees);
-
-            drivetrain.drive(
-                slewAxis(xLimiter, deadBand(-xSupplier.getAsDouble())),
-                yController.calculate(target.getYaw(), cameraConeOffsetDegrees),
-                slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble() * .75)),
-                false
-            );
+            return yController.calculate(target.getYaw(), cameraConeOffsetDegrees);
         } else {
-            drivetrain.drive(
-                slewAxis(xLimiter, deadBand(-xSupplier.getAsDouble())),
-                yController.calculate(0, 0),
-                slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble() * .75)),
-                false
-            );
+            return yController.calculate(0, 0);
         }
     }
 

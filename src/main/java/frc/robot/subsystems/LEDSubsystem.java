@@ -15,9 +15,9 @@ import frc.robot.auto.AutoFactory.Auto;
 public class LEDSubsystem extends SubsystemBase {
     private static LEDSubsystem INSTANCE;
     
-    private DigitalOutput codeChannel1, codeChannel2, codeChannel3, codeChannel4, codeChannel5, codeChannel6, codeChannel7, codeChannel8;
+    private final DigitalOutput codeChannel1, codeChannel2, codeChannel3, codeChannel4, codeChannel5, codeChannel6, codeChannel7, codeChannel8;
 
-    private LEDStatusMode currentStatusMode = LEDStatusMode.OFF;
+    private LEDStatusMode currentStatusMode;
 
     private boolean disableLEDs;
     private boolean robotDisabled;
@@ -34,7 +34,10 @@ public class LEDSubsystem extends SubsystemBase {
         codeChannel8 = new DigitalOutput(Constants.LEDs.CHANNEL_8_PIN);
         robotDisabled = true;
 
-        // SmartDashboard.putNumber("LED CODE", 0); // For manually inputing code to encode to DIO pins
+        currentStatusMode = LEDStatusMode.OFF;
+
+        // For manually inputing code to encode to DIO pins
+        // SmartDashboard.putNumber("LED CODE", 0);
     }
 
     public static LEDSubsystem getInstance() {  // Method to allow calling this class and getting the single instance from anywhere, creating the instance if the first time.

@@ -53,15 +53,11 @@ public class AutoFactory {
         this.pixy = pixy;
     }
 
-    public void precompileAuto() {
-        if (autoSupplier.get() == currentAuto && autoConfigurationSupplier.get().equals(currentAutoConfiguration)) {
-            return;
-        }
-
-        forceRecompile();
+    public boolean recompileNeeded() {
+        return autoSupplier.get() != currentAuto || !autoConfigurationSupplier.get().equals(currentAutoConfiguration);
     }
 
-    public void forceRecompile() {
+    public void recompile() {
         Dashboard.getInstance().putData(Constants.Dashboard.AUTO_COMPILED_KEY, false);
 
         currentAuto = autoSupplier.get();
@@ -129,9 +125,9 @@ public class AutoFactory {
         if (compiledAuto != null) {
             compiledAuto.init();
 
-            AutoDescription description = compiledAuto.getClass().getAnnotation(AutoDescription.class);
-            if (description != null) {
-                System.out.println(description.description());
+            AutoDescription autoDescription = compiledAuto.getClass().getAnnotation(AutoDescription.class);
+            if (autoDescription != null) {
+                Dashboard.getInstance().putData(Constants.Dashboard.AUTO_DESCRIPTION_KEY, autoDescription.description());
             }
         }
 
@@ -143,28 +139,12 @@ public class AutoFactory {
     }
 
     public static enum Auto {
-        NO_AUTO("NO AUTO", "NO AUTO"),
-        SCORE_ONE_BALANCE("Score One Balance", "Description"),
-        SCORE_TWO_BALANCE("Score Two Balance", "Description"),
-        SCORE_TWO_UPPER("Score Two Upper", "Description"),
-        MIDDLE_SCORE_ONE_BALANCE("Middle Score One Balance", "Description"),
-        HUNGRY_HUNGRY_HIPPO("Hungry Hungry Hippo", "Nom nom");
-
-        private final String name;
-        private final String description;
-
-        private Auto(String name, String description) {
-            this.name = name;
-            this.description = description;
-        }
-  
-        public String getName() {
-            return name;
-        }
-
-        public String getDescription() {
-            return description;
-        }
+        NO_AUTO,
+        SCORE_ONE_BALANCE,
+        SCORE_TWO_BALANCE,
+        SCORE_TWO_UPPER,
+        MIDDLE_SCORE_ONE_BALANCE,
+        HUNGRY_HUNGRY_HIPPO;
     }
 
     public static enum Grid {

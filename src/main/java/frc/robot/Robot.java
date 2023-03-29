@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.io.Dashboard;
 import frc.robot.subsystems.LEDSubsystem;
 
 /**
@@ -57,9 +56,6 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-
-        // Update dashboard values every robot frame.
-        Dashboard.getInstance().updateDashboard();
     }
 
     /** This function is called once each time the robot enters Disabled mode. */

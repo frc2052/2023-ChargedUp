@@ -26,9 +26,6 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public abstract class AutoBase extends SequentialCommandGroup {
     protected final AutoConfiguration autoConfiguration;
     protected final DrivetrainSubsystem drivetrain;
@@ -37,6 +34,8 @@ public abstract class AutoBase extends SequentialCommandGroup {
     protected final ArmSubsystem arm;
 
     private Pose2d lastEndingPose;
+
+    protected final Pose2d cableProtectorPoint;
 
     /** Creates a new Auto. */
     public AutoBase(
@@ -51,6 +50,8 @@ public abstract class AutoBase extends SequentialCommandGroup {
         this.elevator = elevator;
         this.intake = intake;
         this.arm = arm;
+
+        cableProtectorPoint = createPose2dInches(98, -12, 0);
 
         if (!DriverStation.isFMSAttached()) {
             if (!this.elevator.elevatorZeroed()) {
@@ -77,16 +78,21 @@ public abstract class AutoBase extends SequentialCommandGroup {
 
     public double getStartingYOffsetInches(Grid startGrid, Node startNode) {
         if (startGrid == Grid.LEFT_GRID) {
+            // [0, 0] is located in the bottom left corner of the community with values becoming more negative farther right.
             return -startNode.ordinal() * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
         } else {
+            // [0, 0] is located in the bottom right corner of the community with values becoming more positive farther left.
             return (2 - startNode.ordinal()) * (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
         }
     }
 
-    // Creates easy rotation 2d suppliers for the SwerveControllerCommands
+    // Creates easy rotation 2d suppliers for the SwerveControllerCommands.
     protected Supplier<Rotation2d> createRotation(double angleDegrees) {
-        double val = autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? -1 : 1;
-        return () -> { return Rotation2d.fromDegrees(angleDegrees * val); };
+        // Automatically adjust angles between positive and negative depending on which grid we're on.
+        // Rotating counter clockwise is positive and clockwise is negative.
+        double flipRotation = autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? -1.0 : 1.0;
+
+        return () -> { return Rotation2d.fromDegrees(angleDegrees * flipRotation); };
     }
 
     protected SwerveControllerCommand createSwerveCommand(
@@ -142,6 +148,8 @@ public abstract class AutoBase extends SequentialCommandGroup {
     ) {
         lastEndingPose = endPose;
 
+        // Automatically adjust y-coordinate depending on grid.
+        // Positive is still left and negative is still right, but 0 is placed in each corner of the community.
         double flipYCoord = autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? -1.0 : 1.0;
 
         List<Translation2d> adjustedMidpointList = new ArrayList<Translation2d>();

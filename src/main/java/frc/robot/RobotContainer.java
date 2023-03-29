@@ -11,17 +11,15 @@ import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.auto.AutoFactory;
-import frc.robot.commands.drive.ChargeStationBalanceCommand;
-import frc.robot.commands.drive.DefaultDriveCommand;
+import frc.robot.commands.drive.DriveCommand;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
 import frc.robot.commands.drive.GyroAlignmentCommand;
-import frc.robot.commands.drive.NewChargeStationBalanceCommand;
+import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.io.ControlPanel;
 import frc.robot.io.Dashboard;
-import frc.robot.io.Dashboard.DriveMode;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -31,7 +29,6 @@ import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.PixySubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
-
 import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -101,14 +98,14 @@ public class RobotContainer {
         );
 
         drivetrain.setDefaultCommand(
-            new DefaultDriveCommand(
+            new DriveCommand(
                 // Forward velocity supplier
-                () -> driveJoystick.getY(),
+                driveJoystick::getY,
                 // Sideways velocity supplier
-                () -> driveJoystick.getX(),
+                driveJoystick::getX,
                 // Rotation velocity supplier
-                () -> turnJoystick.getX(),
-                () -> Dashboard.getInstance().getDriveMode() == DriveMode.FIELD_CENTRIC,
+                turnJoystick::getX,
+                Dashboard.getInstance()::isFieldCentric,
                 drivetrain
             )
         );
@@ -130,31 +127,24 @@ public class RobotContainer {
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
-        Trigger coneScan = new Trigger(() -> controlPanel.getY() > 0.5);
-        coneScan.onTrue(new InstantCommand (() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
-        coneScan.whileTrue(new RunCommand(pixy::updateConePosition, pixy));
+        Trigger coneScanButton = new Trigger(() -> controlPanel.getY() > 0.5);
+        coneScanButton.whileTrue(new SequentialCommandGroup(new InstantCommand(LEDSubsystem.getInstance()::disableLEDs), new RunCommand(pixy::updateConePosition, pixy)));
+        coneScanButton.onFalse(new InstantCommand(LEDSubsystem.getInstance()::enableLEDs));
 
         JoystickButton chargeStationAutoBalanceButton = new JoystickButton(driveJoystick, 7);
-        chargeStationAutoBalanceButton.whileTrue(new NewChargeStationBalanceCommand(drivetrain));
+        chargeStationAutoBalanceButton.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
         JoystickButton leftNodeDriveButton = new JoystickButton(turnJoystick, 4);
-        JoystickButton middleNodeDriveButton = new JoystickButton(turnJoystick, 5);
         leftNodeDriveButton.whileTrue(
             new SequentialCommandGroup(
                 new GyroAlignmentCommand(drivetrain),
                 new DumbHorizontalAlignmentCommand(
-                    drivetrain, vision, pixy,
-                    () -> driveJoystick.getY(),
-                    () -> turnJoystick.getX()
+                    driveJoystick::getY,
+                    turnJoystick::getX,
+                    drivetrain, vision, pixy
                 )
             )
         );
-        middleNodeDriveButton.whileTrue(
-            new ChargeStationBalanceCommand(drivetrain)
-        );
-
-        JoystickButton testGridAlignment = new JoystickButton(driveJoystick, 10);
-        testGridAlignment.whileTrue(new GyroAlignmentCommand(drivetrain));
 
         JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
         xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));
@@ -168,9 +158,7 @@ public class RobotContainer {
         cameraResetButton.and(cameraResetButtonSafety).onFalse(new InstantCommand(() -> pdh.setSwitchableChannel(true)));
 
         JoystickButton ledToggleButton = new JoystickButton(turnJoystick, 6);
-        ledToggleButton.onTrue(new InstantCommand(() -> {
-            vision.enableLEDs();
-        }));
+        ledToggleButton.onTrue(new InstantCommand(vision::toggleLEDs));
 
         /*
          * LED button bindings
@@ -238,11 +226,13 @@ public class RobotContainer {
     }
     
     public void forceRecompile() {
-        autoFactory.forceRecompile();
+        autoFactory.recompile();
     }
 
     public void precompileAuto() {
-        autoFactory.precompileAuto();
+        if (autoFactory.recompileNeeded()) {
+            autoFactory.recompile();
+        }
     }
 
     /**

@@ -7,19 +7,17 @@ package frc.robot.auto;
 import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
+import frc.robot.commands.drive.ResetOdometryCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
-import frc.robot.auto.AutoFactory.Grid;
 import frc.robot.auto.AutoFactory.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -27,7 +25,6 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import frc.robot.subsystems.IntakeSubsystem;
 
-/** Add your docs here. */
 public class ScorePickUpAutoBase extends AutoBase {
     public ScorePickUpAutoBase(
         AutoConfiguration autoConfiguration,
@@ -41,32 +38,18 @@ public class ScorePickUpAutoBase extends AutoBase {
 
     @Override
     public void init() {
-        System.out.println(getStartingYOffsetInches(
+        Pose2d initialPose = createPose2dInches(0, getStartingYOffsetInches(
             autoConfiguration.getStartingGrid(), 
             autoConfiguration.getStartingNode()
-        ));
-
-        Pose2d initialPose = createPose2dInches(
-            0, 
-            getStartingYOffsetInches(
-                autoConfiguration.getStartingGrid(), 
-                autoConfiguration.getStartingNode()
-            ), 
-            0
-        );
-
+        ), 0);
         Pose2d tinyBackupPose2d = createPose2dInches(6, getStartingYOffsetInches(
             autoConfiguration.getStartingGrid(), 
             autoConfiguration.getStartingNode()
         ), 0);
-
-        Translation2d chargeStationMidpoint = createTranslation2dInches(18, -14);
-        Pose2d startPickUpPose = createPose2dInches(92, -14, 0);
+        Translation2d chargeStationMidpoint = createTranslation2dInches(18, -12);
         Pose2d pickUpPose = createPose2dInches(194, -18, 0);
 
-        addCommands(new InstantCommand(() -> { 
-            drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
-        }, drivetrain));
+        addCommands(new ResetOdometryCommand(drivetrain, initialPose));
 
         // Score first time
         if (autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE) {
@@ -75,30 +58,32 @@ public class ScorePickUpAutoBase extends AutoBase {
             addCommands(new TopScoreCommand(elevator, arm));
         }
 
+        addCommands(new ScoreCommand(intake, arm, elevator).withTimeout(
+            autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5
+        ));
+
+        // Drive back slightly to avoid rotation collisions with the grid.
         SwerveControllerCommand tinyBackupCommand = createSwerveTrajectoryCommand(
             AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(1), 
             initialPose, 
             tinyBackupPose2d,
             createRotation(90)
         );
+        addCommands(tinyBackupCommand);
 
+        // Slow down over cable protector to avoid odometry drift.
         SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartAndEndVelocity(1, 2), 
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartAndEndVelocity(1, 1), 
             getLastEndingPose(),
             List.of(chargeStationMidpoint),
-            startPickUpPose,
+            super.cableProtectorPoint,
             createRotation(0)
         );
-
-        addCommands(new ScoreCommand(intake, arm, elevator, autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE).withTimeout(
-            autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5
-        ));
-        addCommands(tinyBackupCommand);
         addCommands(backupPath);
 
-        // Drive to approach cone
+        // Drive to approach and pick up the cone.
         SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(2), 
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(1), 
             getLastEndingPose(), 
             pickUpPose,
             createRotation(0)
