@@ -51,7 +51,7 @@ public abstract class AutoBase extends SequentialCommandGroup {
         this.intake = intake;
         this.arm = arm;
 
-        cableProtectorPoint = createPose2dInches(98, -12, 0);
+        cableProtectorPoint = createPose2dInches(98, -4, 0);
 
         if (!DriverStation.isFMSAttached()) {
             if (!this.elevator.elevatorZeroed()) {

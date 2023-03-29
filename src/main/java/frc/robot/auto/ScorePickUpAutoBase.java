@@ -46,8 +46,9 @@ public class ScorePickUpAutoBase extends AutoBase {
             autoConfiguration.getStartingGrid(), 
             autoConfiguration.getStartingNode()
         ), 0);
-        Translation2d chargeStationMidpoint = createTranslation2dInches(18, -12);
-        Pose2d pickUpPose = createPose2dInches(194, -18, 0);
+        Translation2d nearChargeStationMidpoint = createTranslation2dInches(48, -4);
+        Translation2d farchargeStationMidpoint = createTranslation2dInches(108, -4);
+        Pose2d pickUpPose = createPose2dInches(194, -12, 0);
 
         addCommands(new ResetOdometryCommand(drivetrain, initialPose));
 
@@ -75,7 +76,7 @@ public class ScorePickUpAutoBase extends AutoBase {
         SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
             AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartAndEndVelocity(1, 1), 
             getLastEndingPose(),
-            List.of(chargeStationMidpoint),
+            List.of(nearChargeStationMidpoint),
             super.cableProtectorPoint,
             createRotation(0)
         );
@@ -84,7 +85,8 @@ public class ScorePickUpAutoBase extends AutoBase {
         // Drive to approach and pick up the cone.
         SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
             AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(1), 
-            getLastEndingPose(), 
+            getLastEndingPose(),
+            List.of(farchargeStationMidpoint),
             pickUpPose,
             createRotation(0)
         );

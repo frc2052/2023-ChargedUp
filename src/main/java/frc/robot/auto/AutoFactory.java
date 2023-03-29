@@ -61,6 +61,10 @@ public class AutoFactory {
         Dashboard.getInstance().putData(Constants.Dashboard.AUTO_COMPILED_KEY, false);
 
         currentAuto = autoSupplier.get();
+        if (currentAuto == null) {
+            currentAuto = Auto.NO_AUTO;
+        }
+
         currentAutoConfiguration = autoConfigurationSupplier.get();
 
         switch (currentAuto) {
