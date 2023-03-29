@@ -41,6 +41,11 @@ public class ScorePickUpAutoBase extends AutoBase {
 
     @Override
     public void init() {
+        System.out.println(getStartingYOffsetInches(
+            autoConfiguration.getStartingGrid(), 
+            autoConfiguration.getStartingNode()
+        ));
+
         Pose2d initialPose = createPose2dInches(
             0, 
             getStartingYOffsetInches(
@@ -55,7 +60,7 @@ public class ScorePickUpAutoBase extends AutoBase {
             autoConfiguration.getStartingNode()
         ), 0);
 
-        Translation2d chargeStationMidpoint = createTranslation2dInches(18, -10);
+        Translation2d chargeStationMidpoint = createTranslation2dInches(18, -14);
         Pose2d startPickUpPose = createPose2dInches(92, -14, 0);
         Pose2d pickUpPose = createPose2dInches(194, -18, 0);
 
