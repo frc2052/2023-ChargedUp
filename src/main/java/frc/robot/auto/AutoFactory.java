@@ -101,24 +101,12 @@ public class AutoFactory {
                 break;
 
             case MIDDLE_SCORE_ONE_BALANCE:
-                compiledAuto =  new MiddleScoreOneExitBalance(
+                compiledAuto =  new MiddleScoreOneBalance(
                     currentAutoConfiguration,
                     drivetrain, 
                     elevator, 
                     intake, 
                     arm
-                );
-                break;
-            
-            case VISION_SCORE:
-                compiledAuto = new VisionScoreAuto(
-                    currentAutoConfiguration, 
-                    drivetrain, 
-                    elevator, 
-                    intake, 
-                    arm, 
-                    vision, 
-                    pixy
                 );
                 break;
 
@@ -159,9 +147,7 @@ public class AutoFactory {
         SCORE_ONE_BALANCE("Score One Balance", "Description"),
         SCORE_TWO_BALANCE("Score Two Balance", "Description"),
         SCORE_TWO_UPPER("Score Two Upper", "Description"),
-        MIDDLE_SCORE_ONE_EXIT("Middle Score One Exit", "Description"),
         MIDDLE_SCORE_ONE_BALANCE("Middle Score One Balance", "Description"),
-        VISION_SCORE("VISION SCORE", "D"),
         HUNGRY_HUNGRY_HIPPO("Hungry Hungry Hippo", "Nom nom");
 
         private final String name;

@@ -159,8 +159,7 @@
               "Y-axis/Automatic bounds": false,
               "Y-axis/Upper bound": 15.0,
               "Y-axis/Lower bound": 0.0,
-              "Y-axis/Unit": "A",
-              "Visible data/SmartDashboard/Intake Current": true
+              "Y-axis/Unit": "A"
             }
           },
           "9,2": {

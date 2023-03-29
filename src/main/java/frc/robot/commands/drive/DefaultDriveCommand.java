@@ -7,17 +7,13 @@ package frc.robot.commands.drive;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class DefaultDriveCommand extends DriveCommand {
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
     private final DoubleSupplier rotationSupplier;
-    private final BooleanSupplier gyroControlSupplier;
     private final BooleanSupplier fieldCentricSupplier;
     
     private final SlewRateLimiter xLimiter;
@@ -37,7 +33,6 @@ public class DefaultDriveCommand extends DriveCommand {
         DoubleSupplier xSupplier, 
         DoubleSupplier ySupplier, 
         DoubleSupplier rotationSupplier,
-        BooleanSupplier gyroControlSupplier,
         BooleanSupplier fieldCentricSupplier,
         DrivetrainSubsystem drivetrain
     ) {
@@ -46,15 +41,7 @@ public class DefaultDriveCommand extends DriveCommand {
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
         this.rotationSupplier = rotationSupplier;
-        this.gyroControlSupplier = gyroControlSupplier;
         this.fieldCentricSupplier = fieldCentricSupplier;
-
-        // this.gyroPIDController = new ProfiledPIDController(
-        //     0.001, 0, 0,
-        //         new TrapezoidProfile.Constraints(Math.PI, Math.PI)
-        // );
-        // gyroPIDController.enableContinuousInput(-Math.PI, Math.PI);
-        // gyroPIDController.setTolerance(Units.degreesToRadians(2));
 
         xLimiter = new SlewRateLimiter(2);
         yLimiter = new SlewRateLimiter(2);
@@ -63,33 +50,10 @@ public class DefaultDriveCommand extends DriveCommand {
 
     @Override
     protected void drive() {
-        double rotation;
-        if (gyroControlSupplier.getAsBoolean()) {
-            // rotation = gyroPIDController.calculate(
-            //     drivetrain.getRotation().getRadians(),
-            //     Units.degreesToRadians(180)
-            // );
-            // System.out.println(rotation);
-
-            double gyroDegrees = drivetrain.getRotation().getDegrees();
-
-            if (180 - Math.abs(gyroDegrees) >= 12) {
-                rotation = slewAxis(rotationLimiter, Math.copySign(0.7, gyroDegrees));
-            } else if (180 - Math.abs(gyroDegrees) >= 8) {
-                rotation = slewAxis(rotationLimiter, Math.copySign(0.3, gyroDegrees));
-            } else if (180 - Math.abs(gyroDegrees) >= 2) {
-                rotation = slewAxis(rotationLimiter, Math.copySign(0.2, gyroDegrees));
-            } else {
-                rotation = slewAxis(rotationLimiter, 0);
-            }
-        } else {
-            rotation = slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble()));
-        }
-
         drivetrain.drive(
             slewAxis(xLimiter, deadBand(-xSupplier.getAsDouble())), 
             slewAxis(yLimiter, deadBand(-ySupplier.getAsDouble())),
-            rotation / Math.PI,
+            slewAxis(rotationLimiter, deadBand(-rotationSupplier.getAsDouble())),
             fieldCentricSupplier.getAsBoolean()
         );
     }

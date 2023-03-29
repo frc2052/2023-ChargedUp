@@ -4,22 +4,24 @@
 
 package frc.robot.auto;
 
-import java.util.List;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
+import frc.robot.auto.AutoFactory.Node;
+import frc.robot.commands.arm.ArmInCommand;
+import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
+import frc.robot.commands.drive.ResetOdometryCommand;
+import frc.robot.commands.elevator.ElevatorPositionCommand;
+import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
-import frc.robot.auto.AutoFactory.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import frc.robot.subsystems.IntakeSubsystem;
 
 /**
@@ -41,42 +43,78 @@ public class MiddleScoreOneBalance extends AutoBase {
             0, 
             // Recenter offset to zero is the middle node
             getStartingYOffsetInches(
-                autoConfiguration.getStartingGrid(), 
+                autoConfiguration.getScoreGrid(), 
                 autoConfiguration.getStartingNode()
             ) + (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES), 
             0
         );
-        Translation2d lineUpMidpoint = createTranslation2dInches(
-            -30, 
-            0
-        );
-        Pose2d chargeStationPose = createPose2dInches(
-            -150, 
-            0, 
-            0
-        );
+        Pose2d lineUpPose = createPose2dInches(24, 0, 0);
+        Pose2d chargeStationPose = createPose2dInches(100, 0, 0);
+        Pose2d driveOverPose = createPose2dInches(172, 0, 0);
+        Pose2d pickUpPose = createPose2dInches(234, -12, 0);
+        Pose2d finalChargeStationPose = createPose2dInches(60, 0, 0);
 
-        addCommands(new InstantCommand(() -> { 
-            drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
-        }, drivetrain));
-
+        addCommands(new ResetOdometryCommand(drivetrain, initialPose));
+        
         if (autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE) {
             addCommands(new MidScoreCommand(elevator, arm));
         } else {
             addCommands(new TopScoreCommand(elevator, arm));
         }
         
-        addCommands(new ScoreCommand(intake, arm, elevator, true).withTimeout(1));
+        addCommands(
+            new ScoreCommand(intake, arm, elevator, autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE).withTimeout(
+                autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5
+            )
+        );
         
         if (autoConfiguration.endChargeStation()) {
-            SwerveControllerCommand chargePath = createSwerveTrajectoryCommand(
-                AutoTrajectoryConfig.chargeStationTrajectoryConfig, 
+            SwerveControllerCommand lineUpPath = createSwerveTrajectoryCommand(
+                AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(1), 
                 initialPose,
-                List.of(lineUpMidpoint),
+                lineUpPose,
+                createRotation(180)
+            );
+            addCommands(lineUpPath);
+
+            SwerveControllerCommand onChargePath = createSwerveTrajectoryCommand(
+                AutoTrajectoryConfig.chargeStationTrajectoryConfig.withStartAndEndVelocity(1, 0), 
+                getLastEndingPose(),
                 chargeStationPose,
+                createRotation(180)
+            );
+            addCommands(onChargePath);
+
+            SwerveControllerCommand overChargePath = createSwerveTrajectoryCommand(
+                AutoTrajectoryConfig.snailTrajectoryConfig, 
+                getLastEndingPose(),
+                driveOverPose,
+                createRotation(180)
+            );
+            addCommands(overChargePath);
+
+            SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
+                AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig, 
+                getLastEndingPose(),
+                pickUpPose,
                 createRotation(0)
             );
-            addCommands(chargePath);
+            ParallelDeadlineGroup pickUpGroup = new ParallelDeadlineGroup(
+                pickUpPath,
+                new ArmOutCommand(arm).andThen(new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator)),
+                new IntakeInCommand(intake)
+            );
+            addCommands(pickUpGroup);
+
+            addCommands(new ArmInCommand(arm));
+
+            SwerveControllerCommand chargeStationPath = createSwerveTrajectoryCommand(
+                AutoTrajectoryConfig.chargeStationTrajectoryConfig, 
+                getLastEndingPose(),
+                finalChargeStationPose,
+                createRotation(0)
+            );
+            addCommands(chargeStationPath);
 
             addCommands(new ChargeStationBalanceCommand(drivetrain));
         }

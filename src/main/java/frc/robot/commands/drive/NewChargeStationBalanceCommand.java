@@ -83,8 +83,8 @@ public class NewChargeStationBalanceCommand extends CommandBase {
         } else if (!balanced && flipped && !isDropping) {
 
             drivetrain.drive(
-                Math.copySign(0.08, (double) -(drivetrain.getNavx().getPitch())),
-                Math.copySign(0.065, (double) -(drivetrain.getNavx().getPitch())),
+                Math.copySign(0.06, (double) -(drivetrain.getNavx().getPitch())),
+                Math.copySign(0.04, (double) -(drivetrain.getNavx().getPitch())),
                 0, 
                 false
             );

@@ -20,17 +20,11 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
     private final PixySubsystem pixy;
     
     private final DoubleSupplier xSupplier;
-    private final DoubleSupplier rotationSupplier;
-
     private final SlewRateLimiter xLimiter;
-    private final SlewRateLimiter rotationLimiter;
     
     private final PIDController yController;
 
     private final Timer ledEnableTimer;
-
-    private double goalYaw;
-    private double targetYaw;
 
     /** Creates a new DumbHorizontalAlignmentCommand. */
     public DumbHorizontalAlignmentCommand(
@@ -46,13 +40,10 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
         this.pixy = pixy;
 
         this.xSupplier = xSupplier;
-        this.rotationSupplier = rotationSupplier;
-
         xLimiter = new SlewRateLimiter(2);
-        rotationLimiter = new SlewRateLimiter(2);
 
         yController = new PIDController(1, 0, 0);
-        yController.setTolerance(0.25);
+        yController.setTolerance(0.5);
 
         ledEnableTimer = new Timer();
 
@@ -80,19 +71,21 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
 
         double angleRange = maxConeAlignedYawDegrees - minConeAlignedYawDegrees;
         double offsetAngle = angleRange * conePosPct;
-        goalYaw = minConeAlignedYawDegrees + offsetAngle;
+        double goalYaw = minConeAlignedYawDegrees + offsetAngle;
 
         if (target != null) {
-            targetYaw = target.getYaw();
+            double targetYaw = target.getYaw();
 
             drivetrain.drive(
                 slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
+                // Normalize to our camera FOV.
                 yController.calculate(targetYaw, goalYaw) / 75.76,
                 0,
                 false
             ); 
         } else {
             System.out.println("No target!");
+
             drivetrain.drive(
                 slewAxis(xLimiter, deadBand(xSupplier.getAsDouble())),
                 yController.calculate(0, 0),
@@ -111,10 +104,5 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
     @Override
     public boolean isFinished() {
         return false;
-        // if (ledEnableTimer.get() <= 0.5) {
-        //     return false;
-        // }
-
-        // return Math.abs(targetYaw - goalYaw) <= 1;
     }
 }

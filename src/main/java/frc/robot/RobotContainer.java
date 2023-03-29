@@ -99,9 +99,6 @@ public class RobotContainer {
             pixy
         );
 
-        JoystickButton gyroRotationControllerButton = new JoystickButton(turnJoystick, 8);
-        JoystickButton gyroRotationControllerSafetyButton = new JoystickButton(turnJoystick, 9);
-
         drivetrain.setDefaultCommand(
             new DefaultDriveCommand(
                 // Forward velocity supplier
@@ -110,7 +107,6 @@ public class RobotContainer {
                 () -> driveJoystick.getX(),
                 // Rotation velocity supplier
                 () -> turnJoystick.getX(),
-                gyroRotationControllerButton.and(gyroRotationControllerSafetyButton),
                 () -> Dashboard.getInstance().getDriveMode() == DriveMode.FIELD_CENTRIC,
                 drivetrain
             )
