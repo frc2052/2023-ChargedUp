@@ -74,7 +74,7 @@ public class ScorePickUpAutoBase extends AutoBase {
 
         // Slow down over cable protector to avoid odometry drift.
         SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartAndEndVelocity(1, 1), 
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartAndEndVelocity(1, 2), 
             getLastEndingPose(),
             List.of(nearChargeStationMidpoint),
             super.cableProtectorPoint,
@@ -84,7 +84,7 @@ public class ScorePickUpAutoBase extends AutoBase {
 
         // Drive to approach and pick up the cone.
         SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(1), 
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(2), 
             getLastEndingPose(),
             List.of(farchargeStationMidpoint),
             pickUpPose,
