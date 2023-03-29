@@ -8,6 +8,8 @@ import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -49,40 +51,78 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
     public void init() {
         super.init();
         
-        Translation2d chargeStationInterpolationMipoint = createTranslation2dInches(60, -12);
 
-        Pose2d lineUpPose = createPose2dInches(12, getStartingYOffsetInches(
-            autoConfiguration.getStartingGrid(), Node.RIGHT_CONE
-        ), 225);
+        Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, -6);
+        Translation2d nearChargeStationInterpolationPoint = createTranslation2dInches(18, -6);
+        
+        Translation2d channelInterpolationMipoint = createTranslation2dInches(60, -12);
 
-        // Drive back to cable protector.
+        Pose2d lineUpPose = createPose2dInches(
+            12, 
+            getStartingYOffsetInches(autoConfiguration.getStartingGrid(), Node.RIGHT_CONE), 
+            225
+        );
+//        Pose2d scorePose = createPose2dInches(6, 0, 0);
+
+        // Driving back to grid
         SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withEndVelocity(1),
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig,
             getLastEndingPose(),
-            super.cableProtectorPoint, 
-            createRotation(180)
-        );
-
-        ParallelDeadlineGroup driveBackGroup = new ParallelDeadlineGroup(
-            driveBackPath,
-            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator).andThen(new RunCommand(pixy::updateConePosition))
-        );
-        addCommands(driveBackGroup);
-
-        // Roughly line up with the scoring node.
-        SwerveControllerCommand lineUpPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.defaultTrajectoryConfig.withStartVelocity(1),
-            getLastEndingPose(),
-            List.of(chargeStationInterpolationMipoint),
+            List.of(channelInterpolationMipoint),
             lineUpPose, 
             createRotation(180)
         );
-        addCommands(lineUpPath);
 
+        ParallelCommandGroup driveBackGroup = new ParallelCommandGroup(
+            driveBackPath,
+            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator).andThen(new InstantCommand(pixy::updateConePosition))
+        );
+
+        addCommands(driveBackGroup);
+        
         addCommands(new GyroAlignmentCommand(drivetrain));
         addCommands(new DumbHorizontalAlignmentCommand(() -> 0.25, () -> 0.0, drivetrain, vision, pixy).withTimeout(1));
         
         addCommands(new TopScoreCommand(elevator, arm));
         addCommands(new ScoreCommand(intake, arm, elevator).withTimeout(0.5));
+
+        // Translation2d farchargeStationMidpoint = createTranslation2dInches(130, -4);
+        // Translation2d chargeStationInterpolationMipoint = createTranslation2dInches(48, -4);
+
+        // Pose2d lineUpPose = createPose2dInches(12, getStartingYOffsetInches(
+        //     autoConfiguration.getStartingGrid(), Node.RIGHT_CONE
+        // ), 225);
+
+        // // Drive back to cable protector.
+        // SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
+        //     AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withEndVelocity(2.5),
+        //     getLastEndingPose(),
+        //     // super.cableProtectorPoint, 
+        //     List.of(farchargeStationMidpoint, chargeStationInterpolationMipoint),
+        //     lineUpPose, 
+        //     createRotation(180)
+        // );
+
+        // // Roughly line up with the scoring node.
+        // SwerveControllerCommand lineUpPath = createSwerveTrajectoryCommand(
+        //     AutoTrajectoryConfig.defaultTrajectoryConfig.withStartVelocity(2.5),
+        //     getLastEndingPose(),
+        //     List.of(chargeStationInterpolationMipoint),
+        //     lineUpPose, 
+        //     createRotation(180)
+        // );
+        // // addCommands(lineUpPath);
+
+        // ParallelDeadlineGroup driveBackGroup = new ParallelDeadlineGroup(
+        //     lineUpPath,
+        //     new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator).andThen(new RunCommand(pixy::updateConePosition))
+        // );
+        // addCommands(driveBackGroup);
+
+        // addCommands(new GyroAlignmentCommand(drivetrain));
+        // addCommands(new DumbHorizontalAlignmentCommand(() -> 0.25, () -> 0.0, drivetrain, vision, pixy).withTimeout(1));
+        
+        // addCommands(new TopScoreCommand(elevator, arm));
+        // addCommands(new ScoreCommand(intake, arm, elevator).withTimeout(0.5));
     }
 }

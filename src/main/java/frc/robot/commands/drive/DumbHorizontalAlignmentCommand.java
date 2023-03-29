@@ -69,7 +69,7 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
         if (target != null) {
             double targetYaw = target.getYaw();
 
-            return yController.calculate(targetYaw, goalYaw) / 75.76;
+            return -yController.calculate(targetYaw, goalYaw) / 75.76;
         } else {
             System.out.println("No target!");
 
