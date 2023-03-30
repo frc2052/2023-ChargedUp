@@ -52,7 +52,6 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
     public void init() {
         super.init();
         
-
         Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, -6);
         Translation2d nearChargeStationInterpolationPoint = createTranslation2dInches(18, -6);
         
@@ -82,9 +81,9 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
             createRotation(180)
         );
 
-        ParallelCommandGroup driveBackGroup = new ParallelCommandGroup(
+        ParallelDeadlineGroup driveBackGroup = new ParallelDeadlineGroup(
             driveBackPath,
-            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator).andThen(new InstantCommand(pixy::updateConePosition))
+            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator).andThen(new RunCommand(pixy::updateConePosition))
         );
 
         addCommands(driveBackGroup);

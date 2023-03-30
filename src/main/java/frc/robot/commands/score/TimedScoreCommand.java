@@ -11,17 +11,29 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
-public class ScoreCommand extends CommandBase {
+public class TimedScoreCommand extends CommandBase {
     private final IntakeSubsystem intake;
     private final ArmSubsystem arm;
     private final ElevatorSubsystem elevator;
 
-    public ScoreCommand(IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator) {
+    private final double scoreTime;
+    private final Timer scoreTimer;
+
+    public TimedScoreCommand(double scoreTime, IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator) {
         this.intake = intake;
         this.arm = arm;
         this.elevator = elevator;
 
+        this.scoreTime = scoreTime;
+        scoreTimer = new Timer();
+
         addRequirements(this.intake, this.arm, this.elevator);
+    }
+
+    @Override
+    public void initialize() {
+        scoreTimer.reset();
+        scoreTimer.start();
     }
 
     @Override
@@ -41,6 +53,6 @@ public class ScoreCommand extends CommandBase {
     // Score command ends when interupted or timed out.
     @Override
     public boolean isFinished() {
-        return false;
+        return scoreTimer.hasElapsed(scoreTime);
     }
 }

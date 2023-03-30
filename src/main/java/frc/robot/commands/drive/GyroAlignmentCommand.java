@@ -21,6 +21,13 @@ public class GyroAlignmentCommand extends DriveCommand {
     }
     
     @Override
+    public void initialize() {
+        if (Math.abs(gyroDegrees - 180) <= 4) {
+            end(false);
+        }
+    }
+
+    @Override
     protected double getRotation() {
         // Forcing angle to be between [0, 360], PIDController thinks -180 isn't at setpoint of 180
         gyroDegrees = (drivetrain.getRotation().getDegrees() + 360) % 360;
@@ -30,6 +37,6 @@ public class GyroAlignmentCommand extends DriveCommand {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(gyroDegrees - 180) <= 1.5;
+        return Math.abs(gyroDegrees - 180) <= 2;
     }
 }

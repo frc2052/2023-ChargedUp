@@ -8,7 +8,7 @@ import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.commands.score.MidScoreCommand;
-import frc.robot.commands.score.ScoreCommand;
+import frc.robot.commands.score.TimedScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.auto.AutoFactory;
 import frc.robot.commands.drive.DriveCommand;
@@ -197,7 +197,8 @@ public class RobotContainer {
         JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 8);
         JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
         
-        scoreButton.whileTrue(new ScoreCommand(intake, arm, elevator));
+        scoreButton.onTrue(new TimedScoreCommand(0.25, intake, arm, elevator));
+        //scoreButton.whileTrue(new ScoreCommand(intake, arm, elevator));
         elevatorMidScoreButton.onTrue(new MidScoreCommand(elevator, arm));
         elevatorTopScoreButton.onTrue(new TopScoreCommand(elevator, arm));
 

@@ -80,7 +80,7 @@ public final class Constants {
 
         // Minimum allowable amps
         public static final double INTAKE_CRUISE_CURRENT_AMPS = 2.0;
-        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 10.0;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 8.0;
         public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.25;
     }
     

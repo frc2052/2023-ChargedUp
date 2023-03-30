@@ -155,10 +155,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public static enum ElevatorPosition {
         STARTING(0),
-        GROUND_PICKUP(1000),
+        GROUND_PICKUP(0), // 1000
         FLOOR_CUBE(7200),
         FLOOR_CONE(20000),
-        BABY_BIRD(16000),
+        BABY_BIRD(3200), //16000
         MID_SCORE(92000),
         TOP_SCORE(125000);
 

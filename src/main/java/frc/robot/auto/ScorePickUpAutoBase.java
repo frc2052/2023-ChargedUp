@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.drive.ResetOdometryCommand;
@@ -76,27 +77,29 @@ public class ScorePickUpAutoBase extends AutoBase {
         SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
             AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartAndEndVelocity(1, 2.5), 
             getLastEndingPose(),
-            List.of(nearChargeStationMidpoint),
-            super.cableProtectorPoint,
-            createRotation(0)
-        );
-        addCommands(backupPath);
-
-        // Drive to approach and pick up the cone.
-        SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(2.5), 
-            getLastEndingPose(),
-            List.of(farchargeStationMidpoint),
+            List.of(nearChargeStationMidpoint, farchargeStationMidpoint),
             pickUpPose,
             createRotation(0)
         );
+        // addCommands(backupPath);
 
-        ParallelDeadlineGroup pickUpGroup = new ParallelDeadlineGroup(
-            pickUpPath,
-            new ArmOutCommand(arm).andThen(new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator)),
-            new IntakeInCommand(intake)
+        // // Drive to approach and pick up the cone.
+        // SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
+        //     AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(2.5), 
+        //     getLastEndingPose(),
+        //     List.of(farchargeStationMidpoint),
+        //     pickUpPose,
+        //     createRotation(0)
+        // );
+
+        ParallelDeadlineGroup backUpGroup = new ParallelDeadlineGroup(
+            backupPath,
+            new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.75)),
+            new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator),
+            new IntakeInCommand(intake)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
         );
-        addCommands(pickUpGroup);
+        addCommands(backUpGroup);
+
         addCommands(new ArmInCommand(arm));
     }
 }
