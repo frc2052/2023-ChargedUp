@@ -71,7 +71,7 @@ public class ChargeStationBalanceCommand extends CommandBase {
         // }
         
         if (!balanced) {
-            if (slowdownTimer.hasElapsed(2) || isDropping){
+            if (slowdownTimer.hasElapsed(1.5) || isDropping){
                 drivetrain.drive(
                     Math.copySign(0.04, (double) -(drivetrain.getNavx().getPitch())),
                     Math.copySign(0.04, (double) -(drivetrain.getNavx().getPitch())),
