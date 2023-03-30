@@ -49,7 +49,7 @@ public class ScorePickUpAutoBase extends AutoBase {
         ), 0);
         Translation2d nearChargeStationMidpoint = createTranslation2dInches(48, -4);
         Translation2d farchargeStationMidpoint = createTranslation2dInches(130, -4);
-        Pose2d pickUpPose = createPose2dInches(194, -10, 0);
+        Pose2d pickUpPose = createPose2dInches(194, -6, 0);
 
         addCommands(new ResetOdometryCommand(drivetrain, initialPose));
 
@@ -75,7 +75,7 @@ public class ScorePickUpAutoBase extends AutoBase {
 
         // Slow down over cable protector to avoid odometry drift.
         SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartAndEndVelocity(1, 2.5), 
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(1), 
             getLastEndingPose(),
             List.of(nearChargeStationMidpoint, farchargeStationMidpoint),
             pickUpPose,
@@ -101,5 +101,52 @@ public class ScorePickUpAutoBase extends AutoBase {
         addCommands(backUpGroup);
 
         addCommands(new ArmInCommand(arm));
+
+        // Pose2d initialPose = createPose2dInches(0, getLeftStartingYOffsetInches(startGrid, startNode) * flip, 0);
+        // Translation2d chargeStationMidpoint = createTranslation2dInches(18, 6 * flip);
+        // Pose2d startPickUpPose = createPose2dInches(64, 4 * flip, 0);
+        // Pose2d pickUpPose = createPose2dInches(194, 12 * flip, 0);
+
+        // drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), Rotation2d.fromDegrees(180)));
+
+        // // Score first time
+        // if (startNode == Node.MIDDLE_CUBE) {
+        //     addCommands(new MidScoreCommand(elevator, arm));
+        // } else {
+        //     addCommands(new TopScoreCommand(elevator, arm));
+        // }
+
+        // SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
+        //     AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(2), 
+        //     initialPose,
+        //     List.of(chargeStationMidpoint),
+        //     startPickUpPose,
+        //     createRotation(0)
+        // );
+
+        // ParallelCommandGroup retractGroup = new ParallelCommandGroup(
+        //     new ScoreCommand(intake, arm, elevator, startNode == Node.MIDDLE_CUBE).withTimeout(
+        //         startNode == Node.MIDDLE_CUBE ? 0 : 0.5
+        //     ),
+        //     backupPath.beforeStarting(new WaitCommand(0.5))
+        // );
+        // addCommands(retractGroup);
+
+        // // Drive to approach cone
+        // SwerveControllerCommand pickupPath = createSwerveTrajectoryCommand(
+        //     AutoTrajectoryConfig.fastTurnSlowDriveTrajectoryConfig.withStartVelocity(2), 
+        //     getLastEndingPose(), 
+        //     pickUpPose,
+        //     createRotation(0)
+        // );
+
+        // ParallelDeadlineGroup pickUpGroup = new ParallelDeadlineGroup(
+        //     pickupPath,
+        //     new ElevatorPositionCommand(ElevatorPosition.STARTING, elevator),
+        //     new ArmOutCommand(arm),
+        //     new IntakeInCommand(intake)
+        // );
+        // addCommands(pickUpGroup);
+        // addCommands(new ArmInCommand(arm));
     }
 }
