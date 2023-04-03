@@ -43,13 +43,10 @@ public class ScorePickUpAutoBase extends AutoBase {
             autoConfiguration.getStartingGrid(), 
             autoConfiguration.getStartingNode()
         ), 0);
-        Pose2d tinyBackupPose2d = createPose2dInches(6, getStartingYOffsetInches(
-            autoConfiguration.getStartingGrid(), 
-            autoConfiguration.getStartingNode()
-        ), 0);
-        Translation2d nearChargeStationMidpoint = createTranslation2dInches(48, -4);
-        Translation2d farchargeStationMidpoint = createTranslation2dInches(130, -4);
-        Pose2d pickUpPose = createPose2dInches(194, -6, 0);
+        Pose2d tinyBackupPose2d = createPose2dInches(18, -6, 0);
+        Translation2d chargeStationMidpoint = createTranslation2dInches(48, -4);
+        Pose2d startPickUpPose = createPose2dInches(112, -6, 0);
+        Pose2d pickUpPose = createPose2dInches(194, -14, 0);
 
         addCommands(new ResetOdometryCommand(drivetrain, initialPose));
 
@@ -66,7 +63,7 @@ public class ScorePickUpAutoBase extends AutoBase {
 
         // Drive back slightly to avoid rotation collisions with the grid.
         SwerveControllerCommand tinyBackupCommand = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(1), 
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withEndVelocity(1), 
             initialPose, 
             tinyBackupPose2d,
             createRotation(90)
@@ -75,30 +72,36 @@ public class ScorePickUpAutoBase extends AutoBase {
 
         // Slow down over cable protector to avoid odometry drift.
         SwerveControllerCommand backupPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(1), 
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartAndEndVelocity(1, 2), 
             getLastEndingPose(),
-            List.of(nearChargeStationMidpoint, farchargeStationMidpoint),
-            pickUpPose,
+            List.of(chargeStationMidpoint),
+            startPickUpPose,
             createRotation(0)
         );
         // addCommands(backupPath);
 
-        // // Drive to approach and pick up the cone.
-        // SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
-        //     AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(2.5), 
-        //     getLastEndingPose(),
-        //     List.of(farchargeStationMidpoint),
-        //     pickUpPose,
-        //     createRotation(0)
-        // );
-
         ParallelDeadlineGroup backUpGroup = new ParallelDeadlineGroup(
             backupPath,
-            new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.75)),
-            new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator),
-            new IntakeInCommand(intake)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+            new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
         );
         addCommands(backUpGroup);
+
+        // Drive to approach and pick up the cone.
+        SwerveControllerCommand pickUpPath = createSwerveTrajectoryCommand(
+            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withStartVelocity(2), 
+            getLastEndingPose(),
+            pickUpPose,
+            createRotation(0)
+        );
+
+        ParallelDeadlineGroup pickUpGroup = new ParallelDeadlineGroup(
+            pickUpPath,
+            new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator),
+            new ArmOutCommand(arm),
+            new IntakeInCommand(intake)
+        );
+
+        addCommands(pickUpGroup);
 
         addCommands(new ArmInCommand(arm));
 

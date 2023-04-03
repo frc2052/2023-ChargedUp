@@ -74,7 +74,7 @@ public final class Constants {
     public static final class Intake {
         public static final int INTAKE_MOTOR_ID = 13;
 
-        public static final double INTAKE_IN_SPEED = 1.0;
+        public static final double INTAKE_IN_SPEED = 0.9;
         public static final double INTAKE_IN_SLOW_SPEED = 0.7;
         public static final double INTAKE_OUT_SPEED = -0.5;
 
