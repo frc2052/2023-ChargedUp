@@ -32,14 +32,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         ErrorCode error;
         
         TalonFXConfiguration beltMotorConfiguration = new TalonFXConfiguration();
+        beltMotorConfiguration.slot0.kF = 0;
         beltMotorConfiguration.slot0.kP = Constants.Elevator.BELT_MOTOR_P;
         beltMotorConfiguration.slot0.kI = Constants.Elevator.BELT_MOTOR_I;
         beltMotorConfiguration.slot0.kD = Constants.Elevator.BELT_MOTOR_D;
-        
+
         // Set motion magic cruise velocity and max acceleration.
         beltMotorConfiguration.motionCruiseVelocity = Constants.Elevator.BELT_MOTOR_CRUISE_VELOCITY;
         beltMotorConfiguration.motionAcceleration = Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION;
-
+        beltMotorConfiguration.motionCurveStrength = 0;
+        
         beltMotor = new TalonFX(Constants.Elevator.BELT_MOTOR);
         beltMotor.configFactoryDefault();
 
@@ -101,7 +103,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         
         previousPosition = currentPosition;
         currentPosition = elevatorPosition;
-        
+
         beltMotor.set(
             ControlMode.MotionMagic,
             elevatorPosition.getPositionTicks()

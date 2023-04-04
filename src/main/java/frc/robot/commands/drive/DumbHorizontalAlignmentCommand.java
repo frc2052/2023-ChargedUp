@@ -10,6 +10,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PixySubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -30,12 +31,24 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
         VisionSubsystem vision,
         PixySubsystem pixy
     ) {
-        super(xSupplier, () -> 0, rotationSupplier, () -> true, drivetrain);
+        super(xSupplier, () -> 0, rotationSupplier, Dashboard.getInstance()::isFieldCentric, drivetrain);
 
         this.vision = vision;
         this.pixy = pixy;
 
+        // Max target yaw
+        double minConeAlignedYawDegrees = -3.8;
+        double maxConeAlignedYawDegrees = 11.7;
+
+        double conePositionInches = pixy.getLastKnownPositionInches() + 6;
+        double conePosPct = conePositionInches / 12;
+
+        double angleRange = maxConeAlignedYawDegrees - minConeAlignedYawDegrees;
+        double offsetAngle = angleRange * conePosPct;
+        double goalYaw = minConeAlignedYawDegrees + offsetAngle;
+
         yController = new PIDController(1, 0, 0);
+        yController.setSetpoint(goalYaw);
         yController.setTolerance(0.5);
 
         ledEnableTimer = new Timer();
@@ -53,23 +66,12 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     protected double getY() {
-        // Max target yaw
-        double minConeAlignedYawDegrees = -3.8;
-        double maxConeAlignedYawDegrees = 11.7;
-
-        double conePositionInches = pixy.getLastKnownPositionInches() + 6;
-        double conePosPct = conePositionInches / 12;
-
         PhotonTrackedTarget target = vision.getReflectiveTarget();
-
-        double angleRange = maxConeAlignedYawDegrees - minConeAlignedYawDegrees;
-        double offsetAngle = angleRange * conePosPct;
-        double goalYaw = minConeAlignedYawDegrees + offsetAngle;
 
         if (target != null) {
             double targetYaw = target.getYaw();
 
-            return -yController.calculate(targetYaw, goalYaw) / 75.76;
+            return -yController.calculate(targetYaw) / 75.76;
         } else {
             System.out.println("No target!");
 
