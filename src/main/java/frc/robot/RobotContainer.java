@@ -160,6 +160,9 @@ public class RobotContainer {
         JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
         xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));
         
+        JoystickButton testElevatorButton = new JoystickButton(driveJoystick, 8);
+        testElevatorButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TEST_POINT, elevator));
+
         /*
          * Camera button bindings
          */

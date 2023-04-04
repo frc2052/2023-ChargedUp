@@ -32,7 +32,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         ErrorCode error;
         
         TalonFXConfiguration beltMotorConfiguration = new TalonFXConfiguration();
-        beltMotorConfiguration.slot0.kF = 0;
+        beltMotorConfiguration.slot0.kF = Constants.Elevator.BELT_MOTOR_F;
         beltMotorConfiguration.slot0.kP = Constants.Elevator.BELT_MOTOR_P;
         beltMotorConfiguration.slot0.kI = Constants.Elevator.BELT_MOTOR_I;
         beltMotorConfiguration.slot0.kD = Constants.Elevator.BELT_MOTOR_D;
@@ -89,7 +89,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             zeroEncoder();
 
             // If the elevator is traveling downwards stop the belt motor and end the current command.
-            if (currentPosition.getPositionTicks() <= previousPosition.getPositionTicks()) {
+            if (currentPosition.getPositionTicks() < previousPosition.getPositionTicks()) {
                 currentPosition = ElevatorPosition.STARTING;
                 stop();
             }
@@ -161,6 +161,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         FLOOR_CUBE(7200),
         FLOOR_CONE(20000),
         BABY_BIRD(3200), //16000
+        TEST_POINT(60000),
         MID_SCORE(92000),
         TOP_SCORE(125000);
 

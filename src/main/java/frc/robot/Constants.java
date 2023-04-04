@@ -52,18 +52,18 @@ public final class Constants {
 
         public static final int LIMIT_SWITCH_DIO_CHANNEL = 0;
 
-        public static final double BELT_MOTOR_P = 0.25;
-        public static final double BELT_MOTOR_I = 0;
-        public static final double BELT_MOTOR_D = 0;
+        public static final double BELT_MOTOR_F = 0.054;
+        public static final double BELT_MOTOR_P = 0.2046; //0.1023;
+        public static final double BELT_MOTOR_I = 0.002;
+        public static final double BELT_MOTOR_D = 1.023;
 
         public static final double MANUAL_UP_SPEED = 0.15;
         public static final double MANUAL_DOWN_SPEED = -0.15;
         public static final double FEED_FORWARD = 0.065;
 
-        private static final int FALCON500_TICKS_PER_ROTATION = 2048;
-        public static final double BELT_MOTOR_CRUISE_VELOCITY = 5.0 * FALCON500_TICKS_PER_ROTATION;
-        public static final double BELT_MOTOR_MAX_ACCELERATION = 5.0 * FALCON500_TICKS_PER_ROTATION;
-        public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 500;
+        public static final double BELT_MOTOR_CRUISE_VELOCITY = 14000;
+        public static final double BELT_MOTOR_MAX_ACCELERATION = 24000;
+        public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 250;
     }
 
     public static final class Arm {
