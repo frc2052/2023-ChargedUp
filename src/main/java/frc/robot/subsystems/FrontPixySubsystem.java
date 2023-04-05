@@ -1,62 +1,67 @@
-// // Copyright (c) FIRST and other WPILib contributors.
-// // Open Source Software; you can modify and/or share it under the terms of
-// // the WPILib BSD license file in the root directory of this project.
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
-// package frc.robot.subsystems;
+package frc.robot.subsystems;
 
-// import java.io.Closeable;
-// import java.io.IOException;
-// import java.util.ArrayList;
-// import java.util.Arrays;
-// import java.util.concurrent.TimeUnit;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
-// import edu.wpi.first.wpilibj.AnalogInput;
-// import edu.wpi.first.wpilibj.SPI;
-// import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import frc.robot.Constants;
-// import frc.robot.io.Dashboard;
-// import frc.robot.pixy.Pixy2;
-// /**
-//  * Java Port of Pixy2 Arduino Library
-//  * 
-//  * Defines Color Connected Components tracker for Pixy2
-//  * 
-//  * https://github.com/PseudoResonance/Pixy2JavaAPI
-//  * 
-//  * @author PseudoResonance (Josh Otake)
-//  *
-//  *         ORIGINAL HEADER -
-//  *         https://github.com/charmedlabs/pixy2/blob/master/src/host/arduino/libraries/Pixy2/Pixy2CCC.h
-//  *         ============================================================================================
-//  *         begin license header
-//  *
-//  *         This file is part of Pixy CMUcam5 or "Pixy" for short
-//  *
-//  *         All Pixy source code is provided under the terms of the GNU General
-//  *         Public License v2 (http://www.gnu.org/licenses/gpl-2.0.html). Those
-//  *         wishing to use Pixy source code, software and/or technologies under
-//  *         different licensing terms should contact us at cmucam@cs.cmu.edu.
-//  *         Such licensing terms are available for all portions of the Pixy
-//  *         codebase presented here.
-//  *
-//  *         end license header
-//  *
-//  *         This file is for defining the Block struct and the Pixy template
-//  *         class version 2. (TPixy2). TPixy takes a communication link as a
-//  *         template parameter so that all communication modes (SPI, I2C and
-//  *         UART) can share the same code.
-//  */
-// public class FrontPixySubsystem extends SubsystemBase implements Closeable {
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.io.Dashboard;
+/**
+ * Java Port of Pixy2 Arduino Library
+ * 
+ * Defines Color Connected Components tracker for Pixy2
+ * 
+ * https://github.com/PseudoResonance/Pixy2JavaAPI
+ * 
+ * @author PseudoResonance (Josh Otake)
+ *
+ *         ORIGINAL HEADER -
+ *         https://github.com/charmedlabs/pixy2/blob/master/src/host/arduino/libraries/Pixy2/Pixy2CCC.h
+ *         ============================================================================================
+ *         begin license header
+ *
+ *         This file is part of Pixy CMUcam5 or "Pixy" for short
+ *
+ *         All Pixy source code is provided under the terms of the GNU General
+ *         Public License v2 (http://www.gnu.org/licenses/gpl-2.0.html). Those
+ *         wishing to use Pixy source code, software and/or technologies under
+ *         different licensing terms should contact us at cmucam@cs.cmu.edu.
+ *         Such licensing terms are available for all portions of the Pixy
+ *         codebase presented here.
+ *
+ *         end license header
+ *
+ *         This file is for defining the Block struct and the Pixy template
+ *         class version 2. (TPixy2). TPixy takes a communication link as a
+ *         template parameter so that all communication modes (SPI, I2C and
+ *         UART) can share the same code.
+ */
+public class FrontPixySubsystem extends SubsystemBase implements Closeable {
+
+    @Override
+    public void close() throws IOException {
+        // TODO Auto-generated method stub
+        
+    }
 // 	private final static int PIXY_SPI_CLOCKRATE = 2000000;
 
-//     private final SPI pixyPort;
+//     private final SPI pixy;
 
 // 	public final static int CCC_MAX_SIGNATURE = 7;
 
 // 	public final static byte CCC_RESPONSE_BLOCKS = 0x21;
 // 	public final static byte CCC_REQUEST_BLOCKS = 0x20;
 
-// 	// Defines for sigmap:
+// 	// Defines for sigma
 // 	// You can bitwise "or" these together to make a custom sigmap.
 // 	// For example if you're only interested in receiving blocks
 // 	// with signatures 1 and 5, you could use a sigmap of
@@ -72,7 +77,7 @@
 
 // 	public final static byte CCC_SIG_ALL = (byte) 0xff; // All bits or'ed together
 
-// 	private final Pixy2 pixy;
+// //	private final Pixy2 pixy;
 
 // 	private ArrayList<Block> blocks = new ArrayList<Block>();
 
@@ -81,7 +86,7 @@
 // 	 * 
 // 	 * @param pixy Pixy2 instance
 // 	 */
-// 	protected FrontPixySubsystem(Pixy2 pixy) {
+// 	protected Pixy2CCC(Pixy2 pixy) {
 // 		this.pixy = pixy;
 // 	}
 //     public FrontPixySubsystem() {
@@ -332,10 +337,4 @@
 
 // 	}
 
-// 	@Override
-// 	public void close() throws IOException {
-// 		// TODO Auto-generated method stub
-		
-// 	}
-
-// }
+}

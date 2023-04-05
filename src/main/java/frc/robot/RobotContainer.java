@@ -23,6 +23,7 @@ import frc.robot.io.Dashboard;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ForwardPixySubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -63,6 +64,7 @@ public class RobotContainer {
     private final ElevatorSubsystem elevator;
     private final VisionSubsystem vision;
     private final PixySubsystem pixy;
+    private final ForwardPixySubsystem forwardPixy;
 
     private final AutoFactory autoFactory;
 
@@ -82,6 +84,7 @@ public class RobotContainer {
         elevator = new ElevatorSubsystem();
         vision = new VisionSubsystem();
         pixy = new PixySubsystem();
+        forwardPixy = new ForwardPixySubsystem();
 
         new PneumaticsSubsystem();
 
