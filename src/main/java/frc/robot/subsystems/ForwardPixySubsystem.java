@@ -19,29 +19,53 @@ public class ForwardPixySubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        getBiggestBlock();
+        findBlocks();
     }
 
-    public static Block getBiggestBlock() {
-		// Gets the number of "blocks", identified targets, that match signature 1 on the Pixy2,
-		// does not wait for new data if none is available,
-		// and limits the number of returned blocks to 25, for a slight increase in efficiency
-		int blockCount = pixy.getCCC().getBlocks(false, Pixy2CCC.CCC_SIG_ALL, 25);
-		System.out.println("Found " + blockCount + " blocks!"); // Reports number of blocks found
-		if (blockCount <= 0) {
-			return null; // If blocks were not found, stop processing
-		}
-		ArrayList<Block> blocks = pixy.getCCC().getBlockCache(); // Gets a list of all blocks found by the Pixy2
-		Block largestBlock = null;
-		for (Block block : blocks) { // Loops through all blocks and finds the widest one
-			if (largestBlock == null) {
-				largestBlock = block;
-			} else if (block.getWidth() > largestBlock.getWidth()) {
-				largestBlock = block;
-			}
-		}
-        System.out.println("Found a block x = " + largestBlock.getX() + " y  = " + largestBlock.getY());
-		return largestBlock;
-	}
-    
+    public void findBlocks(){
+        ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
+        for (Block block : blocks){
+            if (block.getSignature() == 1){
+                System.out.println("Cone Position x = " + block.getX() + " y = " + block.getY());
+            }
+            if (block.getSignature() == 2){
+                System.out.println("Cube Position x = " + block.getX() + " y = " + block.getY());
+            }
+            if (block.getSignature() == 3){
+                System.out.println("White Line Position x = " + block.getX() + " y = " + block.getY());
+            }
+        }
+    }
+
+    public Block findCentermostBlock(){
+        ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
+        Block centerBlock = null;
+        for (Block block : blocks){
+            if (block.getY() < getMiddleLine().getY()){
+                if (centerBlock == null){
+                    centerBlock = block;
+                } else if (xOffsetFromCenter(block) < xOffsetFromCenter(centerBlock)){
+                    centerBlock = block;
+                }
+            }
+        }
+        return centerBlock;
+    }
+
+    public double xOffsetFromCenter(Block block){
+        //pixy cam pixel res width is 316, midpoint is 158
+        return (Math.abs(158 - block.getX()));
+    }
+
+    public Block getMiddleLine(){
+        ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
+        Block middleLineBlock = null;
+        for (Block block : blocks){
+            //pixy cam signature for the white line is 3
+            if (block.getSignature() == 3){
+                middleLineBlock = block;
+            }
+        }
+        return (middleLineBlock);
+    }
 }
