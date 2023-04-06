@@ -10,20 +10,23 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
+import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 
 public class TimedScoreCommand extends CommandBase {
     private final IntakeSubsystem intake;
     private final ArmSubsystem arm;
     private final ElevatorSubsystem elevator;
 
+    private final ScoreMode scoreMode;
     private final double scoreTime;
     private final Timer scoreTimer;
 
-    public TimedScoreCommand(double scoreTime, IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator) {
+    public TimedScoreCommand(ScoreMode scoreMode, double scoreTime, IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator) {
         this.intake = intake;
         this.arm = arm;
         this.elevator = elevator;
 
+        this.scoreMode = scoreMode;
         this.scoreTime = scoreTime;
         scoreTimer = new Timer();
 
@@ -39,7 +42,7 @@ public class TimedScoreCommand extends CommandBase {
     @Override
     public void execute() {
         if (elevator.atPosition()) {
-            intake.intakeOut();
+            intake.intakeOut(scoreMode);
         }
     }
 

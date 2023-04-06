@@ -6,6 +6,7 @@ package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 
 public class IntakeOutCommand extends CommandBase {
     private final IntakeSubsystem intake;
@@ -18,7 +19,7 @@ public class IntakeOutCommand extends CommandBase {
 
     @Override
     public void execute() {
-        intake.intakeOut();
+        intake.intakeOut(ScoreMode.CUBE);
     }
 
     @Override

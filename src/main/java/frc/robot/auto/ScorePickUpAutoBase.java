@@ -24,6 +24,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
+import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class ScorePickUpAutoBase extends AutoBase {
@@ -57,7 +58,7 @@ public class ScorePickUpAutoBase extends AutoBase {
             addCommands(new TopScoreCommand(elevator, arm));
         }
 
-        addCommands(new ScoreCommand(intake, arm, elevator).withTimeout(
+        addCommands(new ScoreCommand(() -> ScoreMode.CONE, intake, arm, elevator).withTimeout(
             autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5
         ));
 

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -21,7 +23,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final TalonSRX intakeMotor;
 
     private final Timer currentLimitTimer;
-    
+
     /** Creates a new Intake. */
     public IntakeSubsystem() {
         ErrorCode error;
@@ -74,11 +76,27 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SLOW_SPEED);
     }
 
-    public void intakeOut() {
-        intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_OUT_SPEED);
+    public void intakeOut(ScoreMode scoreMode) {
+        switch (scoreMode) {
+            case CONE:
+                intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_OUT_CONE_SPEED);
+                break;
+            case CUBE:
+                intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_OUT_CUBE_SPEED);
+                break;
+        }
+    }
+
+    public void intakeScore() {
+
     }
 
     public void stop() {
         intakeMotor.set(ControlMode.PercentOutput, 0.0);
+    }
+
+    public enum ScoreMode {
+        CONE,
+        CUBE
     }
 }

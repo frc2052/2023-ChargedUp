@@ -4,19 +4,24 @@
 
 package frc.robot.commands.score;
 
-import edu.wpi.first.wpilibj.Timer;
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
+import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 
 public class ScoreCommand extends CommandBase {
     private final IntakeSubsystem intake;
     private final ArmSubsystem arm;
     private final ElevatorSubsystem elevator;
+    private final Supplier<ScoreMode> scoreMode;
 
-    public ScoreCommand(IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator) {
+    public ScoreCommand(Supplier<ScoreMode> scoreMode, IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator) {
+        this.scoreMode = scoreMode;
+        
         this.intake = intake;
         this.arm = arm;
         this.elevator = elevator;
@@ -26,9 +31,7 @@ public class ScoreCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (elevator.atPosition()) {
-            intake.intakeOut();
-        }
+        intake.intakeOut(scoreMode.get());
     }
 
     @Override

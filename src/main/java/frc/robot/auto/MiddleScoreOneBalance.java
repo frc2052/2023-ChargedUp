@@ -22,6 +22,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
+import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 import frc.robot.subsystems.IntakeSubsystem;
 
 @AutoDescription(description = "Score gamepiece, drive over charge station to pick up second gamepiece, and balance.")
@@ -57,7 +58,7 @@ public class MiddleScoreOneBalance extends AutoBase {
         }
         
         addCommands(
-            new ScoreCommand(intake, arm, elevator).withTimeout(
+            new ScoreCommand(() -> ScoreMode.CONE, intake, arm, elevator).withTimeout(
                 autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5
             )
         );

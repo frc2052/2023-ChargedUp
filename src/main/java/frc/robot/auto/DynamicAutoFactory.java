@@ -32,6 +32,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 
 /**
  * Generates auto path: score gamepiece, drive to pick up gamepiece, drive to grid, 
@@ -117,7 +118,7 @@ public class DynamicAutoFactory {
 
                 ParallelCommandGroup scoreAndBackUpGroup = new ParallelCommandGroup(
                     initialToLaunchCommand,
-                    new ScoreCommand(intake, arm, elevator).withTimeout(
+                    new ScoreCommand(() -> ScoreMode.CONE, intake, arm, elevator).withTimeout(
                         configuration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5
                     )
                 );

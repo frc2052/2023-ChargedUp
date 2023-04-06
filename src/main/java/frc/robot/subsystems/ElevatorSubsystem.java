@@ -93,6 +93,10 @@ public class ElevatorSubsystem extends SubsystemBase {
                 currentPosition = ElevatorPosition.STARTING;
                 stop();
             }
+        } else {
+            if (atPosition()) {
+                stop();
+            }
         }
     }
 

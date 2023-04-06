@@ -74,14 +74,15 @@ public final class Constants {
     public static final class Intake {
         public static final int INTAKE_MOTOR_ID = 13;
 
-        public static final double INTAKE_IN_SPEED = 0.9;
+        public static final double INTAKE_IN_SPEED = 1.0;
         public static final double INTAKE_IN_SLOW_SPEED = 0.7;
-        public static final double INTAKE_OUT_SPEED = -0.5;
+        public static final double INTAKE_OUT_CONE_SPEED = -0.5;
+        public static final double INTAKE_OUT_CUBE_SPEED = -1.0;
 
         // Minimum allowable amps
         public static final double INTAKE_CRUISE_CURRENT_AMPS = 2.0;
-        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 8.0;
-        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.25;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_AMPS = 9.0;
+        public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.5;
     }
     
     public static final class AutoBalance {

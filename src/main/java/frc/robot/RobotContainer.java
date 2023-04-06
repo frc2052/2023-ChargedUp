@@ -8,6 +8,7 @@ import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.commands.score.MidScoreCommand;
+import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TimedScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.auto.AutoFactory;
@@ -30,6 +31,7 @@ import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.PixySubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
+import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -69,6 +71,8 @@ public class RobotContainer {
     private final AutoFactory autoFactory;
 
     private final PowerDistribution pdh;
+
+    private ScoreMode scoreMode;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -114,6 +118,8 @@ public class RobotContainer {
                 drivetrain
             )
         );
+
+        scoreMode = ScoreMode.CONE;
 
         // Configure the trigger bindings
         configureBindings();
@@ -185,8 +191,14 @@ public class RobotContainer {
         JoystickButton LEDCubeButton = new JoystickButton (controlPanel, 6);
 
         LEDOffButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
-        LEDConeButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CONE)));
-        LEDCubeButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CUBE)));
+        LEDConeButton.onTrue(new InstantCommand(() -> {
+            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CONE);
+            scoreMode = ScoreMode.CONE;
+        }));
+        LEDCubeButton.onTrue(new InstantCommand(() -> {
+            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CUBE);
+            scoreMode = ScoreMode.CUBE;
+        }));
 
         /*
          * Elevator button bindings
@@ -214,8 +226,8 @@ public class RobotContainer {
         JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 8);
         JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
         
-        scoreButton.onTrue(new TimedScoreCommand(0.25, intake, arm, elevator));
-        //scoreButton.whileTrue(new ScoreCommand(intake, arm, elevator));
+        //scoreButton.onTrue(new TimedScoreCommand(scoreMode, 0.25, intake, arm, elevator));
+        scoreButton.whileTrue(new ScoreCommand(() -> scoreMode, intake, arm, elevator));
         elevatorMidScoreButton.onTrue(new MidScoreCommand(elevator, arm));
         elevatorTopScoreButton.onTrue(new TopScoreCommand(elevator, arm));
 
@@ -260,5 +272,10 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return autoFactory.getCompiledAuto();
+    }
+
+    public void debug() {
+        
+        System.out.println(scoreMode);
     }
 }

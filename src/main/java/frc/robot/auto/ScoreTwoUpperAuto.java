@@ -28,6 +28,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PixySubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
+import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 
 @AutoDescription(description = "Score gamepiece, drive to pick up second gamepiece, and drive to score second gamepiece.")
 public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
@@ -93,7 +94,7 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
         addCommands(new DumbHorizontalAlignmentCommand(() -> 0.35, () -> 0.0, drivetrain, vision, pixy).withTimeout(1));
         
         addCommands(new TopScoreCommand(elevator, arm));
-        addCommands(new ScoreCommand(intake, arm, elevator).withTimeout(0.5));
+        addCommands(new ScoreCommand(() -> ScoreMode.CONE, intake, arm, elevator).withTimeout(0.5));
 
         // Translation2d farchargeStationMidpoint = createTranslation2dInches(130, -4);
         // Translation2d chargeStationInterpolationMipoint = createTranslation2dInches(48, -4);
