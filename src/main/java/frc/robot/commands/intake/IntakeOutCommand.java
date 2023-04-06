@@ -4,6 +4,8 @@
 
 package frc.robot.commands.intake;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
@@ -11,15 +13,23 @@ import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 public class IntakeOutCommand extends CommandBase {
     private final IntakeSubsystem intake;
 
-    public IntakeOutCommand(IntakeSubsystem intake) {
+    private final Supplier<ScoreMode> scoreMode;
+
+    public IntakeOutCommand(Supplier<ScoreMode> scoreMode, IntakeSubsystem intake) {
         this.intake = intake;
+
+        this.scoreMode = scoreMode;
 
         addRequirements(this.intake);
     }
 
+    public IntakeOutCommand(IntakeSubsystem intake) {
+        this(() -> ScoreMode.CONE, intake);
+    }
+
     @Override
     public void execute() {
-        intake.intakeOut(ScoreMode.CUBE);
+        intake.intakeOut(scoreMode.get());
     }
 
     @Override

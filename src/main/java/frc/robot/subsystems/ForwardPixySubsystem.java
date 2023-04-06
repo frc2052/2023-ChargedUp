@@ -19,11 +19,15 @@ public class ForwardPixySubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        findBlocks();
+        //findBlocks();
     }
 
     public void findBlocks(){
+        pixy.getCCC().getBlocks();
         ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
+
+        System.out.println(blocks.size());
+
         for (Block block : blocks){
             if (block.getSignature() == 1){
                 System.out.println("Cone Position x = " + block.getX() + " y = " + block.getY());
@@ -38,15 +42,21 @@ public class ForwardPixySubsystem extends SubsystemBase{
     }
 
     public Block findCentermostBlock(){
+        pixy.getCCC().getBlocks();
         ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
         Block centerBlock = null;
         for (Block block : blocks){
-            if (block.getY() < getMiddleLine().getY()){
-                if (centerBlock == null){
-                    centerBlock = block;
-                } else if (xOffsetFromCenter(block) < xOffsetFromCenter(centerBlock)){
-                    centerBlock = block;
-                }
+            // if (block.getY() < getMiddleLine().getY()){
+            //     if (centerBlock == null){
+            //         centerBlock = block;
+            //     } else if (xOffsetFromCenter(block) < xOffsetFromCenter(centerBlock)){
+            //         centerBlock = block;
+            //     }
+            // }
+            if (centerBlock == null) {
+                centerBlock = block;
+            } else if (xOffsetFromCenter(block) < xOffsetFromCenter(centerBlock)){
+                centerBlock = block;
             }
         }
         return centerBlock;
@@ -54,7 +64,11 @@ public class ForwardPixySubsystem extends SubsystemBase{
 
     public double xOffsetFromCenter(Block block){
         //pixy cam pixel res width is 316, midpoint is 158
-        return (Math.abs(158 - block.getX()));
+        if (block != null) {
+            return block.getX() - 158;
+        }
+
+        return 0;
     }
 
     public Block getMiddleLine(){

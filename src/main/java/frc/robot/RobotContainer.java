@@ -14,7 +14,9 @@ import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.auto.AutoFactory;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
+import frc.robot.commands.drive.GamePieceAlignmentCommand;
 import frc.robot.commands.drive.GyroAlignmentCommand;
+import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
@@ -41,8 +43,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -135,6 +139,10 @@ public class RobotContainer {
         /*
          * Drivetrain button bindings
          */
+
+        JoystickButton gamePieceAlign = new JoystickButton(driveJoystick, 9);
+        gamePieceAlign.whileTrue(new GamePieceAlignmentCommand(forwardPixy, drivetrain));
+
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
@@ -227,7 +235,14 @@ public class RobotContainer {
         JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
         
         //scoreButton.onTrue(new TimedScoreCommand(scoreMode, 0.25, intake, arm, elevator));
-        scoreButton.whileTrue(new ScoreCommand(() -> scoreMode, intake, arm, elevator));
+        scoreButton.whileTrue(new IntakeOutCommand(() -> scoreMode, intake));
+        scoreButton.onFalse(
+            new ParallelCommandGroup(
+                new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator).beforeStarting(new WaitCommand(0.4)),
+                new IntakeStopCommand(intake),
+                new ArmInCommand(arm)
+            )
+        );
         elevatorMidScoreButton.onTrue(new MidScoreCommand(elevator, arm));
         elevatorTopScoreButton.onTrue(new TopScoreCommand(elevator, arm));
 
@@ -272,10 +287,5 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return autoFactory.getCompiledAuto();
-    }
-
-    public void debug() {
-        
-        System.out.println(scoreMode);
     }
 }

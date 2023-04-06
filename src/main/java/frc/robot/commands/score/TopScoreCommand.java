@@ -16,7 +16,7 @@ public class TopScoreCommand extends ParallelCommandGroup {
     public TopScoreCommand(ElevatorSubsystem elevator, ArmSubsystem arm) {
         addCommands(
             new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, elevator),
-            new ArmOutCommand(arm).beforeStarting(new WaitCommand(1))
+            new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.5))
         );
     }
 }

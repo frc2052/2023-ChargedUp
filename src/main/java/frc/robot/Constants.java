@@ -53,7 +53,7 @@ public final class Constants {
         public static final int LIMIT_SWITCH_DIO_CHANNEL = 0;
 
         public static final double BELT_MOTOR_F = 0.054;
-        public static final double BELT_MOTOR_P = 0.2046; //0.1023;
+        public static final double BELT_MOTOR_P = 0.2046;
         public static final double BELT_MOTOR_I = 0.002;
         public static final double BELT_MOTOR_D = 1.023;
 
