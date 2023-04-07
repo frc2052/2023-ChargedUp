@@ -1,39 +1,53 @@
 package frc.robot.commands.drive;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ForwardPixySubsystem;
 
 public class GamePieceAlignmentCommand extends DriveCommand {
     private final ForwardPixySubsystem pixy;
+
+    // Mount offset is 3 Inches.
+    private final double xMountOffsetPixels = 0;
+
+    private final PIDController xController;
     private final PIDController yController;
 
     public GamePieceAlignmentCommand(
+        DoubleSupplier initialXVelocity,
+        DoubleSupplier goalX,
         ForwardPixySubsystem pixy,
         DrivetrainSubsystem drivetrain
     ) {
-        super(() -> 0, () -> 0, () -> 0, Dashboard.getInstance()::isFieldCentric, drivetrain);
+        super(() -> 0, () -> 0, () -> 0, () -> false, drivetrain);
 
         this.pixy = pixy;
 
-        yController = new PIDController(0.5, 0, 0);
+        xController = new PIDController(0.25, 0, 0);
+        xController.setTolerance(0.1);
+        xController.setSetpoint(goalX.getAsDouble());
+
+        yController = new PIDController(1.25, 0, 0);
         yController.setTolerance(10);
-        yController.setSetpoint(0);
+        yController.setSetpoint(-xMountOffsetPixels);
 
         addRequirements(pixy, drivetrain);
     }
 
     @Override
     protected double getY() {
-        double x = -yController.calculate(pixy.xOffsetFromCenter(pixy.findCentermostBlock())) / 158;
-        //System.out.println(x);
-        return x;
+        return yController.calculate(pixy.xOffsetFromCenter(pixy.findCentermostBlock())) / 158;
+    }
+
+    @Override
+    protected double getX() {
+        return xController.calculate(drivetrain.getPosition().getX());
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return xController.atSetpoint();
     }
 }

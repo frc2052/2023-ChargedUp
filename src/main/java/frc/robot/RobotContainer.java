@@ -7,16 +7,15 @@ package frc.robot;
 import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.commands.intake.IntakeStopCommand;
+import frc.robot.commands.score.CompleteScoreCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
-import frc.robot.commands.score.TimedScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.auto.AutoFactory;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
 import frc.robot.commands.drive.GamePieceAlignmentCommand;
 import frc.robot.commands.drive.GyroAlignmentCommand;
-import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
@@ -30,7 +29,7 @@ import frc.robot.subsystems.ForwardPixySubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.PixySubsystem;
+import frc.robot.subsystems.IntakePixySubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
@@ -39,11 +38,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -69,7 +69,7 @@ public class RobotContainer {
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
     private final VisionSubsystem vision;
-    private final PixySubsystem pixy;
+    private final IntakePixySubsystem intakePixy;
     private final ForwardPixySubsystem forwardPixy;
 
     private final AutoFactory autoFactory;
@@ -77,6 +77,8 @@ public class RobotContainer {
     private final PowerDistribution pdh;
 
     private ScoreMode scoreMode;
+    private final Timer scoreTimer;
+    private final double minScoreTimeSeconds = 0.25;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -91,7 +93,7 @@ public class RobotContainer {
         intake = new IntakeSubsystem();
         elevator = new ElevatorSubsystem();
         vision = new VisionSubsystem();
-        pixy = new PixySubsystem();
+        intakePixy = new IntakePixySubsystem();
         forwardPixy = new ForwardPixySubsystem();
 
         new PneumaticsSubsystem();
@@ -107,7 +109,8 @@ public class RobotContainer {
             intake, 
             arm,
             vision,
-            pixy
+            intakePixy,
+            forwardPixy
         );
 
         drivetrain.setDefaultCommand(
@@ -124,6 +127,7 @@ public class RobotContainer {
         );
 
         scoreMode = ScoreMode.CONE;
+        scoreTimer = new Timer();
 
         // Configure the trigger bindings
         configureBindings();
@@ -139,15 +143,24 @@ public class RobotContainer {
         /*
          * Drivetrain button bindings
          */
-
         JoystickButton gamePieceAlign = new JoystickButton(driveJoystick, 9);
-        gamePieceAlign.whileTrue(new GamePieceAlignmentCommand(forwardPixy, drivetrain));
+        gamePieceAlign.whileTrue(new GamePieceAlignmentCommand(
+            () -> 0,
+            () -> 0,
+            forwardPixy, 
+            drivetrain
+        ));
 
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
         Trigger coneScanButton = new Trigger(() -> controlPanel.getY() > 0.5);
-        coneScanButton.whileTrue(new SequentialCommandGroup(new InstantCommand(LEDSubsystem.getInstance()::disableLEDs), new RunCommand(pixy::updateConePosition, pixy)));
+        coneScanButton.whileTrue(
+            new SequentialCommandGroup(
+                new InstantCommand(LEDSubsystem.getInstance()::disableLEDs), 
+                new RunCommand(intakePixy::updateConePosition, intakePixy)
+            )
+        );
         coneScanButton.onFalse(new InstantCommand(LEDSubsystem.getInstance()::enableLEDs));
 
         JoystickButton chargeStationAutoBalanceButton = new JoystickButton(driveJoystick, 7);
@@ -160,7 +173,7 @@ public class RobotContainer {
                 new DumbHorizontalAlignmentCommand(
                     driveJoystick::getY,
                     turnJoystick::getX,
-                    drivetrain, vision, pixy
+                    drivetrain, vision, intakePixy
                 )
             )
         );
@@ -168,7 +181,7 @@ public class RobotContainer {
         JoystickButton signleSubstationAlignButton = new JoystickButton(turnJoystick, 5);
         signleSubstationAlignButton.whileTrue(new GyroAlignmentCommand(() -> {
             if (DriverStation.getAlliance() == Alliance.Blue) {
-                return Rotation2d.fromDegrees(270);
+                return Rotation2d.fromDegrees(-90);
             } else {
                 return Rotation2d.fromDegrees(90);
             }
@@ -234,13 +247,22 @@ public class RobotContainer {
         JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 8);
         JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
         
-        //scoreButton.onTrue(new TimedScoreCommand(scoreMode, 0.25, intake, arm, elevator));
-        scoreButton.whileTrue(new IntakeOutCommand(() -> scoreMode, intake));
-        scoreButton.onFalse(
-            new ParallelCommandGroup(
-                new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator).beforeStarting(new WaitCommand(0.4)),
-                new IntakeStopCommand(intake),
-                new ArmInCommand(arm)
+        scoreButton.onTrue(
+            new InstantCommand(() -> { scoreTimer.reset(); scoreTimer.start(); })
+        ).whileTrue(
+            new ScoreCommand(() -> scoreMode, intake)
+        ).onFalse(
+            new ConditionalCommand(
+                new SequentialCommandGroup(
+                    new WaitCommand(minScoreTimeSeconds - scoreTimer.get()),
+                    new CompleteScoreCommand(elevator, intake, arm),
+                    new InstantCommand(scoreTimer::stop)
+                ), 
+                new SequentialCommandGroup(
+                    new CompleteScoreCommand(elevator, intake, arm),
+                    new InstantCommand(scoreTimer::stop)
+                ), 
+                () -> scoreTimer.get() < minScoreTimeSeconds
             )
         );
         elevatorMidScoreButton.onTrue(new MidScoreCommand(elevator, arm));

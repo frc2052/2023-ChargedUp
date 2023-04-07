@@ -20,6 +20,7 @@ import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ForwardPixySubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
@@ -30,9 +31,10 @@ public class HungryHungryHippoAuto extends ScorePickUpAutoBase {
         DrivetrainSubsystem drivetrain, 
         ElevatorSubsystem elevator, 
         IntakeSubsystem intake, 
-        ArmSubsystem arm
+        ArmSubsystem arm,
+        ForwardPixySubsystem forwardPixy
     ) {
-        super(autoConfiguration, drivetrain, elevator, intake, arm);
+        super(autoConfiguration, drivetrain, elevator, intake, arm, forwardPixy);
     }
 
     public void init() {

@@ -44,7 +44,7 @@ public class DriveCommand extends CommandBase {
 
         xLimiter = new SlewRateLimiter(2);
         yLimiter = new SlewRateLimiter(2);
-        rotationLimiter = new SlewRateLimiter(6);
+        rotationLimiter = new SlewRateLimiter(5);
 
         addRequirements(drivetrain);
     }

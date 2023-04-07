@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
 import frc.robot.commands.drive.GyroAlignmentCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
+import frc.robot.commands.score.CompleteScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.auto.AutoFactory.Grid;
@@ -24,8 +25,9 @@ import frc.robot.auto.AutoFactory.Node;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ForwardPixySubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PixySubsystem;
+import frc.robot.subsystems.IntakePixySubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
@@ -33,7 +35,7 @@ import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 @AutoDescription(description = "Score gamepiece, drive to pick up second gamepiece, and drive to score second gamepiece.")
 public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
     private final VisionSubsystem vision;
-    private final PixySubsystem pixy;
+    private final IntakePixySubsystem pixy;
 
     public ScoreTwoUpperAuto(
         AutoConfiguration autoConfiguration,
@@ -42,9 +44,10 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
         IntakeSubsystem intake, 
         ArmSubsystem arm,
         VisionSubsystem vision,
-        PixySubsystem pixy
+        IntakePixySubsystem pixy,
+        ForwardPixySubsystem forwardPixy
     ) {
-        super(autoConfiguration, drivetrain, elevator, intake, arm);
+        super(autoConfiguration, drivetrain, elevator, intake, arm, forwardPixy);
 
         this.vision = vision;
         this.pixy = pixy;
@@ -94,7 +97,12 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
         addCommands(new DumbHorizontalAlignmentCommand(() -> 0.35, () -> 0.0, drivetrain, vision, pixy).withTimeout(1));
         
         addCommands(new TopScoreCommand(elevator, arm));
-        addCommands(new ScoreCommand(() -> ScoreMode.CONE, intake, arm, elevator).withTimeout(0.5));
+        
+        addCommands(new ScoreCommand(
+            () -> ScoreMode.CONE, 
+            () -> 0.5,
+            intake
+        ).andThen(new CompleteScoreCommand(elevator, intake, arm)));
 
         // Translation2d farchargeStationMidpoint = createTranslation2dInches(130, -4);
         // Translation2d chargeStationInterpolationMipoint = createTranslation2dInches(48, -4);

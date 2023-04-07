@@ -106,7 +106,7 @@ public class AutoTrajectoryConfig {
         this(
             new TrajectoryConfig(maxXYVelocityMPS, maxAccelarationMPS).setEndVelocity(endVelocityMPS).setStartVelocity(startVelocityMPS),
             new PIDController(xyP, 0, 0),
-            new ProfiledPIDController(turnP, 0, 0, new TrapezoidProfile.Constraints(turnProfileContraintsMultiplier*Math.PI, turnProfileContraintsMultiplier*Math.PI))
+            new ProfiledPIDController(turnP, 0, 0, new TrapezoidProfile.Constraints(turnProfileContraintsMultiplier * Math.PI, turnProfileContraintsMultiplier * Math.PI))
         );
     }
 

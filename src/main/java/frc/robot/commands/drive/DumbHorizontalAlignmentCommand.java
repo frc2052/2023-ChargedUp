@@ -12,12 +12,12 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.PixySubsystem;
+import frc.robot.subsystems.IntakePixySubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 public class DumbHorizontalAlignmentCommand extends DriveCommand {
     private final VisionSubsystem vision;
-    private final PixySubsystem pixy;
+    private final IntakePixySubsystem pixy;
     
     private final PIDController yController;
 
@@ -29,7 +29,7 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
         DoubleSupplier rotationSupplier,
         DrivetrainSubsystem drivetrain, 
         VisionSubsystem vision,
-        PixySubsystem pixy
+        IntakePixySubsystem pixy
     ) {
         super(xSupplier, () -> 0, rotationSupplier, Dashboard.getInstance()::isFieldCentric, drivetrain);
 

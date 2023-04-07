@@ -11,8 +11,9 @@ import frc.robot.io.Dashboard;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ForwardPixySubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PixySubsystem;
+import frc.robot.subsystems.IntakePixySubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 /** Add your docs here. */
@@ -25,7 +26,8 @@ public class AutoFactory {
     private final IntakeSubsystem intake;
     private final ArmSubsystem arm;
     private final VisionSubsystem vision;
-    private final PixySubsystem pixy;
+    private final IntakePixySubsystem intakePixy;
+    private final ForwardPixySubsystem forwardPixy;
 
     private Auto currentAuto;
     private AutoConfiguration currentAutoConfiguration;
@@ -40,7 +42,8 @@ public class AutoFactory {
         IntakeSubsystem intake, 
         ArmSubsystem arm,
         VisionSubsystem vision,
-        PixySubsystem pixy
+        IntakePixySubsystem intakePixy,
+        ForwardPixySubsystem forwardPixy
     ) {
         this.autoSupplier = autoSupplier;
         this.autoConfigurationSupplier = autoConfigurationSupplier;
@@ -50,7 +53,8 @@ public class AutoFactory {
         this.intake = intake;
         this.arm = arm;
         this.vision = vision;
-        this.pixy = pixy;
+        this.intakePixy = intakePixy;
+        this.forwardPixy = forwardPixy;
     }
 
     public boolean recompileNeeded() {
@@ -74,7 +78,8 @@ public class AutoFactory {
                     drivetrain, 
                     elevator, 
                     intake, 
-                    arm
+                    arm,
+                    forwardPixy
                 );
                 break;
 
@@ -84,7 +89,8 @@ public class AutoFactory {
                     drivetrain, 
                     elevator, 
                     intake, 
-                    arm
+                    arm,
+                    forwardPixy
                 );
                 break;
 
@@ -96,7 +102,8 @@ public class AutoFactory {
                     intake, 
                     arm, 
                     vision, 
-                    pixy
+                    intakePixy,
+                    forwardPixy
                 );
                 break;
 
@@ -116,7 +123,8 @@ public class AutoFactory {
                     drivetrain, 
                     elevator, 
                     intake, 
-                    arm
+                    arm,
+                    forwardPixy
                 );
                 break;
 

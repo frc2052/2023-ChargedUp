@@ -9,8 +9,7 @@ import frc.robot.pixy.Pixy2CCC.Block;
 import frc.robot.pixy.links.SPILink;
 
 public class ForwardPixySubsystem extends SubsystemBase{
-    
-	private static Pixy2 pixy;
+	private final Pixy2 pixy;
 
     public ForwardPixySubsystem(){
         pixy = Pixy2.createInstance(new SPILink()); // Creates a new Pixy2 camera using SPILink
@@ -19,7 +18,7 @@ public class ForwardPixySubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        //findBlocks();
+        findBlocks();
     }
 
     public void findBlocks(){
@@ -44,6 +43,7 @@ public class ForwardPixySubsystem extends SubsystemBase{
     public Block findCentermostBlock(){
         pixy.getCCC().getBlocks();
         ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
+
         Block centerBlock = null;
         for (Block block : blocks){
             // if (block.getY() < getMiddleLine().getY()){
@@ -53,10 +53,15 @@ public class ForwardPixySubsystem extends SubsystemBase{
             //         centerBlock = block;
             //     }
             // }
-            if (centerBlock == null) {
-                centerBlock = block;
-            } else if (xOffsetFromCenter(block) < xOffsetFromCenter(centerBlock)){
-                centerBlock = block;
+            if (block.getSignature() != 3) {
+                if (centerBlock == null) {
+                    centerBlock = block;
+                    continue;
+                }
+                
+                if (Math.abs(xOffsetFromCenter(block)) < Math.abs(xOffsetFromCenter(centerBlock))) {
+                    centerBlock = block;
+                }
             }
         }
         return centerBlock;
@@ -73,13 +78,22 @@ public class ForwardPixySubsystem extends SubsystemBase{
 
     public Block getMiddleLine(){
         ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
+
         Block middleLineBlock = null;
         for (Block block : blocks){
-            //pixy cam signature for the white line is 3
+            // Pixy cam signature for the white line is 3.
             if (block.getSignature() == 3){
-                middleLineBlock = block;
+                if (middleLineBlock == null) {
+                    middleLineBlock = block;
+                    continue;
+                }
+
+                // Get the lowest block with a signature of 3.
+                if (block.getY() > middleLineBlock.getY()) {
+                    middleLineBlock = block;
+                }
             }
         }
-        return (middleLineBlock);
+        return middleLineBlock;
     }
 }

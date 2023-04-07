@@ -4,29 +4,40 @@
 
 package frc.robot.commands.score;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 
 public class ScoreCommand extends CommandBase {
     private final IntakeSubsystem intake;
-    private final ArmSubsystem arm;
-    private final ElevatorSubsystem elevator;
+
     private final Supplier<ScoreMode> scoreMode;
+    private final Timer scoreTimer;
+    private final DoubleSupplier maxScoreTime;
 
-    public ScoreCommand(Supplier<ScoreMode> scoreMode, IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator) {
-        this.scoreMode = scoreMode;
-        
+    public ScoreCommand(Supplier<ScoreMode> scoreMode, IntakeSubsystem intake) {
+        this(scoreMode, () -> 0, intake);
+    }
+
+    public ScoreCommand(Supplier<ScoreMode> scoreMode, DoubleSupplier maxScoreTime, IntakeSubsystem intake) {
         this.intake = intake;
-        this.arm = arm;
-        this.elevator = elevator;
 
-        addRequirements(this.intake, this.arm, this.elevator);
+        this.scoreMode = scoreMode;
+
+        scoreTimer = new Timer();
+        this.maxScoreTime = maxScoreTime;
+        
+        addRequirements(this.intake);
+    }
+
+    @Override
+    public void initialize() {
+        scoreTimer.reset();
+        scoreTimer.start();
     }
 
     @Override
@@ -34,16 +45,9 @@ public class ScoreCommand extends CommandBase {
         intake.intakeOut(scoreMode.get());
     }
 
-    @Override
-    public void end(boolean interrupted) {
-        intake.stop();
-        arm.armIn();
-        elevator.setPosition(ElevatorPosition.BABY_BIRD);
-    }
-
     // Score command ends when interupted or timed out.
     @Override
     public boolean isFinished() {
-        return false;
+        return scoreTimer.hasElapsed(maxScoreTime.getAsDouble());
     }
 }

@@ -9,10 +9,10 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.PixySubsystem;
+import frc.robot.subsystems.IntakePixySubsystem;
 
 public class PickUpAlignmentCommand extends DriveCommand {
-    private final PixySubsystem pixy;
+    private final IntakePixySubsystem pixy;
     
     private final PIDController yController;
 
@@ -21,7 +21,7 @@ public class PickUpAlignmentCommand extends DriveCommand {
         DoubleSupplier xSupplier,
         DoubleSupplier rotationSupplier,
         DrivetrainSubsystem drivetrain,
-        PixySubsystem pixy
+        IntakePixySubsystem pixy
     ) {
         super(xSupplier, () -> 0, rotationSupplier, Dashboard.getInstance()::isFieldCentric, drivetrain);
 

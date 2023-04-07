@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.io.Dashboard;
 
-public class PixySubsystem extends SubsystemBase {
+public class IntakePixySubsystem extends SubsystemBase {
     private final double minPixyVoltage = 1.5;
     private final double maxPixyVoltage = 2.7;
     
@@ -17,7 +17,7 @@ public class PixySubsystem extends SubsystemBase {
 
     private final AnalogInput pixyX;
 
-    public PixySubsystem() {
+    public IntakePixySubsystem() {
         pixyX = new AnalogInput(0);
     }
 

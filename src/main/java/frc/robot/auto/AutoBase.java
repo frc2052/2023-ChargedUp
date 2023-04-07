@@ -35,8 +35,6 @@ public abstract class AutoBase extends SequentialCommandGroup {
 
     private Pose2d lastEndingPose;
 
-    protected final Pose2d cableProtectorPoint;
-
     /** Creates a new Auto. */
     public AutoBase(
         AutoConfiguration autoConfiguration,
@@ -51,14 +49,14 @@ public abstract class AutoBase extends SequentialCommandGroup {
         this.intake = intake;
         this.arm = arm;
 
-        cableProtectorPoint = createPose2dInches(98, -4, 0);
-
+        // Automatically zero the elevator if not in a match.
         if (!DriverStation.isFMSAttached()) {
             if (!this.elevator.elevatorZeroed()) {
                 addCommands(new ZeroElevator(this.elevator));
             }
         }
 
+        // Set zero as facing towards the driverstation.
         addCommands(new InstantCommand(drivetrain::zeroGyro, drivetrain));
     }
 
@@ -66,6 +64,10 @@ public abstract class AutoBase extends SequentialCommandGroup {
 
     public Pose2d getLastEndingPose() {
         return lastEndingPose;
+    }
+
+    public void setLastEndingPose(Pose2d newEndingPose) {
+        lastEndingPose = newEndingPose;
     }
 
     public Pose2d createPose2dInches(double xInches, double yInches, double rotationDegrees) {

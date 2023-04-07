@@ -15,6 +15,7 @@ import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.drive.ResetOdometryCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.intake.IntakeInCommand;
+import frc.robot.commands.score.CompleteScoreCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
@@ -57,11 +58,11 @@ public class MiddleScoreOneBalance extends AutoBase {
             addCommands(new TopScoreCommand(elevator, arm));
         }
         
-        addCommands(
-            new ScoreCommand(() -> ScoreMode.CONE, intake, arm, elevator).withTimeout(
-                autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5
-            )
-        );
+        addCommands(new ScoreCommand(
+            () -> ScoreMode.CONE, 
+            () -> autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5,
+            intake
+        ).andThen(new CompleteScoreCommand(elevator, intake, arm)));
         
         if (autoConfiguration.endChargeStation()) {
             SwerveControllerCommand lineUpPath = createSwerveTrajectoryCommand(

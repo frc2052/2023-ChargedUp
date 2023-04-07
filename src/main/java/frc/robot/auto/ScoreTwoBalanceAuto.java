@@ -17,6 +17,7 @@ import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ForwardPixySubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 @AutoDescription(description = "Score gamepiece, drive to pick up second gamepiece, drive to grid and shoot without stopping, balance.")
@@ -26,15 +27,17 @@ public class ScoreTwoBalanceAuto extends ScorePickUpAutoBase {
         DrivetrainSubsystem drivetrain, 
         ElevatorSubsystem elevator, 
         IntakeSubsystem intake, 
-        ArmSubsystem arm
+        ArmSubsystem arm,
+        ForwardPixySubsystem forwardPixy
     ) {
-        super(autoConfiguration, drivetrain, elevator, intake, arm);
+        super(autoConfiguration, drivetrain, elevator, intake, arm, forwardPixy);
     }
     
     public void init() {
         super.init();
 
         Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, -8);
+        Pose2d cableProtectorPoint = createPose2dInches(98, -4, 0);
         Translation2d nearChargeStationInterpolationPoint = createTranslation2dInches(18, -6);
         Pose2d lineUpPose = createPose2dInches(24, -80, 270);
         Pose2d chargeStationPose = createPose2dInches(100, -80, 180);
@@ -44,7 +47,7 @@ public class ScoreTwoBalanceAuto extends ScorePickUpAutoBase {
             AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withEndVelocity(1),
             getLastEndingPose(), 
             List.of(farChargeStationInterpolationPoint), 
-            super.cableProtectorPoint, 
+            cableProtectorPoint, 
             createRotation(180)
         );
 
