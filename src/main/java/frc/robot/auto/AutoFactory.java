@@ -107,14 +107,37 @@ public class AutoFactory {
                 );
                 break;
 
-            case MIDDLE_SCORE_ONE_BALANCE:
-                compiledAuto =  new MiddleScoreOneBalance(
+            case MIDDLE_SCORE_ONE_LEFT_BALANCE:
+                compiledAuto =  new MiddleScoreOnePickupBalance(
                     currentAutoConfiguration,
                     drivetrain, 
                     elevator, 
                     intake, 
                     arm,
-                    forwardPixy
+                    forwardPixy,
+                    GamePiece.MIDDLE_LEFT_GAME_PIECE
+                );
+                break;
+
+            case MIDDLE_SCORE_ONE_NONE_BALANCE:
+                compiledAuto = new MiddleScoreOneBalance(
+                    currentAutoConfiguration, 
+                    drivetrain, 
+                    elevator, 
+                    intake, 
+                    arm
+                );
+                break;
+
+            case MIDDLE_SCORE_ONE_RIGHT_BALANCE:
+                compiledAuto =  new MiddleScoreOnePickupBalance(
+                    currentAutoConfiguration,
+                    drivetrain, 
+                    elevator, 
+                    intake, 
+                    arm,
+                    forwardPixy,
+                    GamePiece.MIDDLE_RIGHT_GAME_PIECE
                 );
                 break;
 
@@ -156,7 +179,9 @@ public class AutoFactory {
         SCORE_ONE_BALANCE,
         SCORE_TWO_BALANCE,
         SCORE_TWO_UPPER,
-        MIDDLE_SCORE_ONE_BALANCE,
+        MIDDLE_SCORE_ONE_LEFT_BALANCE,
+        MIDDLE_SCORE_ONE_NONE_BALANCE,
+        MIDDLE_SCORE_ONE_RIGHT_BALANCE,
         HUNGRY_HUNGRY_HIPPO;
     }
 

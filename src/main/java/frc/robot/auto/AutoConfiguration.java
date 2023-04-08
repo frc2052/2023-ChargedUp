@@ -11,14 +11,14 @@ import frc.robot.auto.AutoFactory.Node;
 
 /** Add your docs here. */
 public class AutoConfiguration {
-    private final Grid startingGrid;
-    private final Node startingNode; 
-    private final Channel exitChannel;
-    private final GamePiece gamePiece;
-    private final boolean scoreGamePiece;
-    private final Grid scoreGrid;
-    private final Node scoreNode;
-    private final boolean endChargeStation;
+    private Grid startingGrid;
+    private Node startingNode; 
+    private Channel exitChannel;
+    private GamePiece gamePiece;
+    private boolean scoreGamePiece;
+    private Grid scoreGrid;
+    private Node scoreNode;
+    private boolean endChargeStation;
     
     public AutoConfiguration(
         Grid startingGrid, 

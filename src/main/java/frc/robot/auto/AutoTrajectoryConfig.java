@@ -59,10 +59,10 @@ public class AutoTrajectoryConfig {
         new TrajectoryConfig(5, 3).setKinematics(DrivetrainSubsystem.getKinematics()),
         new PIDController(2, 0, 0),
         new ProfiledPIDController(
-            2, 0, 0,
+            3, 0, 0,
             new TrapezoidProfile.Constraints(
-                Math.PI, 
-                Math.PI
+                2 * Math.PI, 
+                2 * Math.PI
             )
         )
     );
