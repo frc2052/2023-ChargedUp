@@ -14,10 +14,9 @@ public class ChargeStationBalanceCommand extends CommandBase {
     private DrivetrainSubsystem drivetrain;
 
     private boolean balanced;
-    // private boolean flipped;
+    private boolean flipped;
     private boolean isDropping;
 
-    // private Timer dropTimer;
     private Timer slowdownTimer;
 
     private double previousPitch;
@@ -28,23 +27,15 @@ public class ChargeStationBalanceCommand extends CommandBase {
         this.drivetrain = drivetrain;
 
         slowdownTimer = new Timer();
-        // dropTimer = new Timer();
         
         addRequirements(drivetrain);
     }
-
-    // public void reset() {
-    //     previousPitch = 0;
-    //     currentPitch = 0;
-    //     dropTimer.stop();
-    //     dropTimer.reset();
-    // }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
         balanced = false;
-        // flipped = false;
+        flipped = false;
         previousPitch = 0;
         currentPitch = 0;
 
@@ -53,25 +44,31 @@ public class ChargeStationBalanceCommand extends CommandBase {
     }
 
     @Override
-    public void execute(){
+    public void execute() {
         previousPitch = currentPitch;
         currentPitch = drivetrain.getNavx().getPitch();
-        isDropping = Math.abs(previousPitch) - Math.abs(currentPitch) > 0.05 && Math.abs(currentPitch) < 10;
+
+        double deltaPitch = Math.abs(previousPitch) - Math.abs(currentPitch);
+        isDropping = deltaPitch > 0.1 && Math.abs(currentPitch) < 11;
         balanced = Math.abs(currentPitch) < Constants.AutoBalance.BALANCE_TOLERANCE_DEGREES;
 
         //check if the match is almost done and x wheels if so
-        if (DriverStation.getMatchTime() <= 0.25) {
+        if (DriverStation.isFMSAttached() && DriverStation.getMatchTime() <= 0.25) {
             drivetrain.xWheels();
             return;
         }
-
-        // if (previousPitch != 0 && Math.copySign(1, currentPitch) != Math.copySign(1, previousPitch)) {
-        //     System.out.println("Flipped!");
-        //     flipped = true;
-        // }
         
+        System.out.println(currentPitch);
+        
+        if (previousPitch != 0 && Math.copySign(1, currentPitch) != Math.copySign(1, previousPitch)) {
+            System.out.println("Flipped!");
+            flipped = true;
+        }
+
         if (!balanced) {
-            if (slowdownTimer.hasElapsed(1.5) || isDropping){
+            if (isDropping || flipped) {
+                //System.out.println("BALANCE: Driving slow! dropping: " + isDropping);
+
                 drivetrain.drive(
                     Math.copySign(0.04, (double) -(drivetrain.getNavx().getPitch())),
                     Math.copySign(0.04, (double) -(drivetrain.getNavx().getPitch())),
@@ -79,24 +76,27 @@ public class ChargeStationBalanceCommand extends CommandBase {
                     false
                 );
             } else {
-                drivetrain.drive(
-                    Math.copySign(0.15, (double) -(drivetrain.getNavx().getPitch())),
-                    
-                    Math.copySign(0.0, (double) -(drivetrain.getNavx().getPitch())),
-                    0, 
-                    false
-                );
-            }
+                //System.out.println("BALANCE: Driving fast!");
 
-            // if (dropTimer.hasElapsed(0.5) && balanced) {
-            //     drivetrain.xWheels();
-            //     return;
-            // } else if (dropTimer.get() == 0 && isDropping) {
-            //     dropTimer.start();
-            // } else if (dropTimer.hasElapsed(1) && !balanced){
-            //     dropTimer.reset();
-            // }
+                if (slowdownTimer.hasElapsed(1.5)) {
+                    drivetrain.drive(
+                        Math.copySign(0.1, (double) -(drivetrain.getNavx().getPitch())),
+                        Math.copySign(0.0, (double) -(drivetrain.getNavx().getPitch())),
+                        0, 
+                        false
+                    );
+                } else {
+                    drivetrain.drive(
+                        Math.copySign(0.15, (double) -(drivetrain.getNavx().getPitch())),
+                        Math.copySign(0.0, (double) -(drivetrain.getNavx().getPitch())),
+                        0, 
+                        false
+                    );
+                }
+            }
         } else {
+            //System.out.println("BALANCE: Balanced!");
+
             drivetrain.xWheels();
         }
     }

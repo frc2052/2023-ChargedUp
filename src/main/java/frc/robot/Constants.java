@@ -85,12 +85,16 @@ public final class Constants {
         public static final double INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS = 0.5;
     }
     
+    public static final class Score {
+        public static final double MIN_SCORE_TIME_SECONDS = 0.25;
+    }
+
     public static final class AutoBalance {
         public static final double BALANCE_P = 0.01;
         public static final double BALANCE_I = 0.0;
         public static final double BALANCE_D = 0.0;
     
-        public static final double BALANCE_TOLERANCE_DEGREES = 3;
+        public static final double BALANCE_TOLERANCE_DEGREES = 3.5;
         public static final double MAX_SPEED_METERS_PER_SECOND = 0.1;
     }
 

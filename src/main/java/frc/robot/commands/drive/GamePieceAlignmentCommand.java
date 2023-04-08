@@ -16,7 +16,6 @@ public class GamePieceAlignmentCommand extends DriveCommand {
     private final PIDController yController;
 
     public GamePieceAlignmentCommand(
-        DoubleSupplier initialXVelocity,
         DoubleSupplier goalX,
         ForwardPixySubsystem pixy,
         DrivetrainSubsystem drivetrain

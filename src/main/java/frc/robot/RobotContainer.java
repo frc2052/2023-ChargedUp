@@ -42,8 +42,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -78,7 +78,6 @@ public class RobotContainer {
 
     private ScoreMode scoreMode;
     private final Timer scoreTimer;
-    private final double minScoreTimeSeconds = 0.25;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -144,12 +143,7 @@ public class RobotContainer {
          * Drivetrain button bindings
          */
         JoystickButton gamePieceAlign = new JoystickButton(driveJoystick, 9);
-        gamePieceAlign.whileTrue(new GamePieceAlignmentCommand(
-            () -> 0,
-            () -> 0,
-            forwardPixy, 
-            drivetrain
-        ));
+        gamePieceAlign.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
@@ -157,7 +151,7 @@ public class RobotContainer {
         Trigger coneScanButton = new Trigger(() -> controlPanel.getY() > 0.5);
         coneScanButton.whileTrue(
             new SequentialCommandGroup(
-                new InstantCommand(LEDSubsystem.getInstance()::disableLEDs), 
+                new InstantCommand(LEDSubsystem.getInstance()::disableLEDs),
                 new RunCommand(intakePixy::updateConePosition, intakePixy)
             )
         );
@@ -169,7 +163,13 @@ public class RobotContainer {
         JoystickButton visionAlignButton = new JoystickButton(turnJoystick, 4);
         visionAlignButton.whileTrue(
             new SequentialCommandGroup(
-                new GyroAlignmentCommand(() -> Rotation2d.fromDegrees(180), drivetrain),
+                new GyroAlignmentCommand(
+                    driveJoystick::getY,
+                    () -> 0,
+                    () -> Rotation2d.fromDegrees(180),
+                    () -> true,
+                    drivetrain
+                ),
                 new DumbHorizontalAlignmentCommand(
                     driveJoystick::getY,
                     turnJoystick::getX,
@@ -179,13 +179,19 @@ public class RobotContainer {
         );
 
         JoystickButton signleSubstationAlignButton = new JoystickButton(turnJoystick, 5);
-        signleSubstationAlignButton.whileTrue(new GyroAlignmentCommand(() -> {
-            if (DriverStation.getAlliance() == Alliance.Blue) {
-                return Rotation2d.fromDegrees(-90);
-            } else {
-                return Rotation2d.fromDegrees(90);
-            }
-        }, drivetrain));
+        signleSubstationAlignButton.whileTrue(new GyroAlignmentCommand(
+            driveJoystick::getY,
+            driveJoystick::getX,
+            () -> {
+                if (DriverStation.getAlliance() == Alliance.Blue) {
+                    return Rotation2d.fromDegrees(90);
+                } else {
+                    return Rotation2d.fromDegrees(270);
+                }
+            },
+            () -> false,
+            drivetrain
+        ));
 
         JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
         xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));
@@ -247,22 +253,18 @@ public class RobotContainer {
         JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 8);
         JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
         
+        // Score command starts timer and has a minimum run time of 0.25 seconds.
         scoreButton.onTrue(
             new InstantCommand(() -> { scoreTimer.reset(); scoreTimer.start(); })
         ).whileTrue(
             new ScoreCommand(() -> scoreMode, intake)
         ).onFalse(
-            new ConditionalCommand(
-                new SequentialCommandGroup(
-                    new WaitCommand(minScoreTimeSeconds - scoreTimer.get()),
-                    new CompleteScoreCommand(elevator, intake, arm),
-                    new InstantCommand(scoreTimer::stop)
-                ), 
-                new SequentialCommandGroup(
-                    new CompleteScoreCommand(elevator, intake, arm),
-                    new InstantCommand(scoreTimer::stop)
-                ), 
-                () -> scoreTimer.get() < minScoreTimeSeconds
+            // Blocks score command completion until the minimum run time has elapsed.
+            new SequentialCommandGroup(
+                // Wait until the difference in current time to minimum time has elapsed.
+                new WaitCommand(scoreTimer.get() < Constants.Score.MIN_SCORE_TIME_SECONDS ? Constants.Score.MIN_SCORE_TIME_SECONDS - scoreTimer.get() : 0),
+                new CompleteScoreCommand(elevator, intake, arm),
+                new InstantCommand(scoreTimer::stop)
             )
         );
         elevatorMidScoreButton.onTrue(new MidScoreCommand(elevator, arm));
@@ -282,13 +284,15 @@ public class RobotContainer {
         Trigger controlPanelIntakeInButton = new Trigger(() -> controlPanel.getX() > 0.5);
         JoystickButton driverIntakeInButton = new JoystickButton(driveJoystick, 3);
 
-        driverIntakeInButton.or(controlPanelIntakeInButton).whileTrue(new IntakeInCommand(arm::isArmOut, intake));
+        driverIntakeInButton.or(controlPanelIntakeInButton).whileTrue(new ParallelCommandGroup(
+            new IntakeInCommand(arm::isArmOut, intake)
+        ));
         driverIntakeInButton.or(controlPanelIntakeInButton).onFalse(new IntakeStopCommand(intake));
         
         Trigger controlPanelIntakeOutButton = new Trigger(() -> controlPanel.getY() < -0.5);
         JoystickButton driverIntakeOutButton = new JoystickButton(driveJoystick, 2);
 
-        driverIntakeOutButton.or(controlPanelIntakeOutButton).whileTrue(new IntakeOutCommand(intake));
+        driverIntakeOutButton.or(controlPanelIntakeOutButton).whileTrue(new IntakeOutCommand(() -> scoreMode, intake));
         driverIntakeOutButton.or(controlPanelIntakeOutButton).onFalse(new IntakeStopCommand(intake));
     }
     

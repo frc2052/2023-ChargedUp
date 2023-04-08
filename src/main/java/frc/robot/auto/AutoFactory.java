@@ -113,7 +113,8 @@ public class AutoFactory {
                     drivetrain, 
                     elevator, 
                     intake, 
-                    arm
+                    arm,
+                    forwardPixy
                 );
                 break;
 

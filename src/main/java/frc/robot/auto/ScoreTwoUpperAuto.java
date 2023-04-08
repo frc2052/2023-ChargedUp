@@ -93,7 +93,7 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
 
         addCommands(driveBackGroup);
         
-        addCommands(new GyroAlignmentCommand(() -> Rotation2d.fromDegrees(180), drivetrain));
+        addCommands(new GyroAlignmentCommand(() -> Rotation2d.fromDegrees(180), () -> true, drivetrain));
         addCommands(new DumbHorizontalAlignmentCommand(() -> 0.35, () -> 0.0, drivetrain, vision, pixy).withTimeout(1));
         
         addCommands(new TopScoreCommand(elevator, arm));

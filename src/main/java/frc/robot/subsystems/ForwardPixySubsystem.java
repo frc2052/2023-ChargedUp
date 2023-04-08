@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.pixy.Pixy2;
-import frc.robot.pixy.Pixy2CCC;
 import frc.robot.pixy.Pixy2CCC.Block;
 import frc.robot.pixy.links.SPILink;
 
@@ -18,7 +17,7 @@ public class ForwardPixySubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        findBlocks();
+        //findBlocks();
     }
 
     public void findBlocks(){

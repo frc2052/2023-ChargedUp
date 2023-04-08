@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.Supplier;
-
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -69,14 +67,20 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void intakeIn() {
+        intakeMotor.enableCurrentLimit(true);
+
         intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SPEED);
     }
     
     public void slowIntakeIn() {
+        intakeMotor.enableCurrentLimit(true);
+
         intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SLOW_SPEED);
     }
 
     public void intakeOut(ScoreMode scoreMode) {
+        intakeMotor.enableCurrentLimit(false);
+
         switch (scoreMode) {
             case CONE:
                 intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_OUT_CONE_SPEED);
@@ -85,10 +89,6 @@ public class IntakeSubsystem extends SubsystemBase {
                 intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_OUT_CUBE_SPEED);
                 break;
         }
-    }
-
-    public void intakeScore() {
-
     }
 
     public void stop() {

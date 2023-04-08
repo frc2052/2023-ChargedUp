@@ -97,6 +97,8 @@ public class Dashboard {
         SmartDashboard.putData("Score Grid", scoreGridChooser);
 
         SmartDashboard.putBoolean("End Charge Station", true);
+
+        SmartDashboard.putBoolean("Pixy Cam Broken", false);
     }
 
     public <V> void putData(String key, V value) {
@@ -113,6 +115,10 @@ public class Dashboard {
         } else if (value instanceof Sendable) {
             Shuffleboard.getTab("main").add(key, (Sendable) value);
         }
+    }
+
+    public boolean pixyCamBroken() {
+        return SmartDashboard.getBoolean("Pixy Cam Broken", false);
     }
 
     public boolean isFieldCentric() {

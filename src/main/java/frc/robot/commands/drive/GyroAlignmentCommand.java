@@ -4,36 +4,68 @@
 
 package frc.robot.commands.drive;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /** Add your docs here. */
 public class GyroAlignmentCommand extends DriveCommand {
     private final PIDController rotationController;
 
-    public GyroAlignmentCommand(Supplier<Rotation2d> targetRotation, DrivetrainSubsystem drivetrain) {
-        super(() -> 0, () -> 0, () -> 0, () -> false, drivetrain);
+    private final Supplier<Rotation2d> targetRotation;
+    private final BooleanSupplier shouldFinish;
 
-        rotationController = new PIDController(2, 0, 0);
+    public GyroAlignmentCommand(
+        Supplier<Rotation2d> targetRotation, 
+        BooleanSupplier shouldFinish,
+        DrivetrainSubsystem drivetrain
+    ) {
+        this(() -> 0, () -> 0, targetRotation, shouldFinish, drivetrain);
+    }
+
+    public GyroAlignmentCommand(
+        DoubleSupplier xSupplier,
+        DoubleSupplier ySupplier,
+        Supplier<Rotation2d> targetRotation, 
+        BooleanSupplier shouldFinish,
+        DrivetrainSubsystem drivetrain
+    ) {
+        super(xSupplier, ySupplier, () -> 0, Dashboard.getInstance()::isFieldCentric, drivetrain);
+
+        rotationController = new PIDController(2.5, 0, 0.1);
         rotationController.enableContinuousInput(0, 360);
-        rotationController.setSetpoint(targetRotation.get().getDegrees());
         rotationController.setTolerance(1);
+
+        this.targetRotation = targetRotation;
+
+        this.shouldFinish = shouldFinish;
+    }
+
+    @Override
+    public void initialize() {
+        // Normalize the angle value between [0, 360]
+        rotationController.setSetpoint((targetRotation.get().getDegrees() + 360) % 360);
     }
 
     @Override
     protected double getRotation() {
+        System.out.println(rotationController.getSetpoint());
+
         // Forcing angle to be between [0, 360], PIDController thinks -180 isn't at setpoint of 180
         double gyroDegrees = (drivetrain.getRotation().getDegrees() + 360) % 360;
 
-        return rotationController.calculate(gyroDegrees) / 360;
+        // Calculate PID value along with feedforward constant to assist with minor adjustments.
+        double rotationValue = rotationController.calculate(gyroDegrees) / 360;
+        return rotationValue + Math.copySign(0.025, rotationValue);
     }
 
     @Override
     public boolean isFinished() {
-        return rotationController.atSetpoint();
-        //return Math.abs(gyroDegrees - 180) <= 2;
+        return rotationController.atSetpoint() && shouldFinish.getAsBoolean();
     }
 }
