@@ -9,9 +9,7 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
@@ -64,7 +62,7 @@ public class ScorePickUpAutoBase extends AutoBase {
 
         AutoTrajectoryConfig retractTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 4, 1.5, 0, 1);
         AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 4, 2, 1, 1);
-        AutoTrajectoryConfig pickupTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 4, 2, 1, 0);
+        AutoTrajectoryConfig pickupTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 4, 2, 1, 1);
 
         addCommands(new ResetOdometryCommand(drivetrain, initialPose));
 
@@ -110,14 +108,13 @@ public class ScorePickUpAutoBase extends AutoBase {
         // Drive to approach and pick up the cone.
         Command pickupCommand = null;
         if (!Dashboard.getInstance().pixyCamBroken()) {
-            pickupCommand = new SequentialCommandGroup(
-                new GamePieceAlignmentCommand(
-                    () -> pickUpPose.getX(),
-                    forwardPixy, 
-                    drivetrain
-                ),
-                new InstantCommand(() -> setLastEndingPose(drivetrain.getPosition()))
+            pickupCommand = new GamePieceAlignmentCommand(
+                () -> pickUpPose.getX(),
+                forwardPixy, 
+                drivetrain,
+                intake
             );
+            setLastEndingPose(pickUpPose);
         } else {
             pickupCommand = createSwerveTrajectoryCommand(
                 pickupTrajectoryConfig, 

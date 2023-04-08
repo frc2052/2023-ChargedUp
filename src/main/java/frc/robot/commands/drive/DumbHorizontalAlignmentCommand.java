@@ -36,6 +36,17 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
         this.vision = vision;
         this.pixy = pixy;
 
+        yController = new PIDController(2, 0, 0);
+        yController.setTolerance(0.5);
+
+        ledEnableTimer = new Timer();
+
+        addRequirements(this.vision, this.pixy);
+    }
+
+    double goalYaw;
+    @Override
+    public void initialize() {
         // Max target yaw
         double minConeAlignedYawDegrees = -3.8;
         double maxConeAlignedYawDegrees = 11.7;
@@ -45,20 +56,10 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
 
         double angleRange = maxConeAlignedYawDegrees - minConeAlignedYawDegrees;
         double offsetAngle = angleRange * conePosPct;
-        double goalYaw = minConeAlignedYawDegrees + offsetAngle;
+        goalYaw = minConeAlignedYawDegrees + offsetAngle;
 
-        yController = new PIDController(1, 0, 0);
         yController.setSetpoint(goalYaw);
-        yController.setTolerance(0.5);
 
-        ledEnableTimer = new Timer();
-
-        addRequirements(this.vision, this.pixy);
-    }
-
-    // Called when the command is initially scheduled.
-    @Override
-    public void initialize() {
         vision.enableLEDs();
         ledEnableTimer.start();
     }
@@ -71,11 +72,13 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
         if (target != null) {
             double targetYaw = target.getYaw();
 
+            System.out.println(targetYaw + " : " + goalYaw + " : " + yController.getSetpoint());
+
             return -yController.calculate(targetYaw) / 75.76;
         } else {
             System.out.println("No target!");
 
-            return yController.calculate(0, 0);
+            return yController.calculate(goalYaw);
         }
     }
 

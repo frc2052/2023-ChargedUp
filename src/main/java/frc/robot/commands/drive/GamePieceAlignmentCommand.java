@@ -5,9 +5,11 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ForwardPixySubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 public class GamePieceAlignmentCommand extends DriveCommand {
     private final ForwardPixySubsystem pixy;
+    private final IntakeSubsystem intake;
 
     // Mount offset is 3 Inches.
     private final double xMountOffsetPixels = 0;
@@ -18,13 +20,15 @@ public class GamePieceAlignmentCommand extends DriveCommand {
     public GamePieceAlignmentCommand(
         DoubleSupplier goalX,
         ForwardPixySubsystem pixy,
-        DrivetrainSubsystem drivetrain
+        DrivetrainSubsystem drivetrain,
+        IntakeSubsystem intake
     ) {
         super(() -> 0, () -> 0, () -> 0, () -> false, drivetrain);
 
         this.pixy = pixy;
+        this.intake = intake;
 
-        xController = new PIDController(0.25, 0, 0);
+        xController = new PIDController(0.3, 0, 0);
         xController.setTolerance(0.1);
         xController.setSetpoint(goalX.getAsDouble());
 
@@ -47,6 +51,6 @@ public class GamePieceAlignmentCommand extends DriveCommand {
 
     @Override
     public boolean isFinished() {
-        return xController.atSetpoint();
+        return xController.atSetpoint() || intake.isCurrentLimiting();
     }
 }

@@ -44,6 +44,7 @@ public class GyroAlignmentCommand extends DriveCommand {
         this.targetRotation = targetRotation;
 
         this.shouldFinish = shouldFinish;
+
     }
 
     @Override
@@ -54,8 +55,6 @@ public class GyroAlignmentCommand extends DriveCommand {
 
     @Override
     protected double getRotation() {
-        System.out.println(rotationController.getSetpoint());
-
         // Forcing angle to be between [0, 360], PIDController thinks -180 isn't at setpoint of 180
         double gyroDegrees = (drivetrain.getRotation().getDegrees() + 360) % 360;
 

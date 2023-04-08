@@ -141,7 +141,8 @@ public class MiddleScoreOnePickupBalance extends AutoBase {
             pickupCommand = new GamePieceAlignmentCommand(
                 () -> pickUpPose.getX(),
                 forwardPixy, 
-                drivetrain
+                drivetrain,
+                intake
             );
             setLastEndingPose(pickUpPose);
         } else {

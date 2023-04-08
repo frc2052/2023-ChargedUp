@@ -68,16 +68,15 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
         ));
 
         Pose2d lineUpPose = createPose2dInches(
-            12, 
+            18, 
             getStartingYOffsetInches(
                 autoConfiguration.getStartingGrid(),
                 autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? Node.RIGHT_CONE : Node.LEFT_CONE
             ) * (autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? 1 : -1), 
             225
         );
-//        Pose2d scorePose = createPose2dInches(6, 0, 0);
 
-        // Driving back to grid
+        // Driving back to grid.
         SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
             AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig,
             getLastEndingPose(),
@@ -94,7 +93,7 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
         addCommands(driveBackGroup);
         
         addCommands(new GyroAlignmentCommand(() -> Rotation2d.fromDegrees(180), () -> true, drivetrain));
-        addCommands(new DumbHorizontalAlignmentCommand(() -> 0.35, () -> 0.0, drivetrain, vision, pixy).withTimeout(1));
+        addCommands(new DumbHorizontalAlignmentCommand(() -> 0.25, () -> 0.0, drivetrain, vision, pixy).withTimeout(1));
         
         addCommands(new TopScoreCommand(elevator, arm));
         

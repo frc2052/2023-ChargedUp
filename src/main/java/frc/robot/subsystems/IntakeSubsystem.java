@@ -22,6 +22,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final Timer currentLimitTimer;
 
+    private boolean currentLimiting = false;
+
     /** Creates a new Intake. */
     public IntakeSubsystem() {
         ErrorCode error;
@@ -58,12 +60,18 @@ public class IntakeSubsystem extends SubsystemBase {
                 currentLimitTimer.start();
             } else if (currentLimitTimer.get() >= Constants.Intake.INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS) {
                 LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CURRENT_LIMITING);
+                currentLimiting = true;
             }
         } else if (LEDSubsystem.getInstance().getLEDStatusMode() == LEDStatusMode.CURRENT_LIMITING && !LEDSubsystem.getInstance().getRobotDisabled()){
             LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF);
+            currentLimiting = false;
             currentLimitTimer.stop();
             currentLimitTimer.reset();
         }
+    }
+
+    public boolean isCurrentLimiting() {
+        return currentLimiting;
     }
 
     public void intakeIn() {
