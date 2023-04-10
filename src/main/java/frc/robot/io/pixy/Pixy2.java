@@ -1,12 +1,12 @@
-package frc.robot.pixy;
+package frc.robot.io.pixy;
 
 import java.awt.Color;
 import java.util.concurrent.TimeUnit;
 
-import frc.robot.pixy.links.I2CLink;
-import frc.robot.pixy.links.Link;
-import frc.robot.pixy.links.SPILink;
-import frc.robot.pixy.links.UARTLink;
+import frc.robot.io.pixy.links.I2CLink;
+import frc.robot.io.pixy.links.Link;
+import frc.robot.io.pixy.links.SPILink;
+import frc.robot.io.pixy.links.UARTLink;
 
 /**
  * Java Port of Pixy2 Arduino Library

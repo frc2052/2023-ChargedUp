@@ -1,4 +1,4 @@
-package frc.robot.pixy;
+package frc.robot.io.pixy;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;

@@ -1,6 +1,6 @@
-package frc.robot.pixy.links;
+package frc.robot.io.pixy.links;
 
-import frc.robot.pixy.Pixy2.Checksum;
+import frc.robot.io.pixy.Pixy2.Checksum;
 
 /**
  * Java Port of Pixy2 Arduino Library

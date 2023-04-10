@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.auto;
+package frc.robot.auto.common;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,46 +18,33 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
+import frc.robot.auto.common.AutoFactory.Grid;
+import frc.robot.auto.common.AutoFactory.Node;
 import frc.robot.commands.elevator.ZeroElevator;
-import frc.robot.auto.AutoFactory.Grid;
-import frc.robot.auto.AutoFactory.Node;
-import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 
 public abstract class AutoBase extends SequentialCommandGroup {
     protected final AutoConfiguration autoConfiguration;
-    protected final DrivetrainSubsystem drivetrain;
-    protected final ElevatorSubsystem elevator;
-    protected final IntakeSubsystem intake;
-    protected final ArmSubsystem arm;
+    protected final AutoRequirements autoRequirements;
 
     private Pose2d lastEndingPose;
 
-    /** Creates a new Auto. */
     public AutoBase(
         AutoConfiguration autoConfiguration,
-        DrivetrainSubsystem drivetrain, 
-        ElevatorSubsystem elevator, 
-        IntakeSubsystem intake, 
-        ArmSubsystem arm
+        AutoRequirements autoRequirements
     ) {
         this.autoConfiguration = autoConfiguration;
-        this.drivetrain = drivetrain;
-        this.elevator = elevator;
-        this.intake = intake;
-        this.arm = arm;
+        this.autoRequirements = autoRequirements;
 
         // Automatically zero the elevator if not in a match.
         if (!DriverStation.isFMSAttached()) {
-            if (!this.elevator.elevatorZeroed()) {
-                addCommands(new ZeroElevator(this.elevator));
+            if (!this.autoRequirements.getElevator().elevatorZeroed()) {
+                addCommands(new ZeroElevator(this.autoRequirements.getElevator()));
             }
         }
 
         // Set zero as facing towards the driverstation.
-        addCommands(new InstantCommand(drivetrain::zeroGyro, drivetrain));
+        addCommands(new InstantCommand(autoRequirements.getDrivetrain()::zeroGyro, autoRequirements.getDrivetrain()));
     }
 
     public abstract void init();
@@ -98,41 +85,12 @@ public abstract class AutoBase extends SequentialCommandGroup {
     }
 
     protected SwerveControllerCommand createSwerveCommand(
-        Pose2d startPose,
-        Pose2d endPose,
-        Supplier<Rotation2d> rotationSupplier
-    ) {
-        return createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.defaultTrajectoryConfig, 
-            startPose, 
-            new ArrayList<Translation2d>(), 
-            endPose, 
-            rotationSupplier
-        );
-    }
-
-    protected SwerveControllerCommand createSwerveCommand(
-        Pose2d startPose, 
-        List<Translation2d> midpoints,
-        Pose2d endPose,
-        Supplier<Rotation2d> rotationSupplier
-    ) {
-        return createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.defaultTrajectoryConfig, 
-            startPose, 
-            midpoints, 
-            endPose, 
-            rotationSupplier
-        );
-    }
-
-    protected SwerveControllerCommand createSwerveTrajectoryCommand(
         AutoTrajectoryConfig trajectoryConfig, 
         Pose2d startPose, 
         Pose2d endPose, 
         Supplier<Rotation2d> rotationSupplier
     ) {
-        return createSwerveTrajectoryCommand(
+        return createSwerveCommand(
             trajectoryConfig, 
             startPose, 
             new ArrayList<Translation2d>(), 
@@ -141,7 +99,7 @@ public abstract class AutoBase extends SequentialCommandGroup {
         );
     }
 
-    protected SwerveControllerCommand createSwerveTrajectoryCommand(
+    protected SwerveControllerCommand createSwerveCommand(
         AutoTrajectoryConfig trajectoryConfig, 
         Pose2d startPose, 
         List<Translation2d> midpointList,
@@ -166,14 +124,14 @@ public abstract class AutoBase extends SequentialCommandGroup {
                 new Pose2d(endPose.getX(), endPose.getY() * flipYCoord, endPose.getRotation()),
                 trajectoryConfig.getTrajectoryConfig()
             ),
-            drivetrain::getPosition,
+            autoRequirements.getDrivetrain()::getPosition,
             DrivetrainSubsystem.getKinematics(),
             trajectoryConfig.getXYController(),
             trajectoryConfig.getXYController(),
             trajectoryConfig.getThetaController(), 
             rotationSupplier,
-            drivetrain::setModuleStates,
-            drivetrain
+            autoRequirements.getDrivetrain()::setModuleStates,
+            autoRequirements.getDrivetrain()
         );
     }
 }

@@ -1,10 +1,10 @@
-package frc.robot.pixy.links;
+package frc.robot.io.pixy.links;
 
 import java.util.Arrays;
 
 import edu.wpi.first.wpilibj.I2C;
-import frc.robot.pixy.Pixy2;
-import frc.robot.pixy.Pixy2.Checksum;
+import frc.robot.io.pixy.Pixy2;
+import frc.robot.io.pixy.Pixy2.Checksum;
 
 /**
  * Java Port of Pixy2 Arduino Library

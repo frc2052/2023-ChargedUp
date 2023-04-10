@@ -11,11 +11,11 @@ import frc.robot.commands.score.CompleteScoreCommand;
 import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
-import frc.robot.auto.AutoFactory;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
-import frc.robot.commands.drive.GamePieceAlignmentCommand;
 import frc.robot.commands.drive.GyroAlignmentCommand;
+import frc.robot.auto.common.AutoFactory;
+import frc.robot.auto.common.AutoRequirements;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
@@ -76,7 +76,6 @@ public class RobotContainer {
 
     private final PowerDistribution pdh;
 
-    private ScoreMode scoreMode;
     private final Timer scoreTimer;
 
     /**
@@ -103,38 +102,38 @@ public class RobotContainer {
         autoFactory = new AutoFactory(
             () -> Dashboard.getInstance().getAuto(),
             () -> Dashboard.getInstance().getAutoConfiguration(),
-            drivetrain, 
-            elevator, 
-            intake, 
-            arm,
-            vision,
-            intakePixy,
-            forwardPixy
+            new AutoRequirements(
+                drivetrain, 
+                elevator, 
+                intake, 
+                arm,
+                vision,
+                intakePixy,
+                forwardPixy
+            )
         );
 
         drivetrain.setDefaultCommand(
             new DriveCommand(
-                // Forward velocity supplier
+                // Forward velocity supplier.
                 driveJoystick::getY,
-                // Sideways velocity supplier
+                // Sideways velocity supplier.
                 driveJoystick::getX,
-                // Rotation velocity supplier
+                // Rotation velocity supplier.
                 turnJoystick::getX,
                 Dashboard.getInstance()::isFieldCentric,
                 drivetrain
             )
         );
 
-        scoreMode = ScoreMode.CONE;
         scoreTimer = new Timer();
 
-        // Configure the trigger bindings
+        // Configure the trigger bindings.
         configureBindings();
     }
 
     /**
-     * Use this method to define your trigger->command mappings. Triggers can be
-     * created via the
+     * Use this method to define your trigger->command mappings. Triggers can be created via the
      * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with a
      * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joystick}.
      */
@@ -147,15 +146,6 @@ public class RobotContainer {
 
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
-
-        Trigger coneScanButton = new Trigger(() -> controlPanel.getY() > 0.5);
-        coneScanButton.whileTrue(
-            new SequentialCommandGroup(
-                new InstantCommand(LEDSubsystem.getInstance()::disableLEDs),
-                new RunCommand(intakePixy::updateConePosition, intakePixy)
-            )
-        );
-        coneScanButton.onFalse(new InstantCommand(LEDSubsystem.getInstance()::enableLEDs));
 
         JoystickButton chargeStationAutoBalanceButton = new JoystickButton(driveJoystick, 7);
         chargeStationAutoBalanceButton.whileTrue(new ChargeStationBalanceCommand(drivetrain));
@@ -182,13 +172,7 @@ public class RobotContainer {
         signleSubstationAlignButton.whileTrue(new GyroAlignmentCommand(
             driveJoystick::getY,
             driveJoystick::getX,
-            () -> {
-                if (DriverStation.getAlliance() == Alliance.Blue) {
-                    return Rotation2d.fromDegrees(90);
-                } else {
-                    return Rotation2d.fromDegrees(270);
-                }
-            },
+            () -> Rotation2d.fromDegrees(DriverStation.getAlliance() == Alliance.Blue ? 90 : 270),
             () -> false,
             drivetrain
         ));
@@ -196,16 +180,16 @@ public class RobotContainer {
         JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
         xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));
         
-        JoystickButton testElevatorButton = new JoystickButton(driveJoystick, 8);
-        testElevatorButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.TEST_POINT, elevator));
-
         /*
          * Camera button bindings
          */
         JoystickButton cameraResetButton = new JoystickButton(turnJoystick, 11);
         JoystickButton cameraResetButtonSafety = new JoystickButton(turnJoystick, 10);
-        cameraResetButton.and(cameraResetButtonSafety).onTrue(new InstantCommand(() -> pdh.setSwitchableChannel(false)));
-        cameraResetButton.and(cameraResetButtonSafety).onFalse(new InstantCommand(() -> pdh.setSwitchableChannel(true)));
+        cameraResetButton.and(cameraResetButtonSafety).onTrue(
+            new InstantCommand(() -> pdh.setSwitchableChannel(false))
+        ).onFalse(
+            new InstantCommand(() -> pdh.setSwitchableChannel(true))
+        );
 
         JoystickButton ledToggleButton = new JoystickButton(turnJoystick, 6);
         ledToggleButton.onTrue(new InstantCommand(vision::toggleLEDs));
@@ -220,11 +204,11 @@ public class RobotContainer {
         LEDOffButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
         LEDConeButton.onTrue(new InstantCommand(() -> {
             LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CONE);
-            scoreMode = ScoreMode.CONE;
+            intake.setScoreMode(ScoreMode.CONE);
         }));
         LEDCubeButton.onTrue(new InstantCommand(() -> {
             LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CUBE);
-            scoreMode = ScoreMode.CUBE;
+            intake.setScoreMode(ScoreMode.CUBE);
         }));
 
         /*
@@ -235,9 +219,9 @@ public class RobotContainer {
         JoystickButton elevatorConeGroundPickUpButton = new JoystickButton(controlPanel, 10);
         JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 5);
         
-        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator));
+        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, elevator));
         elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
-        elevatorConeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CONE, elevator));
+        elevatorConeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STANDING_CONE, elevator));
         elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
 
         JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 3);
@@ -249,6 +233,15 @@ public class RobotContainer {
         /*
          * Score button bindings
          */
+        Trigger coneScanButton = new Trigger(() -> controlPanel.getY() > 0.5);
+        coneScanButton.whileTrue(
+            new SequentialCommandGroup(
+                new InstantCommand(LEDSubsystem.getInstance()::disableLEDs),
+                new RunCommand(intakePixy::updateConePosition, intakePixy)
+            )
+        );
+        coneScanButton.onFalse(new InstantCommand(LEDSubsystem.getInstance()::enableLEDs));
+
         JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 7);
         JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 8);
         JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
@@ -257,7 +250,7 @@ public class RobotContainer {
         scoreButton.onTrue(
             new InstantCommand(() -> { scoreTimer.reset(); scoreTimer.start(); })
         ).whileTrue(
-            new ScoreCommand(() -> scoreMode, intake)
+            new ScoreCommand(intake)
         ).onFalse(
             // Blocks score command completion until the minimum run time has elapsed.
             new SequentialCommandGroup(
@@ -292,7 +285,7 @@ public class RobotContainer {
         Trigger controlPanelIntakeOutButton = new Trigger(() -> controlPanel.getY() < -0.5);
         JoystickButton driverIntakeOutButton = new JoystickButton(driveJoystick, 2);
 
-        driverIntakeOutButton.or(controlPanelIntakeOutButton).whileTrue(new IntakeOutCommand(() -> scoreMode, intake));
+        driverIntakeOutButton.or(controlPanelIntakeOutButton).whileTrue(new IntakeOutCommand(intake));
         driverIntakeOutButton.or(controlPanelIntakeOutButton).onFalse(new IntakeStopCommand(intake));
     }
     

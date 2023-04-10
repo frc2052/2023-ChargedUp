@@ -14,132 +14,77 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import frc.robot.auto.common.AutoConfiguration;
+import frc.robot.auto.common.AutoDescription;
+import frc.robot.auto.common.AutoRequirements;
+import frc.robot.auto.common.AutoTrajectoryConfig;
+import frc.robot.auto.common.DashboardAutoRequirements;
+import frc.robot.auto.common.ScorePickUpAutoBase;
+import frc.robot.auto.common.AutoFactory.ChargeStation;
+import frc.robot.auto.common.AutoFactory.Grid;
+import frc.robot.auto.common.AutoFactory.Node;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
 import frc.robot.commands.drive.GyroAlignmentCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.score.CompleteScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
-import frc.robot.auto.AutoFactory.Grid;
-import frc.robot.auto.AutoFactory.Node;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ForwardPixySubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.IntakePixySubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 
 @AutoDescription(description = "Score gamepiece, drive to pick up second gamepiece, and drive to score second gamepiece.")
+@DashboardAutoRequirements(requirements = { Grid.class, Node.class, ChargeStation.class })
 public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
-    private final VisionSubsystem vision;
-    private final IntakePixySubsystem pixy;
-
-    public ScoreTwoUpperAuto(
-        AutoConfiguration autoConfiguration,
-        DrivetrainSubsystem drivetrain, 
-        ElevatorSubsystem elevator, 
-        IntakeSubsystem intake, 
-        ArmSubsystem arm,
-        VisionSubsystem vision,
-        IntakePixySubsystem pixy,
-        ForwardPixySubsystem forwardPixy
-    ) {
-        super(autoConfiguration, drivetrain, elevator, intake, arm, forwardPixy);
-
-        this.vision = vision;
-        this.pixy = pixy;
+    public ScoreTwoUpperAuto(AutoConfiguration autoConfiguration, AutoRequirements autoRequirements) {
+        super(autoConfiguration, autoRequirements);
     }
     
     @Override
     public void init() {
         super.init();
         
-        Translation2d farChargeStationInterpolationPoint = createTranslation2dInches(108, -6);
-        Translation2d nearChargeStationInterpolationPoint = createTranslation2dInches(18, -6);
-        
-        Translation2d channelInterpolationMipoint = createTranslation2dInches(60, -12);
-
-        System.out.println(getStartingYOffsetInches(
+        final double yOffsetInches = getStartingYOffsetInches(
             autoConfiguration.getStartingGrid(),
-            Node.MIDDLE_CUBE
-        ));
+            autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? Node.RIGHT_CONE : Node.LEFT_CONE
+        ) * (autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? 1 : -1);
 
-        Pose2d lineUpPose = createPose2dInches(
-            18, 
-            getStartingYOffsetInches(
-                autoConfiguration.getStartingGrid(),
-                autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? Node.RIGHT_CONE : Node.LEFT_CONE
-            ) * (autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? 1 : -1), 
-            225
-        );
+        final Translation2d chargeStationMidpoint = createTranslation2dInches(60, -12);
+        final Pose2d lineUpPose = createPose2dInches(18, yOffsetInches, 225);
 
-        // Driving back to grid.
-        SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig,
+        final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 4, 2, 0, 0);
+
+        // Driving back to the grid.
+        SwerveControllerCommand driveBackPath = createSwerveCommand(
+            driveBackTrajectoryConfig,
             getLastEndingPose(),
-            List.of(channelInterpolationMipoint),
+            List.of(chargeStationMidpoint),
             lineUpPose, 
             createRotation(180)
         );
-
         ParallelDeadlineGroup driveBackGroup = new ParallelDeadlineGroup(
             driveBackPath,
-            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator).andThen(new RunCommand(pixy::updateConePosition))
+            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, autoRequirements.getElevator()).andThen(new RunCommand(autoRequirements.getIntakePixy()::updateConePosition))
         );
-
         addCommands(driveBackGroup);
         
-        addCommands(new GyroAlignmentCommand(() -> Rotation2d.fromDegrees(180), () -> true, drivetrain));
-        addCommands(new DumbHorizontalAlignmentCommand(() -> 0.25, () -> 0.0, drivetrain, vision, pixy).withTimeout(1));
+        // Line up and bring up elevator to score.
+        addCommands(new GyroAlignmentCommand(() -> Rotation2d.fromDegrees(180), () -> true, autoRequirements.getDrivetrain()));
         
-        addCommands(new TopScoreCommand(elevator, arm));
-        
-        addCommands(new ScoreCommand(
-            () -> ScoreMode.CONE, 
-            () -> 0.5,
-            intake
-        ).andThen(new CompleteScoreCommand(elevator, intake, arm)));
+        ParallelCommandGroup scoreGroup = new ParallelCommandGroup(
+            new DumbHorizontalAlignmentCommand(
+                () -> 0.25, 
+                () -> 0.0, 
+                autoRequirements.getDrivetrain(), 
+                autoRequirements.getVision(), 
+                autoRequirements.getIntakePixy()
+            ).withTimeout(1),
+            new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm())
+        );
+        addCommands(scoreGroup);
 
-        // Translation2d farchargeStationMidpoint = createTranslation2dInches(130, -4);
-        // Translation2d chargeStationInterpolationMipoint = createTranslation2dInches(48, -4);
-
-        // Pose2d lineUpPose = createPose2dInches(12, getStartingYOffsetInches(
-        //     autoConfiguration.getStartingGrid(), Node.RIGHT_CONE
-        // ), 225);
-
-        // // Drive back to cable protector.
-        // SwerveControllerCommand driveBackPath = createSwerveTrajectoryCommand(
-        //     AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig.withEndVelocity(2.5),
-        //     getLastEndingPose(),
-        //     // super.cableProtectorPoint, 
-        //     List.of(farchargeStationMidpoint, chargeStationInterpolationMipoint),
-        //     lineUpPose, 
-        //     createRotation(180)
-        // );
-
-        // // Roughly line up with the scoring node.
-        // SwerveControllerCommand lineUpPath = createSwerveTrajectoryCommand(
-        //     AutoTrajectoryConfig.defaultTrajectoryConfig.withStartVelocity(2.5),
-        //     getLastEndingPose(),
-        //     List.of(chargeStationInterpolationMipoint),
-        //     lineUpPose, 
-        //     createRotation(180)
-        // );
-        // // addCommands(lineUpPath);
-
-        // ParallelDeadlineGroup driveBackGroup = new ParallelDeadlineGroup(
-        //     lineUpPath,
-        //     new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator).andThen(new RunCommand(pixy::updateConePosition))
-        // );
-        // addCommands(driveBackGroup);
-
-        // addCommands(new GyroAlignmentCommand(drivetrain));
-        // addCommands(new DumbHorizontalAlignmentCommand(() -> 0.25, () -> 0.0, drivetrain, vision, pixy).withTimeout(1));
-        
-        // addCommands(new TopScoreCommand(elevator, arm));
-        // addCommands(new ScoreCommand(intake, arm, elevator).withTimeout(0.5));
+        // Second score and retract.
+        addCommands(new InstantCommand(() -> autoRequirements.getIntake().setScoreMode(ScoreMode.CONE)));
+        addCommands(new ScoreCommand(() -> 0.25, autoRequirements.getIntake()));
+        addCommands(new CompleteScoreCommand(autoRequirements.getElevator(), autoRequirements.getIntake(), autoRequirements.getArm()));
     }
 }

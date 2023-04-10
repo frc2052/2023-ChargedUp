@@ -21,8 +21,9 @@ public class IntakeSubsystem extends SubsystemBase {
     private final TalonSRX intakeMotor;
 
     private final Timer currentLimitTimer;
-
     private boolean currentLimiting = false;
+
+    private ScoreMode scoreMode;
 
     /** Creates a new Intake. */
     public IntakeSubsystem() {
@@ -49,6 +50,8 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor.setInverted(true);
 
         currentLimitTimer = new Timer();
+
+        scoreMode = ScoreMode.CONE;
     }
 
     @Override
@@ -86,7 +89,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SLOW_SPEED);
     }
 
-    public void intakeOut(ScoreMode scoreMode) {
+    public void intakeOut() {
         intakeMotor.enableCurrentLimit(false);
 
         switch (scoreMode) {
@@ -103,7 +106,11 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor.set(ControlMode.PercentOutput, 0.0);
     }
 
-    public enum ScoreMode {
+    public void setScoreMode(ScoreMode scoreMode) {
+        this.scoreMode = scoreMode;
+    }
+
+    public static enum ScoreMode {
         CONE,
         CUBE
     }

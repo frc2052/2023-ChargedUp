@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.auto.common.AutoFactory.Auto;
 import frc.robot.io.Dashboard;
-import frc.robot.auto.AutoFactory.Auto;
 
 /**
  * Subsystem to control the robot's LEDs, by determining what number should be encoded to DIO pins and

@@ -10,14 +10,14 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.auto.AutoConfiguration;
-import frc.robot.auto.AutoFactory.Auto;
-import frc.robot.auto.AutoFactory.Channel;
-import frc.robot.auto.AutoFactory.GamePiece;
-import frc.robot.auto.AutoFactory.Grid;
-import frc.robot.auto.AutoFactory.Node;
+import frc.robot.auto.common.AutoConfiguration;
+import frc.robot.auto.common.DashboardAutoRequirement;
+import frc.robot.auto.common.AutoFactory.Auto;
+import frc.robot.auto.common.AutoFactory.ChargeStation;
+import frc.robot.auto.common.AutoFactory.GamePiece;
+import frc.robot.auto.common.AutoFactory.Grid;
+import frc.robot.auto.common.AutoFactory.Node;
 
-/** Add your docs here. */
 // Trying something different this year, instead of a normal class
 // the dashboard this year is using a singleton class, so only one instance will
 // run at once
@@ -28,12 +28,11 @@ public class Dashboard {
     private final SendableChooser<DriveMode> driveModeChooser;
 
     private final SendableChooser<Auto> autoChooser;
+
     private final SendableChooser<Node> startingNodeChooser;
     private final SendableChooser<Grid> startingGridChooser;
-    private final SendableChooser<Channel> exitChannelChooser;
     private final SendableChooser<GamePiece> gamePieceChooser;
-    private final SendableChooser<Grid> scoreGridChooser;
-    private final SendableChooser<Node> scoreNodeChooser;
+    private final SendableChooser<ChargeStation> chargeStationChooser;
 
     private Dashboard() {
         //Creates options for different choosers
@@ -42,8 +41,6 @@ public class Dashboard {
         driveModeChooser.addOption(DriveMode.ROBOT_CENTRIC.name(), DriveMode.ROBOT_CENTRIC);
         driveModeChooser.setDefaultOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
         SmartDashboard.putData(Constants.Dashboard.DRIVE_MODE_KEY, driveModeChooser);
-
-        SmartDashboard.putNumber("Score Offset Inches", 0);
 
         autoChooser = new SendableChooser<Auto>();
         for (Auto auto : Auto.values()) {
@@ -57,48 +54,52 @@ public class Dashboard {
             startingNodeChooser.addOption(node.name(), node);
         }
         startingNodeChooser.setDefaultOption(Node.MIDDLE_CUBE.name(), Node.MIDDLE_CUBE);
-        SmartDashboard.putData("Starting Node", startingNodeChooser);
 
         startingGridChooser = new SendableChooser<Grid>();
         for (Grid grid : Grid.values()) {
             startingGridChooser.addOption(grid.name(), grid);
         }
-        startingGridChooser.setDefaultOption(Grid.values()[0].name(), Grid.values()[0]);
-        SmartDashboard.putData("Starting Grid", startingGridChooser);
-
-        exitChannelChooser = new SendableChooser<Channel>();
-        for (Channel channel : Channel.values()) {
-            exitChannelChooser.addOption(channel.name(), channel);
-        }
-        exitChannelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
-        SmartDashboard.putData("Exit Channel", exitChannelChooser);
+        startingGridChooser.setDefaultOption(Grid.LEFT_GRID.name(), Grid.LEFT_GRID);
 
         gamePieceChooser = new SendableChooser<GamePiece>();
         for (GamePiece gamePiece : GamePiece.values()) {
             gamePieceChooser.addOption(gamePiece.name(), gamePiece);
         }
-        gamePieceChooser.setDefaultOption(GamePiece.values()[0].name(), GamePiece.values()[0]);
-        SmartDashboard.putData("Game Piece", gamePieceChooser);
-   
-        SmartDashboard.putBoolean("Score Game Piece", true);
+        gamePieceChooser.setDefaultOption(GamePiece.NO_GAME_PIECE.name(), GamePiece.NO_GAME_PIECE);
 
-        scoreNodeChooser = new SendableChooser<Node>();
-        for (Node node : Node.values()) {
-            scoreNodeChooser.addOption(node.name(), node);
+        chargeStationChooser = new SendableChooser<ChargeStation>();
+        for (GamePiece gamePiece : GamePiece.values()) {
+            gamePieceChooser.addOption(gamePiece.name(), gamePiece);
         }
-        scoreNodeChooser.setDefaultOption(Node.values()[0].name(), Node.values()[0]);
-        SmartDashboard.putData("Score Node", scoreNodeChooser);
-
-        scoreGridChooser = new SendableChooser<Grid>();
-        for (Grid grid : Grid.values()) {
-            scoreGridChooser.addOption(grid.name(), grid);
-        }
-        scoreGridChooser.setDefaultOption(Grid.values()[0].name(), Grid.values()[0]);
-        SmartDashboard.putData("Score Grid", scoreGridChooser);
-
-        SmartDashboard.putBoolean("End Charge Station", true);
+        chargeStationChooser.setDefaultOption(ChargeStation.BALANCE.name(), ChargeStation.BALANCE);
 
         SmartDashboard.putBoolean("Pixy Cam Broken", false);
+    }
+
+    public void updateAutoChoosers(Class<? extends DashboardAutoRequirement>[] autoRequirements) {
+        if (autoRequirements != null) {
+            SmartDashboard.putData("Starting Grid", null);
+            SmartDashboard.putData("Starting Node", null);
+            SmartDashboard.putData("Game Piece", null);
+            SmartDashboard.putData("Charge Station", null);
+
+            for (Class<? extends DashboardAutoRequirement> autoRequirement : autoRequirements) {
+                if (autoRequirement.equals(Grid.class)) {
+                    SmartDashboard.putData("Starting Grid", startingGridChooser);
+                } else if (autoRequirement.equals(Node.class)) {
+                    SmartDashboard.putData("Starting Node", startingNodeChooser);
+                } else if (autoRequirement.equals(GamePiece.class)) {
+                    SmartDashboard.putData("Game Piece", gamePieceChooser);
+                } else if (autoRequirement.equals(ChargeStation.class)) {
+                    SmartDashboard.putData("Charge Station", chargeStationChooser);
+                }
+            }
+        } else {
+            SmartDashboard.putData("Starting Grid", startingGridChooser);
+            SmartDashboard.putData("Starting Node", startingNodeChooser);
+            SmartDashboard.putData("Game Piece", gamePieceChooser);
+            SmartDashboard.putData("Charge Station", chargeStationChooser);
+        }
     }
 
     public <V> void putData(String key, V value) {
@@ -125,10 +126,6 @@ public class Dashboard {
         return driveModeChooser.getSelected() == DriveMode.FIELD_CENTRIC;      
     }
 
-    public double getScoreOffsetDegrees() {
-        return SmartDashboard.getNumber("Score Offset Inches", 0);
-    }
-
     public Auto getAuto() {
         return autoChooser.getSelected();
     }
@@ -141,41 +138,27 @@ public class Dashboard {
         return startingGridChooser.getSelected();
     }
 
-    public Channel getExitChannel() {
-        return exitChannelChooser.getSelected();
-    }
-
     public GamePiece getGamePiece() {
         return gamePieceChooser.getSelected();
     }
 
-    public boolean scoreGamePiece() {
-        return SmartDashboard.getBoolean("Score Game Piece", false);
-    }
-
-    public Node getScoreNode() {
-        return scoreNodeChooser.getSelected();
-    }
-
-    public Grid getScoreGrid() {
-        return scoreGridChooser.getSelected();
-    }
-
-    public boolean endChargeStation(){
-        return SmartDashboard.getBoolean("End Charge Station", true);
+    public ChargeStation getChargeStation(){
+        return chargeStationChooser.getSelected();
     }
 
     public AutoConfiguration getAutoConfiguration() {
         return new AutoConfiguration(
             getStartingGrid(), 
-            getStartingNode(), 
-            getExitChannel(), 
-            getGamePiece(), 
-            scoreGamePiece(), 
-            getScoreGrid(), 
-            getScoreNode(), 
-            endChargeStation()
+            getStartingNode(),
+            getGamePiece(),
+            getChargeStation()
         );
+    }
+
+    // Create enums for Dashboard elements/parts here
+    public static enum DriveMode {
+        FIELD_CENTRIC,
+        ROBOT_CENTRIC;
     }
 
     public static Dashboard getInstance() {
@@ -184,11 +167,5 @@ public class Dashboard {
         }
 
         return INSTANCE;
-    }
-
-    // Create enums for Dashboard elements/parts here
-    public static enum DriveMode {
-        FIELD_CENTRIC,
-        ROBOT_CENTRIC;
     }
 }

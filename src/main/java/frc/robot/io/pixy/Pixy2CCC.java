@@ -1,4 +1,4 @@
-package frc.robot.pixy;
+package frc.robot.io.pixy;
 
 import java.util.ArrayList;
 import java.util.Arrays;

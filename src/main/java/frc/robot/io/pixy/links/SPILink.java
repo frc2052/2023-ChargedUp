@@ -1,7 +1,7 @@
-package frc.robot.pixy.links;
+package frc.robot.io.pixy.links;
 
 import edu.wpi.first.wpilibj.SPI;
-import frc.robot.pixy.Pixy2.Checksum;
+import frc.robot.io.pixy.Pixy2.Checksum;
 
 /**
  * Java Port of Pixy2 Arduino Library
@@ -64,9 +64,6 @@ public class SPILink implements Link {
 		}
 		spi = new SPI(port);
 		spi.setClockRate(PIXY_SPI_CLOCKRATE);
-		spi.setMSBFirst();
-		spi.setSampleDataOnTrailingEdge();
-		spi.setClockActiveLow();
 		spi.setChipSelectActiveLow();
 		return 0;
 	}

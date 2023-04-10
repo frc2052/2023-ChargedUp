@@ -6,12 +6,21 @@ package frc.robot.auto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.auto.AutoFactory.GamePiece;
-import frc.robot.auto.AutoFactory.Node;
+import frc.robot.auto.common.AutoBase;
+import frc.robot.auto.common.AutoConfiguration;
+import frc.robot.auto.common.AutoDescription;
+import frc.robot.auto.common.AutoRequirements;
+import frc.robot.auto.common.AutoTrajectoryConfig;
+import frc.robot.auto.common.DashboardAutoRequirements;
+import frc.robot.auto.common.AutoFactory.ChargeStation;
+import frc.robot.auto.common.AutoFactory.GamePiece;
+import frc.robot.auto.common.AutoFactory.Grid;
+import frc.robot.auto.common.AutoFactory.Node;
 import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
@@ -24,44 +33,27 @@ import frc.robot.commands.score.MidScoreCommand;
 import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.io.Dashboard;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ForwardPixySubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
-import frc.robot.subsystems.IntakeSubsystem;
 
 @AutoDescription(description = "Score gamepiece, drive over charge station to pick up second gamepiece, and balance.")
-public class MiddleScoreOnePickupBalance extends AutoBase {
-    private final ForwardPixySubsystem forwardPixy;
-
-    private final GamePiece gamePiece;
-    
-    public MiddleScoreOnePickupBalance(
+@DashboardAutoRequirements(requirements = { Node.class, GamePiece.class, ChargeStation.class })
+public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
+    public MiddleScoreOnePickupBalanceAuto(
         AutoConfiguration autoConfiguration,
-        DrivetrainSubsystem drivetrain, 
-        ElevatorSubsystem elevator, 
-        IntakeSubsystem intake, 
-        ArmSubsystem arm,
-        ForwardPixySubsystem forwardPixy,
-        GamePiece gamePiece
+        AutoRequirements autoRequirements
     ) {
-        super(autoConfiguration, drivetrain, elevator, intake, arm);
-
-        this.forwardPixy = forwardPixy;
-
-        this.gamePiece = gamePiece;
+        super(autoConfiguration, autoRequirements);
     }
     
     public void init() {
         final double startingYOffset = getStartingYOffsetInches(
-            autoConfiguration.getScoreGrid(), 
+            Grid.MIDDLE_GRID, 
             autoConfiguration.getStartingNode()
         ) + (Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
 
         double pickUpYInches;
-        switch (gamePiece) {
+        switch (autoConfiguration.getGamePiece()) {
             case MIDDLE_LEFT_GAME_PIECE:
                 pickUpYInches = 12;
                 break;
@@ -84,46 +76,50 @@ public class MiddleScoreOnePickupBalance extends AutoBase {
         final Pose2d secondLineUpPose = createPose2dInches(164, 0, 180);
         final Pose2d finalChargeStationPose = createPose2dInches(120, 0, 180);
 
-        addCommands(new ResetOdometryCommand(drivetrain, initialPose));
+        final AutoTrajectoryConfig retractTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 2, 1, 0, 1);
+        final AutoTrajectoryConfig chargeStationTrajectoryConfig = new AutoTrajectoryConfig(5, 3, 2, 3, 2, 1, 0.5);
+        final AutoTrajectoryConfig driveOverTrajectoryConfig = new AutoTrajectoryConfig(0.5, 1.5, 0.5, 3, 2, 0.5, 0.75);
+        final AutoTrajectoryConfig pickUpTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 4, 2, 0.75, 0);
+        final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 2, 1, 0, 2);
+        final AutoTrajectoryConfig rechargeStationTrajectoryConfig = new AutoTrajectoryConfig(5, 3, 2, 3, 2, 2, 0);
+
+        addCommands(new ResetOdometryCommand(autoRequirements.getDrivetrain(), initialPose));
         
+        // Initial elevator score command.
         if (autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE) {
-            addCommands(new MidScoreCommand(elevator, arm));
+            addCommands(new MidScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm()));
         } else {
-            addCommands(new TopScoreCommand(elevator, arm));
+            addCommands(new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm()));
         }
+        addCommands(new InstantCommand(() -> autoRequirements.getIntake().setScoreMode(autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? ScoreMode.CUBE : ScoreMode.CONE)));
+        addCommands(new ScoreCommand(() -> autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.25, autoRequirements.getIntake()));
         
-        addCommands(new ScoreCommand(
-            () -> ScoreMode.CONE, 
-            () -> autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.5,
-            intake
-        ));
-        
-        SwerveControllerCommand lineUpPath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.defaultTrajectoryConfig.withEndVelocity(1), 
+        SwerveControllerCommand lineUpPath = createSwerveCommand(
+            retractTrajectoryConfig, 
             initialPose,
             lineUpPose,
             createRotation(180)
         );
         ParallelDeadlineGroup retractGroup = new ParallelDeadlineGroup(
             lineUpPath.beforeStarting(new WaitCommand(0.5)),
-            new CompleteScoreCommand(elevator, intake, arm)
+            new CompleteScoreCommand(autoRequirements.getElevator(), autoRequirements.getIntake(), autoRequirements.getArm())
         );
         addCommands(retractGroup);
 
-        SwerveControllerCommand onChargePath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.chargeStationTrajectoryConfig.withStartAndEndVelocity(1, 0), 
+        SwerveControllerCommand onChargePath = createSwerveCommand(
+            chargeStationTrajectoryConfig, 
             getLastEndingPose(),
             chargeStationPose,
             createRotation(180)
         );
         ParallelDeadlineGroup onChargeGroup = new ParallelDeadlineGroup(
             onChargePath,
-            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator)
+            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, autoRequirements.getElevator())
         );
         addCommands(onChargeGroup);
 
-        SwerveControllerCommand overChargePath = createSwerveTrajectoryCommand(
-            AutoTrajectoryConfig.snailTrajectoryConfig.withEndVelocity(0.75), 
+        SwerveControllerCommand overChargePath = createSwerveCommand(
+            driveOverTrajectoryConfig, 
             getLastEndingPose(),
             driveOverPose,
             createRotation(0)
@@ -131,7 +127,7 @@ public class MiddleScoreOnePickupBalance extends AutoBase {
 
         ParallelDeadlineGroup overChargeGroup = new ParallelDeadlineGroup(
             overChargePath,
-            new ArmOutCommand(arm)
+            new ArmOutCommand(autoRequirements.getArm())
         );
         addCommands(overChargeGroup);
 
@@ -140,14 +136,14 @@ public class MiddleScoreOnePickupBalance extends AutoBase {
         if (!Dashboard.getInstance().pixyCamBroken()) {
             pickupCommand = new GamePieceAlignmentCommand(
                 () -> pickUpPose.getX(),
-                forwardPixy, 
-                drivetrain,
-                intake
+                autoRequirements.getDrivetrain(),
+                autoRequirements.getForwardPixy(),
+                autoRequirements.getIntake()
             );
             setLastEndingPose(pickUpPose);
         } else {
-            pickupCommand = createSwerveTrajectoryCommand(
-                AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig, 
+            pickupCommand = createSwerveCommand(
+                pickUpTrajectoryConfig, 
                 getLastEndingPose(),
                 pickUpPose,
                 createRotation(0)
@@ -155,32 +151,31 @@ public class MiddleScoreOnePickupBalance extends AutoBase {
         }
         ParallelDeadlineGroup pickUpGroup = new ParallelDeadlineGroup(
             pickupCommand,
-            new ElevatorPositionCommand(ElevatorPosition.GROUND_PICKUP, elevator),
-            new IntakeInCommand(intake)
+            new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, autoRequirements.getElevator()),
+            new IntakeInCommand(autoRequirements.getIntake())
         );
-
         addCommands(pickUpGroup);
 
-        addCommands(new ArmInCommand(arm));
+        addCommands(new ArmInCommand(autoRequirements.getArm()));
 
-        if (autoConfiguration.endChargeStation()) {
-            SwerveControllerCommand secondLineupPath = createSwerveTrajectoryCommand(
-                AutoTrajectoryConfig.fastTurnDriveTrajectoryConfig, 
+        if (autoConfiguration.getChargeStation() == ChargeStation.BALANCE) {
+            SwerveControllerCommand secondLineupPath = createSwerveCommand(
+                lineUpTrajectoryConfig, 
                 getLastEndingPose(),
                 secondLineUpPose,
                 createRotation(180)
             );
             addCommands(secondLineupPath);
 
-            SwerveControllerCommand chargeStationPath = createSwerveTrajectoryCommand(
-                AutoTrajectoryConfig.chargeStationTrajectoryConfig, 
+            SwerveControllerCommand chargeStationPath = createSwerveCommand(
+                rechargeStationTrajectoryConfig, 
                 getLastEndingPose(),
                 finalChargeStationPose,
                 createRotation(180)
             );
             addCommands(chargeStationPath);
 
-            addCommands(new ChargeStationBalanceCommand(drivetrain));
+            addCommands(new ChargeStationBalanceCommand(autoRequirements.getDrivetrain()));
         }
     }
 }

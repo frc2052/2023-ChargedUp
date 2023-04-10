@@ -3,9 +3,9 @@ package frc.robot.subsystems;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.pixy.Pixy2;
-import frc.robot.pixy.Pixy2CCC.Block;
-import frc.robot.pixy.links.SPILink;
+import frc.robot.io.pixy.Pixy2;
+import frc.robot.io.pixy.Pixy2CCC.Block;
+import frc.robot.io.pixy.links.SPILink;
 
 public class ForwardPixySubsystem extends SubsystemBase{
 	private final Pixy2 pixy;

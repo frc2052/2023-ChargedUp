@@ -13,7 +13,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
-import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakePixySubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -62,7 +61,7 @@ public class SmartHorizontalAlignmentCommand extends DriveCommand {
 
         if (target != null) {
             // Total offset of the cone in the intake, the camera's mounted position on the robot, and the manual dashboard offset.
-            double coneOffsetInches = pixy.getLastKnownPositionInches() + Units.metersToInches(Constants.Camera.CAMERA_POSITION_METERS.getY()) + Dashboard.getInstance().getScoreOffsetDegrees();
+            double coneOffsetInches = pixy.getLastKnownPositionInches() + Units.metersToInches(Constants.Camera.CAMERA_POSITION_METERS.getY());
 
             // Finds the PID target angle in degrees given a constant distance of 36 inches and the offset of the cone in the intake.
             double cameraConeOffsetDegrees = Math.copySign(-Math.toDegrees(Math.atan(Units.inchesToMeters(36) / Math.abs(Units.inchesToMeters(coneOffsetInches)))) + 90, coneOffsetInches);

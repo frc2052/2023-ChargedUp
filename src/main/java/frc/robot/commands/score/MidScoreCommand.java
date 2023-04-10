@@ -16,7 +16,7 @@ public class MidScoreCommand extends ParallelCommandGroup {
     public MidScoreCommand(ElevatorSubsystem elevator, ArmSubsystem arm) {
         addCommands(
             new ElevatorPositionCommand(ElevatorPosition.MID_SCORE, elevator),
-            new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.75))
+            new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.5))
         );
     }
 }

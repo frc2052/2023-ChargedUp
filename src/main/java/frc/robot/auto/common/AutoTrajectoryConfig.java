@@ -1,84 +1,11 @@
-package frc.robot.auto;
+package frc.robot.auto.common;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class AutoTrajectoryConfig {
-    public static final AutoTrajectoryConfig defaultTrajectoryConfig = new AutoTrajectoryConfig(
-        new TrajectoryConfig(3, 2).setKinematics(DrivetrainSubsystem.getKinematics()),
-        new PIDController(1, 0, 0),
-        new ProfiledPIDController(
-            2, 0, 0,
-            new TrapezoidProfile.Constraints(
-                Math.PI, 
-                Math.PI
-            )
-        )
-    );
-
-    public static final AutoTrajectoryConfig originalTrajectoryConfig = new AutoTrajectoryConfig(
-        new TrajectoryConfig(2.5, 1.5).setKinematics(DrivetrainSubsystem.getKinematics()),
-        new PIDController(1, 0, 0),
-        new ProfiledPIDController(
-            2, 0, 0,
-            new TrapezoidProfile.Constraints(
-                Math.PI, 
-                Math.PI
-            )
-        )
-    );
-
-    public static final AutoTrajectoryConfig snailTrajectoryConfig = new AutoTrajectoryConfig(
-        new TrajectoryConfig(0.5, 1.5).setKinematics(DrivetrainSubsystem.getKinematics()),
-        new PIDController(0.5, 0, 0),
-        new ProfiledPIDController(
-            3, 0, 0,
-            new TrapezoidProfile.Constraints(
-                2 * Math.PI, 
-                2 * Math.PI
-            )
-        )
-    );
-
-    public static final AutoTrajectoryConfig fastTurnDriveTrajectoryConfig = new AutoTrajectoryConfig(
-        new TrajectoryConfig(3, 2).setKinematics(DrivetrainSubsystem.getKinematics()),
-        new PIDController(1, 0, 0),
-        new ProfiledPIDController(
-            4, 0, 0,
-            new TrapezoidProfile.Constraints(
-                2 * Math.PI, 
-                2 * Math.PI
-            )
-        )
-    );
-
-    public static final AutoTrajectoryConfig chargeStationTrajectoryConfig = new AutoTrajectoryConfig(
-        new TrajectoryConfig(5, 3).setKinematics(DrivetrainSubsystem.getKinematics()),
-        new PIDController(2, 0, 0),
-        new ProfiledPIDController(
-            3, 0, 0,
-            new TrapezoidProfile.Constraints(
-                2 * Math.PI, 
-                2 * Math.PI
-            )
-        )
-    );
-
-    public static final AutoTrajectoryConfig speedDriveTrajectoryConfig = new AutoTrajectoryConfig(
-        new TrajectoryConfig(4.5, 3.5).setKinematics(DrivetrainSubsystem.getKinematics()), 
-        new PIDController(1, 0, 0),
-        new ProfiledPIDController(
-            10, 0, 0, 
-            new TrapezoidProfile.Constraints(
-                4 * Math.PI, 
-                3 * Math.PI
-            )
-        )
-    );
-    
     private final TrajectoryConfig trajectoryConfig;
     private final PIDController XYController;
     private final ProfiledPIDController thetaController;

@@ -5,28 +5,23 @@
 package frc.robot.commands.score;
 
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 
 public class ScoreCommand extends CommandBase {
     private final IntakeSubsystem intake;
 
-    private final Supplier<ScoreMode> scoreMode;
     private final Timer scoreTimer;
     private final DoubleSupplier maxScoreTime;
 
-    public ScoreCommand(Supplier<ScoreMode> scoreMode, IntakeSubsystem intake) {
-        this(scoreMode, () -> 0, intake);
+    public ScoreCommand(IntakeSubsystem intake) {
+        this(() -> 0, intake);
     }
 
-    public ScoreCommand(Supplier<ScoreMode> scoreMode, DoubleSupplier maxScoreTime, IntakeSubsystem intake) {
+    public ScoreCommand(DoubleSupplier maxScoreTime, IntakeSubsystem intake) {
         this.intake = intake;
-
-        this.scoreMode = scoreMode;
 
         scoreTimer = new Timer();
         this.maxScoreTime = maxScoreTime;
@@ -42,7 +37,7 @@ public class ScoreCommand extends CommandBase {
 
     @Override
     public void execute() {
-        intake.intakeOut(scoreMode.get());
+        intake.intakeOut();
     }
 
     // Score command ends when interupted or timed out.
