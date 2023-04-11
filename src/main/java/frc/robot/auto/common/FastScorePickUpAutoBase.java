@@ -6,11 +6,13 @@ package frc.robot.auto.common;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auto.common.AutoFactory.Node;
+import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.drive.GamePieceAlignmentCommand;
 import frc.robot.commands.drive.ResetOdometryCommand;
@@ -32,14 +34,14 @@ public class FastScorePickUpAutoBase extends AutoBase {
         );
 
         final Pose2d initialPose = createPose2dInches(12.25, startingYOffset, 0);
-        final Pose2d nearCableProtectorPose = createPose2dInches(70, 2, 0);
-        final Pose2d farCableProtectorPose = createPose2dInches(106, 2, 0);
-        final Pose2d startPickUpPose = createPose2dInches(160, -10, 0);
-        final Pose2d pickUpPose = createPose2dInches(202, -12, 0);
+        final Pose2d nearCableProtectorPose = createPose2dInches(70, -2, 0);
+        final Pose2d farCableProtectorPose = createPose2dInches(106, -2, 0);
+        final Pose2d startPickUpPose = createPose2dInches(160, -12, 0);
+        final Pose2d pickUpPose = createPose2dInches(202, -12, 165);
 
-        final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 4, 4.5, 0, 1);
+        final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 4, 5, 0, 1);
         final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1);
-        final AutoTrajectoryConfig pickupLineUpTrajectoryConfig = new AutoTrajectoryConfig(4, 3.5, 2.5, 4, 2, 1, 3);
+        final AutoTrajectoryConfig pickupLineUpTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 4, 2, 1, 3);
         final AutoTrajectoryConfig pickupTrajectoryConfig = new AutoTrajectoryConfig(3, 3, 1, 4, 2, 2.5, 0);
 
         addCommands(new ResetOdometryCommand(autoRequirements.getDrivetrain(), initialPose));
@@ -106,11 +108,10 @@ public class FastScorePickUpAutoBase extends AutoBase {
         ParallelDeadlineGroup pickUpGroup = new ParallelDeadlineGroup(
             pickupCommand,
             new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, autoRequirements.getElevator()),
-            new ArmOutCommand(autoRequirements.getArm()),
             new IntakeInCommand(autoRequirements.getIntake())
         );
         addCommands(pickUpGroup);
 
-        addCommands(new ElevatorPositionCommand(40000, autoRequirements.getElevator()));
+        addCommands(new ArmInCommand(autoRequirements.getArm()));
     }
 }

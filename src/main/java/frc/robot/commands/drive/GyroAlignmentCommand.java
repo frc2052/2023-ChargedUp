@@ -39,7 +39,7 @@ public class GyroAlignmentCommand extends DriveCommand {
 
         rotationController = new PIDController(2.5, 0, 0.1);
         rotationController.enableContinuousInput(0, 360);
-        rotationController.setTolerance(1);
+        rotationController.setTolerance(2);
 
         this.targetRotation = targetRotation;
 
@@ -60,7 +60,11 @@ public class GyroAlignmentCommand extends DriveCommand {
 
         // Calculate PID value along with feedforward constant to assist with minor adjustments.
         double rotationValue = rotationController.calculate(gyroDegrees) / 360;
-        return rotationValue + Math.copySign(0.025, rotationValue);
+        if (!rotationController.atSetpoint()) {
+            return rotationValue + Math.copySign(0.025, rotationValue);
+        } else {
+            return 0;
+        }
     }
 
     @Override

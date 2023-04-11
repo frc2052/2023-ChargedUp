@@ -42,20 +42,15 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
     @Override
     public void init() {
         super.init();
-        
-        final double yOffsetInches = getStartingYOffsetInches(
-            autoConfiguration.getStartingGrid(),
-            autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? Node.RIGHT_CONE : Node.LEFT_CONE
-        ) * (autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? 1 : -1);
-        
-        final Pose2d farCableProtectorPose = createPose2dInches(106, 2, 180);
-        final Pose2d nearCableProtectorPose = createPose2dInches(70, 2, 180);
-        final Translation2d chargeStationMidPoint = createTranslation2dInches(18, yOffsetInches / 2);
-        final Pose2d lineUpPose = createPose2dInches(12, yOffsetInches, 225);
 
-        final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(4, 3.5, 2.5, 4, 2, 0, 1);
+        final Pose2d farCableProtectorPose = createPose2dInches(106, -2, 180);
+        final Pose2d nearCableProtectorPose = createPose2dInches(70, -2, 180);
+        final Translation2d chargeStationMidPoint = createTranslation2dInches(32, -12);
+        final Pose2d lineUpPose = createPose2dInches(16, -30, 225);
+
+        final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 4, 4.5, 0, 1);
         final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1);
-        final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 4, 2, 1, 0);
+        final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 1.75, 1, 4, 2, 1, 0);
 
         // Driving back to the grid.
         SwerveControllerCommand driveBackPath = createSwerveCommand(
@@ -64,7 +59,11 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
             farCableProtectorPose, 
             createRotation(-175)
         );
-        addCommands(driveBackPath);
+        ParallelDeadlineGroup driveBackGroup = new ParallelDeadlineGroup(
+            driveBackPath,
+            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, autoRequirements.getElevator())
+        );
+        addCommands(driveBackGroup);
 
         SwerveControllerCommand cableProtectorPath = createSwerveCommand(
             cableProtectorTrajectoryConfig,
@@ -72,7 +71,7 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
             nearCableProtectorPose, 
             createRotation(180)
         );
-        addCommands(cableProtectorPath);
+        addCommands(cableProtectorPath); 
 
         SwerveControllerCommand lineUpPath = createSwerveCommand(
             lineUpTrajectoryConfig,
@@ -81,22 +80,27 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
             lineUpPose, 
             createRotation(180)
         );
-        addCommands(lineUpPath);
-        
+        ParallelCommandGroup lineUpGroup = new ParallelCommandGroup(
+            lineUpPath,
+            new InstantCommand(autoRequirements.getIntakePixy()::updateConePosition, autoRequirements.getIntakePixy()).andThen(
+                new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm())
+            )
+        );
+
+        addCommands(lineUpGroup);
+
         // Line up and bring up elevator to score.
         addCommands(new GyroAlignmentCommand(() -> Rotation2d.fromDegrees(180), () -> true, autoRequirements.getDrivetrain()));
         
-        ParallelCommandGroup scoreGroup = new ParallelCommandGroup(
+        addCommands(
             new DumbHorizontalAlignmentCommand(
-                () -> 0.35, 
+                () -> 0.25, 
                 () -> 0.0, 
                 autoRequirements.getDrivetrain(), 
                 autoRequirements.getVision(), 
                 autoRequirements.getIntakePixy()
-            ).withTimeout(1),
-            new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm())
+            ).withTimeout(1)
         );
-        addCommands(scoreGroup);
 
         // Second score and retract.
         addCommands(new InstantCommand(() -> autoRequirements.getIntake().setScoreMode(ScoreMode.CONE)));

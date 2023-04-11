@@ -31,7 +31,7 @@ public class GamePieceAlignmentCommand extends DriveCommand {
         xController = new PIDController(0.5, 0, 0);
         xController.setTolerance(0.1);
 
-        yController = new PIDController(1.25, 0, 0);
+        yController = new PIDController(1, 0, 0);
         yController.setTolerance(5);
         yController.setSetpoint(-Constants.Intake.FRONT_PIXY_MOUNT_OFFSET_PIXELS);
 
