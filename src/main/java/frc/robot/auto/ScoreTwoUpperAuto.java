@@ -19,7 +19,7 @@ import frc.robot.auto.common.AutoDescription;
 import frc.robot.auto.common.AutoRequirements;
 import frc.robot.auto.common.AutoTrajectoryConfig;
 import frc.robot.auto.common.DashboardAutoRequirements;
-import frc.robot.auto.common.ScorePickUpAutoBase;
+import frc.robot.auto.common.FastScorePickUpAutoBase;
 import frc.robot.auto.common.AutoFactory.ChargeStation;
 import frc.robot.auto.common.AutoFactory.Grid;
 import frc.robot.auto.common.AutoFactory.Node;
@@ -34,7 +34,7 @@ import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 
 @AutoDescription(description = "Score gamepiece, drive to pick up second gamepiece, and drive to score second gamepiece.")
 @DashboardAutoRequirements(requirements = { Grid.class, Node.class, ChargeStation.class })
-public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
+public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
     public ScoreTwoUpperAuto(AutoConfiguration autoConfiguration, AutoRequirements autoRequirements) {
         super(autoConfiguration, autoRequirements);
     }
@@ -47,32 +47,48 @@ public class ScoreTwoUpperAuto extends ScorePickUpAutoBase {
             autoConfiguration.getStartingGrid(),
             autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? Node.RIGHT_CONE : Node.LEFT_CONE
         ) * (autoConfiguration.getStartingGrid() == Grid.LEFT_GRID ? 1 : -1);
+        
+        final Pose2d farCableProtectorPose = createPose2dInches(106, 2, 180);
+        final Pose2d nearCableProtectorPose = createPose2dInches(70, 2, 180);
+        final Translation2d chargeStationMidPoint = createTranslation2dInches(18, yOffsetInches / 2);
+        final Pose2d lineUpPose = createPose2dInches(12, yOffsetInches, 225);
 
-        final Translation2d chargeStationMidpoint = createTranslation2dInches(60, -12);
-        final Pose2d lineUpPose = createPose2dInches(18, yOffsetInches, 225);
-
-        final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 4, 2, 0, 0);
+        final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(4, 3.5, 2.5, 4, 2, 0, 1);
+        final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1);
+        final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 4, 2, 1, 0);
 
         // Driving back to the grid.
         SwerveControllerCommand driveBackPath = createSwerveCommand(
             driveBackTrajectoryConfig,
             getLastEndingPose(),
-            List.of(chargeStationMidpoint),
+            farCableProtectorPose, 
+            createRotation(-175)
+        );
+        addCommands(driveBackPath);
+
+        SwerveControllerCommand cableProtectorPath = createSwerveCommand(
+            cableProtectorTrajectoryConfig,
+            getLastEndingPose(),
+            nearCableProtectorPose, 
+            createRotation(180)
+        );
+        addCommands(cableProtectorPath);
+
+        SwerveControllerCommand lineUpPath = createSwerveCommand(
+            lineUpTrajectoryConfig,
+            getLastEndingPose(),
+            List.of(chargeStationMidPoint),
             lineUpPose, 
             createRotation(180)
         );
-        ParallelDeadlineGroup driveBackGroup = new ParallelDeadlineGroup(
-            driveBackPath,
-            new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, autoRequirements.getElevator()).andThen(new RunCommand(autoRequirements.getIntakePixy()::updateConePosition))
-        );
-        addCommands(driveBackGroup);
+        addCommands(lineUpPath);
         
         // Line up and bring up elevator to score.
         addCommands(new GyroAlignmentCommand(() -> Rotation2d.fromDegrees(180), () -> true, autoRequirements.getDrivetrain()));
         
         ParallelCommandGroup scoreGroup = new ParallelCommandGroup(
             new DumbHorizontalAlignmentCommand(
-                () -> 0.25, 
+                () -> 0.35, 
                 () -> 0.0, 
                 autoRequirements.getDrivetrain(), 
                 autoRequirements.getVision(), 

@@ -11,7 +11,7 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "3,3": {
+          "5,3": {
             "size": [
               2,
               1
@@ -53,28 +53,15 @@
               "Visuals/Show value": true
             }
           },
-          "0,2": {
+          "1,1": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Starting Node",
               "_title": "Starting Node",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "0,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/End Charge Station",
-              "_title": "End Charge Station?",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -117,7 +104,7 @@
           },
           "0,1": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -128,7 +115,7 @@
               "_showGlyph": false
             }
           },
-          "1,3": {
+          "2,3": {
             "size": [
               1,
               1
@@ -176,7 +163,7 @@
               "_showGlyph": false
             }
           },
-          "2,3": {
+          "3,3": {
             "size": [
               1,
               1
@@ -217,6 +204,32 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Cone Offset",
               "_title": "SmartDashboard/Cone Offset",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Game Piece",
+              "_title": "SmartDashboard/Game Piece",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Charge Station",
+              "_title": "SmartDashboard/Charge Station",
               "_glyph": 148,
               "_showGlyph": false
             }

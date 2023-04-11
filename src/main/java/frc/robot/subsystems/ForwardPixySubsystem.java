@@ -45,21 +45,15 @@ public class ForwardPixySubsystem extends SubsystemBase{
 
         Block centerBlock = null;
         for (Block block : blocks){
-            // if (block.getY() < getMiddleLine().getY()){
-            //     if (centerBlock == null){
-            //         centerBlock = block;
-            //     } else if (xOffsetFromCenter(block) < xOffsetFromCenter(centerBlock)){
-            //         centerBlock = block;
-            //     }
-            // }
             if (block.getSignature() != 3) {
                 if (centerBlock == null) {
                     centerBlock = block;
                     continue;
                 }
-                
-                if (Math.abs(xOffsetFromCenter(block)) < Math.abs(xOffsetFromCenter(centerBlock))) {
-                    centerBlock = block;
+                if (Math.abs(xOffsetFromCenter(block)) < 78) {
+                    if (Math.abs(xOffsetFromCenter(block)) < Math.abs(xOffsetFromCenter(centerBlock))) {
+                        centerBlock = block;
+                    }
                 }
             }
         }

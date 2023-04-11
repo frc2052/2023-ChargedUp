@@ -74,10 +74,10 @@ public final class Constants {
     public static final class Intake {
         public static final int INTAKE_MOTOR_ID = 13;
 
-        public static final double FRONT_PIXY_MOUNT_OFFSET_PIXELS = 0;
+        public static final double FRONT_PIXY_MOUNT_OFFSET_PIXELS = 20;
 
         public static final double INTAKE_IN_SPEED = 1.0;
-        public static final double INTAKE_IN_SLOW_SPEED = 0.7;
+        public static final double INTAKE_IN_SLOW_SPEED = 0.6;
         public static final double INTAKE_OUT_CONE_SPEED = -0.5;
         public static final double INTAKE_OUT_CUBE_SPEED = -1.0;
 

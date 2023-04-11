@@ -23,8 +23,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     
     private final DigitalInput limitSwitch;
 
-    private ElevatorPosition previousPosition;
-    private ElevatorPosition currentPosition;
+    private double previousPositionTicks;
+    private double currentPositionTicks;
 
     private final Orchestra warningSound;
 
@@ -54,8 +54,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         limitSwitch = new DigitalInput(Constants.Elevator.LIMIT_SWITCH_DIO_CHANNEL);
         
-        previousPosition = ElevatorPosition.STARTING;
-        currentPosition = ElevatorPosition.STARTING;
+        previousPositionTicks = 0;
+        currentPositionTicks = 0;
 
         warningSound = new Orchestra(List.of(beltMotor));
 
@@ -89,8 +89,8 @@ public class ElevatorSubsystem extends SubsystemBase {
             zeroEncoder();
 
             // If the elevator is traveling downwards stop the belt motor and end the current command.
-            if (currentPosition.getPositionTicks() < previousPosition.getPositionTicks()) {
-                currentPosition = ElevatorPosition.STARTING;
+            if (currentPositionTicks < previousPositionTicks) {
+                currentPositionTicks = 0;
                 stop();
             }
         } else {
@@ -101,30 +101,26 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setPosition(ElevatorPosition elevatorPosition) {
-        if (currentPosition == elevatorPosition && atPosition()) {
+        setPositionTicks(elevatorPosition.getPositionTicks());
+    }
+
+    public void setPositionTicks(double elevatorPositionTicks) {
+        if (currentPositionTicks == elevatorPositionTicks && atPosition()) {
             return;
         }
         
-        previousPosition = currentPosition;
-        currentPosition = elevatorPosition;
+        previousPositionTicks = currentPositionTicks;
+        currentPositionTicks = elevatorPositionTicks;
 
         beltMotor.set(
             ControlMode.MotionMagic,
-            elevatorPosition.getPositionTicks()
+            elevatorPositionTicks
         );
-    }
-
-    public ElevatorPosition getPosition() {
-        return currentPosition;
-    }
-
-    public ElevatorPosition getPreviouPosition() {
-        return previousPosition;
     }
 
     public boolean atPosition() {
         return Math.abs(
-            currentPosition.getPositionTicks() - beltMotor.getSelectedSensorPosition()
+            currentPositionTicks - beltMotor.getSelectedSensorPosition()
         ) <= Constants.Elevator.BELT_MOTOR_DEAD_ZONE_TICKS;
     }
 

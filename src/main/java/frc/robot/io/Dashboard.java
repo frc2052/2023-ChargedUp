@@ -74,14 +74,16 @@ public class Dashboard {
         chargeStationChooser.setDefaultOption(ChargeStation.BALANCE.name(), ChargeStation.BALANCE);
 
         SmartDashboard.putBoolean("Pixy Cam Broken", false);
+
+        updateAutoChoosers(null);
     }
 
     public void updateAutoChoosers(Class<? extends DashboardAutoRequirement>[] autoRequirements) {
         if (autoRequirements != null) {
-            SmartDashboard.putData("Starting Grid", null);
-            SmartDashboard.putData("Starting Node", null);
-            SmartDashboard.putData("Game Piece", null);
-            SmartDashboard.putData("Charge Station", null);
+            // SmartDashboard.putData("Starting Grid", null);
+            // SmartDashboard.putData("Starting Node", null);
+            // SmartDashboard.putData("Game Piece", null);
+            // SmartDashboard.putData("Charge Station", null);
 
             for (Class<? extends DashboardAutoRequirement> autoRequirement : autoRequirements) {
                 if (autoRequirement.equals(Grid.class)) {

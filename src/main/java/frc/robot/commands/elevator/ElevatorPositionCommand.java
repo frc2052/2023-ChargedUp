@@ -11,22 +11,23 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 public class ElevatorPositionCommand extends CommandBase {
     private final ElevatorSubsystem elevator;
 
-    private final ElevatorPosition position;
+    private final double positionTicks;
   
-    public ElevatorPositionCommand(
-        ElevatorPosition position, 
-        ElevatorSubsystem elevator
-    ) {
+    public ElevatorPositionCommand(ElevatorPosition position, ElevatorSubsystem elevator) {
+        this(position.getPositionTicks(), elevator);
+    }
+
+    public ElevatorPositionCommand(double positionTicks, ElevatorSubsystem elevator) {
         this.elevator = elevator;
 
-        this.position = position;
+        this.positionTicks = positionTicks;
 
         addRequirements(this.elevator);
     }
 
     @Override
     public void initialize() {
-        elevator.setPosition(position);
+        elevator.setPositionTicks(positionTicks);
     }
 
     @Override

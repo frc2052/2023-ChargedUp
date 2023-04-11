@@ -13,6 +13,7 @@ import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.commands.drive.DumbHorizontalAlignmentCommand;
+import frc.robot.commands.drive.GamePieceAlignmentCommand;
 import frc.robot.commands.drive.GyroAlignmentCommand;
 import frc.robot.auto.common.AutoFactory;
 import frc.robot.auto.common.AutoRequirements;
@@ -142,7 +143,7 @@ public class RobotContainer {
          * Drivetrain button bindings
          */
         JoystickButton gamePieceAlign = new JoystickButton(driveJoystick, 9);
-        gamePieceAlign.whileTrue(new ChargeStationBalanceCommand(drivetrain));
+        gamePieceAlign.whileTrue(new GamePieceAlignmentCommand(() -> 0, drivetrain, forwardPixy, intake));
 
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));

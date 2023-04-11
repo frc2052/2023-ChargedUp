@@ -86,7 +86,14 @@ public class IntakeSubsystem extends SubsystemBase {
     public void slowIntakeIn() {
         intakeMotor.enableCurrentLimit(true);
 
-        intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SLOW_SPEED);
+        switch (scoreMode) {
+            case CONE:
+                intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SLOW_SPEED);
+                break;
+            case CUBE:
+                intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SPEED);
+                break;
+        }
     }
 
     public void intakeOut() {

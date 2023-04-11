@@ -28,11 +28,11 @@ public class GamePieceAlignmentCommand extends DriveCommand {
         this.pixy = pixy;
         this.intake = intake;
 
-        xController = new PIDController(0.3, 0, 0);
+        xController = new PIDController(0.5, 0, 0);
         xController.setTolerance(0.1);
 
         yController = new PIDController(1.25, 0, 0);
-        yController.setTolerance(7.5);
+        yController.setTolerance(5);
         yController.setSetpoint(-Constants.Intake.FRONT_PIXY_MOUNT_OFFSET_PIXELS);
 
         this.goalXMeters = goalXMeters;
@@ -47,7 +47,9 @@ public class GamePieceAlignmentCommand extends DriveCommand {
 
     @Override
     protected double getY() {
-        return yController.calculate(pixy.xOffsetFromCenter(pixy.findCentermostBlock())) / 158;
+        double yOffset = pixy.xOffsetFromCenter(pixy.findCentermostBlock());
+
+        return yController.calculate(yOffset) / 158;
     }
 
     @Override
