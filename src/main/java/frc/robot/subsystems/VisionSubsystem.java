@@ -47,12 +47,14 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void enableLEDs() {
+        camera.setDriverMode(false);
         camera.setLED(VisionLEDMode.kOn);
         // Clear previous results from other tracking session
         lastResult = null;
     }
 
     public void disableLEDs() {
+        camera.setDriverMode(true);
         camera.setLED(VisionLEDMode.kOff);
     }
 

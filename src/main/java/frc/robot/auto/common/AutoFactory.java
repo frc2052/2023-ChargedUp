@@ -13,6 +13,7 @@ import frc.robot.auto.MiddleScoreOnePickupBalanceAuto;
 import frc.robot.auto.ScoreOneBalanceAuto;
 import frc.robot.auto.ScoreTwoBalanceAuto;
 import frc.robot.auto.ScoreTwoUpperAuto;
+import frc.robot.auto.ScoreTwoUpperPickupAuto;
 import frc.robot.io.Dashboard;
 
 /**
@@ -79,8 +80,9 @@ public class AutoFactory {
         SCORE_ONE_BALANCE(ScoreOneBalanceAuto.class),
         SCORE_TWO_BALANCE(ScoreTwoBalanceAuto.class),
         SCORE_TWO_UPPER(ScoreTwoUpperAuto.class),
+        SCORE_TWO_UPPER_PICKUP(ScoreTwoUpperPickupAuto.class),
         MIDDLE_SCORE_ONE_PICKUP_BALANCE(MiddleScoreOnePickupBalanceAuto.class),
-        MIDDLE_SCORE_ONE_NONE_BALANCE(MiddleScoreOneBalanceAuto.class),
+        MIDDLE_SCORE_ONE_BALANCE(MiddleScoreOneBalanceAuto.class),
         HUNGRY_HUNGRY_HIPPO(HungryHungryHippoAuto.class);
 
         private final Class<? extends AutoBase> autoClass;
