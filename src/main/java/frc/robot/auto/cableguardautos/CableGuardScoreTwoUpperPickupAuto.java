@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.auto;
+package frc.robot.auto.cableguardautos;
 
 import java.util.List;
 
@@ -20,6 +20,7 @@ import frc.robot.auto.common.DashboardAutoRequirements;
 import frc.robot.auto.common.AutoFactory.ChargeStation;
 import frc.robot.auto.common.AutoFactory.Grid;
 import frc.robot.auto.common.AutoFactory.Node;
+import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.drive.GamePieceAlignmentCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.intake.IntakeInCommand;
@@ -29,8 +30,8 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 @AutoDescription(description = "Score gamepiece, drive to pick up second gamepiece, and drive to score second gamepiece.")
 @DashboardAutoRequirements(requirements = { Grid.class, Node.class, ChargeStation.class })
-public class ScoreTwoUpperPickupAuto extends ScoreTwoUpperAuto {
-    public ScoreTwoUpperPickupAuto(AutoConfiguration autoConfiguration, AutoRequirements autoRequirements) {
+public class CableGuardScoreTwoUpperPickupAuto extends CableGuardScoreTwoUpperAuto {
+    public CableGuardScoreTwoUpperPickupAuto(AutoConfiguration autoConfiguration, AutoRequirements autoRequirements) {
         super(autoConfiguration, autoRequirements);
     }
     
@@ -38,17 +39,18 @@ public class ScoreTwoUpperPickupAuto extends ScoreTwoUpperAuto {
     public void init() {
         super.init();
 
-        final Translation2d nearChargeStationMidPoint = createTranslation2dInches(18, -12);
-        final Pose2d farCableProtectorPose = createPose2dInches(106, -12, 0);
-        final Translation2d farChargeStationMidPoint = createTranslation2dInches(160, -12);
-        final Translation2d sCurveMidPoint = createTranslation2dInches(165, -36);
-        final Pose2d startPickUpPose = createPose2dInches(170, -72, 0);
-        final Pose2d pickUpPose = createPose2dInches(250, -72, 0);
-        // final Translation2d farChargeStationMidPoint = createTranslation2dInches(188, -6);
-        // final Pose2d startPickUpPose = createPose2dInches(230, -32, 45);
-        // final Pose2d pickUpPose = createPose2dInches(292, -92, 45);
+        final Translation2d nearChargeStationMidPoint = createTranslation2dInches(18, -4);
+        final Pose2d nearCableProtectorPose = createPose2dInches(70, -2, 0);
+        final Pose2d farCableProtectorPose = createPose2dInches(106, -2, 0);
+        // final Translation2d farChargeStationMidPoint = createTranslation2dInches(168, -6);
+        // final Pose2d startPickUpPose = createPose2dInches(180, -36, 0);
+        // final Pose2d pickUpPose = createPose2dInches(202, -48, 0);
+        final Translation2d farChargeStationMidPoint = createTranslation2dInches(188, -6);
+        final Pose2d startPickUpPose = createPose2dInches(230, -32, 45);
+        final Pose2d pickUpPose = createPose2dInches(292, -92, 45);
 
-        final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 3.5, 4, 0, 1);
+        final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 4, 5, 0, 1);
+        final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1);
         final AutoTrajectoryConfig pickupLineUpTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 3.5, 2, 1, 0);
         final AutoTrajectoryConfig pickupTrajectoryConfig = new AutoTrajectoryConfig(3, 3, 1, 4, 2, 1, 0);
         
@@ -57,23 +59,32 @@ public class ScoreTwoUpperPickupAuto extends ScoreTwoUpperAuto {
             backupTrajectoryConfig, 
             getLastEndingPose(),
             List.of(nearChargeStationMidPoint), 
-            farCableProtectorPose,
+            nearCableProtectorPose,
             createRotation(0)
         );
         ParallelDeadlineGroup retractGroup = new ParallelDeadlineGroup(
             backupPath,
             new IntakeStopCommand(autoRequirements.getIntake()),
-            new ElevatorPositionCommand(40000, autoRequirements.getElevator())
+            new ElevatorPositionCommand(40000, autoRequirements.getElevator()).beforeStarting(new WaitCommand(0.25))
         );
         addCommands(retractGroup);
+
+        SwerveControllerCommand cableProtectorPath = createSwerveCommand(
+            cableProtectorTrajectoryConfig, 
+            getLastEndingPose(), 
+            farCableProtectorPose,
+            createRotation(0)
+        );
+
+        addCommands(cableProtectorPath);
 
         // Slow down over cable protector to avoid odometry drift.        
         SwerveControllerCommand pickupLineUpCommand = createSwerveCommand(
             pickupLineUpTrajectoryConfig, 
             getLastEndingPose(),
-            List.of(farChargeStationMidPoint, sCurveMidPoint),
+            List.of(farChargeStationMidPoint),
             startPickUpPose,
-            createRotation(0)
+            createRotation(-45)
         );
         ParallelDeadlineGroup pickupLineUpGroup = new ParallelDeadlineGroup(
             pickupLineUpCommand,

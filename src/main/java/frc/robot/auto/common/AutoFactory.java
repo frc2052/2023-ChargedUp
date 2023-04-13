@@ -14,6 +14,8 @@ import frc.robot.auto.ScoreOneBalanceAuto;
 import frc.robot.auto.ScoreTwoBalanceAuto;
 import frc.robot.auto.ScoreTwoUpperAuto;
 import frc.robot.auto.ScoreTwoUpperPickupAuto;
+import frc.robot.auto.cableguardautos.CableGuardScoreTwoUpperAuto;
+import frc.robot.auto.cableguardautos.CableGuardScoreTwoUpperPickupAuto;
 import frc.robot.io.Dashboard;
 
 /**
@@ -79,7 +81,9 @@ public class AutoFactory {
         NO_AUTO(null),
         SCORE_ONE_BALANCE(ScoreOneBalanceAuto.class),
         SCORE_TWO_BALANCE(ScoreTwoBalanceAuto.class),
+        CABLE_GUARD_SCORE_TWO_UPPER(CableGuardScoreTwoUpperAuto.class),
         SCORE_TWO_UPPER(ScoreTwoUpperAuto.class),
+        CABLE_GUARD_SCORE_TWO_UPPER_PICKUP(CableGuardScoreTwoUpperPickupAuto.class),
         SCORE_TWO_UPPER_PICKUP(ScoreTwoUpperPickupAuto.class),
         MIDDLE_SCORE_ONE_PICKUP_BALANCE(MiddleScoreOnePickupBalanceAuto.class),
         MIDDLE_SCORE_ONE_BALANCE(MiddleScoreOneBalanceAuto.class),

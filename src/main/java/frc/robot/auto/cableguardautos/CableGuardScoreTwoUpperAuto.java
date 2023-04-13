@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.auto;
+package frc.robot.auto.cableguardautos;
 
 import java.util.List;
 
@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auto.common.AutoConfiguration;
 import frc.robot.auto.common.AutoDescription;
 import frc.robot.auto.common.AutoRequirements;
@@ -32,8 +31,8 @@ import frc.robot.subsystems.IntakeSubsystem.ScoreMode;
 
 @AutoDescription(description = "Score gamepiece, drive to pick up second gamepiece, and drive to score second gamepiece.")
 @DashboardAutoRequirements(requirements = { Grid.class, Node.class, ChargeStation.class })
-public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
-    public ScoreTwoUpperAuto(AutoConfiguration autoConfiguration, AutoRequirements autoRequirements) {
+public class CableGuardScoreTwoUpperAuto extends CableGuardFastScorePickUpAutoBase {
+    public CableGuardScoreTwoUpperAuto(AutoConfiguration autoConfiguration, AutoRequirements autoRequirements) {
         super(autoConfiguration, autoRequirements);
     }
     
@@ -41,18 +40,20 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
     public void init() {
         super.init();
 
-        final Pose2d farChargeStationPose = createPose2dInches(106, -16, 180);
-        final Translation2d nearChargeStationMidPoint = createTranslation2dInches(32, -16);
-        final Pose2d lineUpPose = createPose2dInches(9, -32, 225);
+        final Pose2d farCableProtectorPose = createPose2dInches(106, -6, 180);
+        final Pose2d nearCableProtectorPose = createPose2dInches(70, -6, 180);
+        final Translation2d chargeStationMidPoint = createTranslation2dInches(32, -12);
+        final Pose2d lineUpPose = createPose2dInches(24, -30, 225);
 
-        final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 4, 4.5, 0, 2);
-        final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(2, 1, 1, 4, 2, 2, 0);
+        final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 4, 4.5, 0, 1);
+        final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1);
+        final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 1.75, 1, 4, 2, 1, 0);
 
         // Driving back to the grid.
         SwerveControllerCommand driveBackPath = createSwerveCommand(
             driveBackTrajectoryConfig,
             getLastEndingPose(),
-            farChargeStationPose, 
+            farCableProtectorPose, 
             createRotation(-175)
         );
         ParallelDeadlineGroup driveBackGroup = new ParallelDeadlineGroup(
@@ -61,17 +62,25 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
         );
         addCommands(driveBackGroup);
 
+        SwerveControllerCommand cableProtectorPath = createSwerveCommand(
+            cableProtectorTrajectoryConfig,
+            getLastEndingPose(),
+            nearCableProtectorPose, 
+            createRotation(180)
+        );
+        addCommands(cableProtectorPath); 
+
         SwerveControllerCommand lineUpPath = createSwerveCommand(
             lineUpTrajectoryConfig,
             getLastEndingPose(),
-            List.of(nearChargeStationMidPoint),
+            List.of(chargeStationMidPoint),
             lineUpPose, 
             createRotation(180)
         );
         ParallelCommandGroup lineUpGroup = new ParallelCommandGroup(
             lineUpPath,
             new InstantCommand(autoRequirements.getIntakePixy()::updateConePosition, autoRequirements.getIntakePixy()).andThen(
-                new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm()).beforeStarting(new WaitCommand(0.25))
+                new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm())
             )
         );
 
@@ -87,7 +96,7 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
                 autoRequirements.getDrivetrain(), 
                 autoRequirements.getVision(), 
                 autoRequirements.getIntakePixy()
-            ).withTimeout(2)
+            ).withTimeout(1)
         );
         setLastEndingPose(createPose2dInches(0, -35, 0));
 

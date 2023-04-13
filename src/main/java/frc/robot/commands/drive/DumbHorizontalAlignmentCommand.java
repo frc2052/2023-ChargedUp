@@ -36,7 +36,7 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
         this.vision = vision;
         this.pixy = pixy;
 
-        yController = new PIDController(2, 0, 0);
+        yController = new PIDController(1.75, 0, 0);
         yController.setTolerance(0.5);
 
         ledEnableTimer = new Timer();

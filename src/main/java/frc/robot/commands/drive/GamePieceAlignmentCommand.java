@@ -55,11 +55,18 @@ public class GamePieceAlignmentCommand extends DriveCommand {
     @Override
     protected double getX() {
         System.out.println("ALIGNING X: " + drivetrain.getPosition().getX());
-        return xController.calculate(drivetrain.getPosition().getX());
+        if (goalXMeters.getAsDouble() != 0) {
+            return xController.calculate(drivetrain.getPosition().getX());
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return xController.atSetpoint() || intake.isCurrentLimiting();
+        if (goalXMeters.getAsDouble() == 0) {
+            return true;
+        }
+        return  xController.atSetpoint(); // || intake.isCurrentLimiting();
     }
 }
