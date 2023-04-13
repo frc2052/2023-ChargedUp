@@ -48,6 +48,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveDriveOdometry odometry;
     private final Field2d field;
 
+    private boolean balanced = false;
+    
     /** Creates a new SwerveDrivetrainSubsystem. */
     public DrivetrainSubsystem() {
         frontLeftModule = new NeoSwerverModule(
@@ -242,6 +244,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // );
 
         return 6 * Math.PI;
+    }
+
+    public void setBalanced(boolean balanced) {
+        this.balanced = balanced;
+    }
+
+    public Boolean getBalanced() {
+        return balanced;
     }
 
     /**

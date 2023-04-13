@@ -18,6 +18,7 @@ public class ChargeStationBalanceCommand extends CommandBase {
     private boolean isDropping;
 
     private Timer slowdownTimer;
+    private final Timer balanceTimer;
 
     private double previousPitch;
     private double currentPitch;
@@ -27,6 +28,7 @@ public class ChargeStationBalanceCommand extends CommandBase {
         this.drivetrain = drivetrain;
 
         slowdownTimer = new Timer();
+        balanceTimer = new Timer();
         
         addRequirements(drivetrain);
     }
@@ -41,6 +43,9 @@ public class ChargeStationBalanceCommand extends CommandBase {
 
         slowdownTimer.start();
         slowdownTimer.reset();
+
+        balanceTimer.stop();
+        balanceTimer.reset();
     }
 
     @Override
@@ -65,7 +70,13 @@ public class ChargeStationBalanceCommand extends CommandBase {
             flipped = true;
         }
 
+        System.out.println(balanceTimer.get() + " : " + drivetrain.getBalanced());
+
         if (!balanced) {
+            balanceTimer.stop();
+            balanceTimer.reset();
+            //drivetrain.setBalanced(false);
+
             if (isDropping || flipped) {
                 //System.out.println("BALANCE: Driving slow! dropping: " + isDropping);
 
@@ -96,6 +107,15 @@ public class ChargeStationBalanceCommand extends CommandBase {
             }
         } else {
             //System.out.println("BALANCE: Balanced!");
+
+            if (balanceTimer.get() == 0) {
+                balanceTimer.start();
+            }
+            drivetrain.setBalanced(true);
+
+            // if (balanceTimer.hasElapsed(0.1)) {
+            //     drivetrain.setBalanced(true);
+            // }
 
             drivetrain.xWheels();
         }
