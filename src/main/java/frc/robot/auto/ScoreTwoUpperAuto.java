@@ -41,10 +41,10 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
     public void init() {
         super.init();
 
-        final Pose2d farCableProtectorPose = createPose2dInches(106, -2, 180);
-        final Pose2d nearCableProtectorPose = createPose2dInches(70, -2, 180);
+        final Pose2d farCableProtectorPose = createPose2dInches(106, -6, 180);
+        final Pose2d nearCableProtectorPose = createPose2dInches(70, -6, 180);
         final Translation2d chargeStationMidPoint = createTranslation2dInches(32, -12);
-        final Pose2d lineUpPose = createPose2dInches(16, -30, 225);
+        final Pose2d lineUpPose = createPose2dInches(24, -30, 225);
 
         final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 4, 4.5, 0, 1);
         final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1);
@@ -92,7 +92,7 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
         
         addCommands(
             new DumbHorizontalAlignmentCommand(
-                () -> 0.2, 
+                () -> 0.25, 
                 () -> 0.0, 
                 autoRequirements.getDrivetrain(), 
                 autoRequirements.getVision(), 
