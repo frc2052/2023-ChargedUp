@@ -43,7 +43,11 @@ public class CableGuardScoreTwoUpperAuto extends CableGuardFastScorePickUpAutoBa
         final Pose2d farCableProtectorPose = createPose2dInches(106, -12, 180);
         final Pose2d nearCableProtectorPose = createPose2dInches(70, -12, 180);
         final Translation2d chargeStationMidPoint = createTranslation2dInches(32, -12);
-        final Pose2d lineUpPose = createPose2dInches(18, -32, 225);
+        final Pose2d lineUpPose = createPose2dInches(
+            autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? 16 : 21.999937, 
+            autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? -32 : -40,
+            autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? 225 : 135
+        );
 
         final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 4, 4.5, 0, 1);
         final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1.5);
@@ -107,7 +111,7 @@ public class CableGuardScoreTwoUpperAuto extends CableGuardFastScorePickUpAutoBa
                 autoRequirements.getIntakePixy()
             ).withTimeout(0.75)
         );
-        setLastEndingPose(createPose2dInches(0, -35, 180));
+        setLastEndingPose(createPose2dInches(0, -35, 0));
 
         // Second score and retract.
         addCommands(new InstantCommand(() -> autoRequirements.getIntake().setScoreMode(ScoreMode.CONE)));

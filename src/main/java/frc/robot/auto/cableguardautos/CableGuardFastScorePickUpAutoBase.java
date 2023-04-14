@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auto.common.AutoBase;
 import frc.robot.auto.common.AutoConfiguration;
+import frc.robot.auto.common.AutoFactory.Grid;
 import frc.robot.auto.common.AutoFactory.Node;
 import frc.robot.auto.common.AutoRequirements;
 import frc.robot.auto.common.AutoTrajectoryConfig;
@@ -40,8 +41,8 @@ public class CableGuardFastScorePickUpAutoBase extends AutoBase {
         final Pose2d initialPose = createPose2dInches(12.25, startingYOffset, 0);
         final Pose2d nearCableProtectorPose = createPose2dInches(70, -2, 0);
         final Pose2d farCableProtectorPose = createPose2dInches(106, -2, 0);
-        final Pose2d startPickUpPose = createPose2dInches(160, -12, 0);
-        final Pose2d pickUpPose = createPose2dInches(204, -16, 165);
+        final Pose2d startPickUpPose = createPose2dInches(150, -12, 0);
+        final Pose2d pickUpPose = createPose2dInches(202, -16, autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? 165 : 195);
 
         final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 4, 5, 0, 1);
         final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1);

@@ -46,8 +46,8 @@ public class CableGuardScoreTwoUpperPickupAuto extends CableGuardScoreTwoUpperAu
         // final Pose2d startPickUpPose = createPose2dInches(180, -36, 0);
         // final Pose2d pickUpPose = createPose2dInches(202, -48, 0);
         final Translation2d farChargeStationMidPoint = createTranslation2dInches(188, -6);
-        final Pose2d startPickUpPose = createPose2dInches(224, -24, 45);
-        final Pose2d pickUpPose = createPose2dInches(256, -76, 45);
+        final Pose2d startPickUpPose = createPose2dInches(212, -24, autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? 45 : 315);
+        final Pose2d pickUpPose = createPose2dInches(256, -76, autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? 45 : 315);
 
         final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 3, 3, 0, 1);
         final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1);
@@ -89,7 +89,7 @@ public class CableGuardScoreTwoUpperPickupAuto extends CableGuardScoreTwoUpperAu
         ParallelDeadlineGroup pickupLineUpGroup = new ParallelDeadlineGroup(
             pickupLineUpCommand,
             new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, autoRequirements.getElevator()),
-            new IntakeInCommand(autoRequirements.getIntake())                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+            new IntakeStopCommand(autoRequirements.getIntake()).andThen(new IntakeInCommand(autoRequirements.getIntake()))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
         );
         addCommands(pickupLineUpGroup);
 

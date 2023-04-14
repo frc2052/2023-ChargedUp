@@ -50,13 +50,21 @@ public class ForwardPixySubsystem extends SubsystemBase{
                     centerBlock = block;
                     continue;
                 }
-                if (Math.abs(xOffsetFromCenter(block)) < 78) {
-                    if (Math.abs(xOffsetFromCenter(block)) < Math.abs(xOffsetFromCenter(centerBlock))) {
+                if (Math.abs(xOffsetFromCenter(block)) < 39) {
+                    // if (Math.abs(xOffsetFromCenter(block)) < Math.abs(xOffsetFromCenter(centerBlock))) {
+                    //     centerBlock = block;
+                    // }
+                    if (yOffsetFromTop(block) > yOffsetFromTop(centerBlock)) {
                         centerBlock = block;
                     }
                 }
             }
         }
+
+        if (centerBlock != null) {
+            System.out.println(xOffsetFromCenter(centerBlock));
+        }
+
         return centerBlock;
     }
 
@@ -64,6 +72,15 @@ public class ForwardPixySubsystem extends SubsystemBase{
         //pixy cam pixel res width is 316, midpoint is 158
         if (block != null) {
             return block.getX() - 158;
+        }
+
+        return 0;
+    }
+
+    public double yOffsetFromTop(Block block){
+        //pixy cam pixel res width is 316, midpoint is 158
+        if (block != null) {
+            return block.getY();
         }
 
         return 0;
