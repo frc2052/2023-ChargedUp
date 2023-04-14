@@ -46,10 +46,10 @@ public class CableGuardScoreTwoUpperPickupAuto extends CableGuardScoreTwoUpperAu
         // final Pose2d startPickUpPose = createPose2dInches(180, -36, 0);
         // final Pose2d pickUpPose = createPose2dInches(202, -48, 0);
         final Translation2d farChargeStationMidPoint = createTranslation2dInches(188, -6);
-        final Pose2d startPickUpPose = createPose2dInches(230, -32, 45);
-        final Pose2d pickUpPose = createPose2dInches(292, -92, 45);
+        final Pose2d startPickUpPose = createPose2dInches(224, -24, 45);
+        final Pose2d pickUpPose = createPose2dInches(256, -76, 45);
 
-        final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 4, 5, 0, 1);
+        final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 3, 3, 0, 1);
         final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1);
         final AutoTrajectoryConfig pickupLineUpTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 3.5, 2, 1, 0);
         final AutoTrajectoryConfig pickupTrajectoryConfig = new AutoTrajectoryConfig(3, 3, 1, 4, 2, 1, 0);

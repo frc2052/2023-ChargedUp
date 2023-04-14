@@ -40,14 +40,14 @@ public class CableGuardScoreTwoUpperAuto extends CableGuardFastScorePickUpAutoBa
     public void init() {
         super.init();
 
-        final Pose2d farCableProtectorPose = createPose2dInches(106, -6, 180);
-        final Pose2d nearCableProtectorPose = createPose2dInches(70, -6, 180);
+        final Pose2d farCableProtectorPose = createPose2dInches(106, -12, 180);
+        final Pose2d nearCableProtectorPose = createPose2dInches(70, -12, 180);
         final Translation2d chargeStationMidPoint = createTranslation2dInches(32, -12);
-        final Pose2d lineUpPose = createPose2dInches(24, -30, 225);
+        final Pose2d lineUpPose = createPose2dInches(18, -32, 225);
 
         final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 4, 4.5, 0, 1);
-        final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1);
-        final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 1.75, 1, 4, 2, 1, 0);
+        final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1.5);
+        final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(2, 1, 1, 4, 2, 1.5, 0);
 
         // Driving back to the grid.
         SwerveControllerCommand driveBackPath = createSwerveCommand(
@@ -91,14 +91,23 @@ public class CableGuardScoreTwoUpperAuto extends CableGuardFastScorePickUpAutoBa
         
         addCommands(
             new DumbHorizontalAlignmentCommand(
+                () -> -0.2, 
+                () -> 0.0, 
+                autoRequirements.getDrivetrain(), 
+                autoRequirements.getVision(), 
+                autoRequirements.getIntakePixy()
+            ).withTimeout(0.5)
+        );
+        addCommands(
+            new DumbHorizontalAlignmentCommand(
                 () -> 0.25, 
                 () -> 0.0, 
                 autoRequirements.getDrivetrain(), 
                 autoRequirements.getVision(), 
                 autoRequirements.getIntakePixy()
-            ).withTimeout(1)
+            ).withTimeout(0.75)
         );
-        setLastEndingPose(createPose2dInches(0, -35, 0));
+        setLastEndingPose(createPose2dInches(0, -35, 180));
 
         // Second score and retract.
         addCommands(new InstantCommand(() -> autoRequirements.getIntake().setScoreMode(ScoreMode.CONE)));
