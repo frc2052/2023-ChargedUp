@@ -27,11 +27,19 @@ public class IntakeInCommand extends CommandBase {
     }
 
     @Override
+    public void initialize() {
+        // Run at least one time
+        execute();
+    }
+
+    @Override
     public void execute() {
         if (isArmOut.getAsBoolean()) {
             intake.intakeIn();
+            System.out.println("FAST FAST FAST FAST FAST FAST FAST ");
         } else {
             intake.slowIntakeIn();
+            System.out.println("SLOW SLOW SLOW SLOW SLOW");
         }
     }
 

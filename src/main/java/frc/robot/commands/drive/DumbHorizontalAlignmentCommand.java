@@ -72,7 +72,7 @@ public class DumbHorizontalAlignmentCommand extends DriveCommand {
         if (target != null) {
             double targetYaw = target.getYaw();
 
-            System.out.println(targetYaw + " : " + goalYaw + " : " + yController.getSetpoint());
+            //System.out.println("[vision] " + targetYaw + " : " + goalYaw + " : " + yController.getSetpoint());
 
             return -yController.calculate(targetYaw) / 75.76;
         } else {

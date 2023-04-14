@@ -68,6 +68,7 @@ public class ChargeStationBalanceCommand extends CommandBase {
         if (previousPitch != 0 && Math.copySign(1, currentPitch) != Math.copySign(1, previousPitch)) {
             System.out.println("Flipped!");
             flipped = true;
+            drivetrain.setBalanced(true);
         }
 
         System.out.println(balanceTimer.get() + " : " + drivetrain.getBalanced());
@@ -108,10 +109,9 @@ public class ChargeStationBalanceCommand extends CommandBase {
         } else {
             //System.out.println("BALANCE: Balanced!");
 
-            if (balanceTimer.get() == 0) {
-                balanceTimer.start();
-            }
             drivetrain.setBalanced(true);
+
+            // balanceTimer.start();
 
             // if (balanceTimer.hasElapsed(0.1)) {
             //     drivetrain.setBalanced(true);

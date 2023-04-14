@@ -38,18 +38,18 @@ public class ScoreTwoUpperPickupAuto extends ScoreTwoUpperAuto {
     public void init() {
         super.init();
 
-        final Translation2d nearChargeStationMidPoint = createTranslation2dInches(18, -12);
-        final Pose2d farCableProtectorPose = createPose2dInches(106, -12, 0);
-        final Translation2d farChargeStationMidPoint = createTranslation2dInches(160, -12);
-        final Translation2d sCurveMidPoint = createTranslation2dInches(165, -36);
-        final Pose2d startPickUpPose = createPose2dInches(170, -72, 0);
-        final Pose2d pickUpPose = createPose2dInches(250, -72, 0);
-        // final Translation2d farChargeStationMidPoint = createTranslation2dInches(188, -6);
-        // final Pose2d startPickUpPose = createPose2dInches(230, -32, 45);
-        // final Pose2d pickUpPose = createPose2dInches(292, -92, 45);
+        final Translation2d nearChargeStationMidPoint = createTranslation2dInches(15, -3);
+        final Pose2d farCableProtectorPose = createPose2dInches(106, -3, 0);
+        // final Translation2d farChargeStationMidPoint = createTranslation2dInches(160, -12);
+        // final Translation2d sCurveMidPoint = createTranslation2dInches(165, -36);
+        // final Pose2d startPickUpPose = createPose2dInches(170, -72, 0);
+        // final Pose2d pickUpPose = createPose2dInches(250, -72, 0);
+        final Translation2d farChargeStationMidPoint = createTranslation2dInches(188, -6);
+        final Pose2d startPickUpPose = createPose2dInches(206, -20, 45);
+        final Pose2d pickUpPose = createPose2dInches(236, -36, 45);
 
-        final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 3.5, 4, 0, 1);
-        final AutoTrajectoryConfig pickupLineUpTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 3.5, 2, 1, 0);
+        final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 3, 3, 0, 1);
+        final AutoTrajectoryConfig pickupLineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 2.5, 3.5, 2, 1, 1);
         final AutoTrajectoryConfig pickupTrajectoryConfig = new AutoTrajectoryConfig(3, 3, 1, 4, 2, 1, 0);
         
         // Drive back slightly and retract to avoid rotation collisions with the grid.
@@ -63,7 +63,7 @@ public class ScoreTwoUpperPickupAuto extends ScoreTwoUpperAuto {
         ParallelDeadlineGroup retractGroup = new ParallelDeadlineGroup(
             backupPath,
             new IntakeStopCommand(autoRequirements.getIntake()),
-            new ElevatorPositionCommand(40000, autoRequirements.getElevator())
+            new ElevatorPositionCommand(40000, autoRequirements.getElevator()).beforeStarting(new WaitCommand(0.25))
         );
         addCommands(retractGroup);
 
@@ -71,14 +71,14 @@ public class ScoreTwoUpperPickupAuto extends ScoreTwoUpperAuto {
         SwerveControllerCommand pickupLineUpCommand = createSwerveCommand(
             pickupLineUpTrajectoryConfig, 
             getLastEndingPose(),
-            List.of(farChargeStationMidPoint, sCurveMidPoint),
+            List.of(farChargeStationMidPoint),
             startPickUpPose,
-            createRotation(0)
+            createRotation(-45)
         );
         ParallelDeadlineGroup pickupLineUpGroup = new ParallelDeadlineGroup(
             pickupLineUpCommand,
             new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, autoRequirements.getElevator()),
-            new IntakeInCommand(autoRequirements.getIntake())                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+            new IntakeInCommand(() -> true, autoRequirements.getIntake())                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
         );
         addCommands(pickupLineUpGroup);
 
@@ -100,7 +100,11 @@ public class ScoreTwoUpperPickupAuto extends ScoreTwoUpperAuto {
                 createRotation(0)
             );
         }
-        addCommands(pickupCommand);
+
+        ParallelDeadlineGroup pickupGroup = new ParallelDeadlineGroup(
+            pickupCommand
+        );
+        addCommands(pickupGroup);
 
         //addCommands(new ArmInCommand(autoRequirements.getArm()));
     }

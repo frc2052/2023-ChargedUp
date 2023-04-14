@@ -81,7 +81,7 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
 
         final AutoTrajectoryConfig retractTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 2, 1, 0, 2);
         final AutoTrajectoryConfig chargeStationTrajectoryConfig = new AutoTrajectoryConfig(5, 4, 2, 3, 2, 2, 0.5);
-        final AutoTrajectoryConfig driveOverTrajectoryConfig = new AutoTrajectoryConfig(0.5, 1.5, 0.5, 3, 2.5, 0.5, 0.5);
+        final AutoTrajectoryConfig driveOverTrajectoryConfig = new AutoTrajectoryConfig(1, 1.5, 0.5, 3, 2.5, 0.5, 0.5);
         final AutoTrajectoryConfig pickUpTrajectoryConfig = new AutoTrajectoryConfig(3, 3, 1, 4, 2, 0.5, 0);
         final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 3, 2, 0, 2);
         final AutoTrajectoryConfig rechargeStationTrajectoryConfig = new AutoTrajectoryConfig(5, 3, 2, 3, 2, 2, 0);

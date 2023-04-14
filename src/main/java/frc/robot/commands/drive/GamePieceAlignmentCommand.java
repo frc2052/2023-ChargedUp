@@ -54,7 +54,7 @@ public class GamePieceAlignmentCommand extends DriveCommand {
 
     @Override
     protected double getX() {
-        System.out.println("ALIGNING X: " + drivetrain.getPosition().getX());
+        //System.out.println("ALIGNING X: " + drivetrain.getPosition().getX());
         if (goalXMeters.getAsDouble() != 0) {
             return xController.calculate(drivetrain.getPosition().getX());
         } else {

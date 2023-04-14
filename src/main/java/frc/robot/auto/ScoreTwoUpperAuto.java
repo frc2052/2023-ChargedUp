@@ -41,12 +41,12 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
     public void init() {
         super.init();
 
-        final Pose2d farChargeStationPose = createPose2dInches(106, -16, 180);
-        final Translation2d nearChargeStationMidPoint = createTranslation2dInches(32, -16);
+        final Pose2d farChargeStationPose = createPose2dInches(106, -12, 180);
+        final Translation2d nearChargeStationMidPoint = createTranslation2dInches(24, -12);
         final Pose2d lineUpPose = createPose2dInches(9, -32, 225);
 
-        final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 4, 4.5, 0, 2);
-        final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(2, 1, 1, 4, 2, 2, 0);
+        final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(3, 4, 2.5, 4, 4.5, 0, 1.5);
+        final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(2, 1, 1, 4, 2, 1.5, 0);
 
         // Driving back to the grid.
         SwerveControllerCommand driveBackPath = createSwerveCommand(
@@ -71,7 +71,7 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
         ParallelCommandGroup lineUpGroup = new ParallelCommandGroup(
             lineUpPath,
             new InstantCommand(autoRequirements.getIntakePixy()::updateConePosition, autoRequirements.getIntakePixy()).andThen(
-                new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm()).beforeStarting(new WaitCommand(0.25))
+                new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm()).beforeStarting(new WaitCommand(0.5))
             )
         );
 
@@ -82,17 +82,30 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
         
         addCommands(
             new DumbHorizontalAlignmentCommand(
-                () -> 0.25, 
+                () -> -0.2, 
                 () -> 0.0, 
                 autoRequirements.getDrivetrain(), 
                 autoRequirements.getVision(), 
                 autoRequirements.getIntakePixy()
-            ).withTimeout(2)
+            ).withTimeout(0.75)
+        );
+        addCommands(
+            new DumbHorizontalAlignmentCommand(
+                () -> 0.4, 
+                () -> 0.0, 
+                autoRequirements.getDrivetrain(), 
+                autoRequirements.getVision(), 
+                autoRequirements.getIntakePixy()
+            ).withTimeout(0.75)
         );
         setLastEndingPose(createPose2dInches(0, -35, 0));
 
         // Second score and retract.
-        addCommands(new InstantCommand(() -> autoRequirements.getIntake().setScoreMode(ScoreMode.CONE)));
-        addCommands(new ScoreCommand(() -> 0.25, autoRequirements.getIntake()));
+        addCommands(
+            new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE , autoRequirements.getElevator()).andThen(
+                new InstantCommand(() -> autoRequirements.getIntake().setScoreMode(ScoreMode.CONE)),
+                new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm())
+            )
+        );
     }
 }
