@@ -65,7 +65,7 @@ public class GamePieceAlignmentCommand extends DriveCommand {
     @Override
     public boolean isFinished() {
         if (goalXMeters.getAsDouble() == 0) {
-            return true;
+            return false;
         }
         return  xController.atSetpoint(); // || intake.isCurrentLimiting();
     }

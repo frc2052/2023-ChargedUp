@@ -74,14 +74,14 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
         final Pose2d initialPose = createPose2dInches(12.25, 0, 0);
         final Pose2d lineUpPose = createPose2dInches(24, -6, 0);
         final Pose2d chargeStationPose = createPose2dInches(134, pickUpYInches / 2, 0);
-        final Pose2d driveOverPose = createPose2dInches(182, pickUpYInches, 0);
+        final Pose2d driveOverPose = createPose2dInches(190, pickUpYInches, 0);
         final Pose2d pickUpPose = createPose2dInches(258, pickUpYInches, 0);
-        final Pose2d secondLineUpPose = createPose2dInches(164, 12, 180);
-        final Pose2d finalChargeStationPose = createPose2dInches(120, 12, 180);
+        final Pose2d secondLineUpPose = createPose2dInches(164, 6, 180);
+        final Pose2d finalChargeStationPose = createPose2dInches(120, 6, 180);
 
         final AutoTrajectoryConfig retractTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 2, 1, 0, 2);
         final AutoTrajectoryConfig chargeStationTrajectoryConfig = new AutoTrajectoryConfig(5, 4, 2, 3, 2, 2, 0.5);
-        final AutoTrajectoryConfig driveOverTrajectoryConfig = new AutoTrajectoryConfig(0.75, 1.5, 0.5, 3, 2, 0.5, 0.5);
+        final AutoTrajectoryConfig driveOverTrajectoryConfig = new AutoTrajectoryConfig(0.5, 1.5, 0.5, 3, 2.5, 0.5, 0.5);
         final AutoTrajectoryConfig pickUpTrajectoryConfig = new AutoTrajectoryConfig(3, 3, 1, 4, 2, 0.5, 0);
         final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 3, 2, 0, 2);
         final AutoTrajectoryConfig rechargeStationTrajectoryConfig = new AutoTrajectoryConfig(5, 3, 2, 3, 2, 2, 0);
@@ -89,14 +89,19 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
         addCommands(new ResetOdometryCommand(autoRequirements.getDrivetrain(), initialPose));
         
         // Initial elevator score command.
-        if (autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE) {
-            addCommands(new MidScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm()));
-        } else {
-            addCommands(new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm()));
-        }
-        addCommands(new InstantCommand(() -> autoRequirements.getIntake().setScoreMode(autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? ScoreMode.CUBE : ScoreMode.CONE)));
-        addCommands(new ScoreCommand(() -> autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.25, autoRequirements.getIntake()));
+        // if (autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE) {
+        //     addCommands(new MidScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm()));
+        // } else {
+        //     addCommands(new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm()));
+        // }
+        // addCommands(new InstantCommand(() -> autoRequirements.getIntake().setScoreMode(autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? ScoreMode.CUBE : ScoreMode.CONE)));
+        // addCommands(new ScoreCommand(() -> autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.25, autoRequirements.getIntake()));
         
+        addCommands(new ParallelCommandGroup(
+            new ElevatorPositionCommand(87500, autoRequirements.getElevator()),
+            new ArmOutCommand(autoRequirements.getArm()).beforeStarting(new WaitCommand(0.2))
+        ));
+
         SwerveControllerCommand lineUpPath = createSwerveCommand(
             retractTrajectoryConfig, 
             initialPose,
@@ -104,7 +109,7 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
             createRotation(180)
         );
         ParallelDeadlineGroup retractGroup = new ParallelDeadlineGroup(
-            lineUpPath.beforeStarting(new WaitCommand(0.25)),
+            lineUpPath.beforeStarting(new WaitCommand(0.125)),
             new CompleteScoreCommand(autoRequirements.getElevator(), autoRequirements.getIntake(), autoRequirements.getArm())
         );
         addCommands(retractGroup);
@@ -154,7 +159,7 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
         }
         ParallelDeadlineGroup pickUpGroup = new ParallelDeadlineGroup(
             pickupCommand,
-            new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, autoRequirements.getElevator()),
+            new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, autoRequirements.getElevator()).beforeStarting(new WaitCommand(0)),
             new IntakeInCommand(autoRequirements.getIntake())
         );
         addCommands(pickUpGroup);
@@ -193,8 +198,10 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
                 new WaitUntilCommand(autoRequirements.getDrivetrain()::getBalanced).andThen(
                     new ParallelCommandGroup(
                         new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, autoRequirements.getElevator()),
-                        new IntakeOutCommand(autoRequirements.getIntake()).beforeStarting(new WaitCommand(0.95))
-                    ).andThen(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, autoRequirements.getElevator()))
+                        new InstantCommand(() -> { autoRequirements.getIntake().setScoreMode(ScoreMode.CUBE); }).andThen(
+                            new IntakeOutCommand(autoRequirements.getIntake()).beforeStarting(new WaitCommand(0.85))
+                        )
+                    )//.andThen(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, autoRequirements.getElevator()))
                 )
             );
 
