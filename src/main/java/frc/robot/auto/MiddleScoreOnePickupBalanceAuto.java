@@ -76,8 +76,8 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
         final Pose2d chargeStationPose = createPose2dInches(134, pickUpYInches / 2, 0);
         final Pose2d driveOverPose = createPose2dInches(190, pickUpYInches, 0);
         final Pose2d pickUpPose = createPose2dInches(258, pickUpYInches, 0);
-        final Pose2d secondLineUpPose = createPose2dInches(164, 6 + (autoConfiguration.getGamePiece() == GamePiece.MIDDLE_LEFT_GAME_PIECE ? 16 : -32), 180);
-        final Pose2d finalChargeStationPose = createPose2dInches(120, 6 + (autoConfiguration.getGamePiece() == GamePiece.MIDDLE_LEFT_GAME_PIECE ? 16 : -32), 180);
+        final Pose2d secondLineUpPose = createPose2dInches(164, 6 + (autoConfiguration.getGamePiece() == GamePiece.MIDDLE_LEFT_GAME_PIECE ? 16 : -38), 180);
+        final Pose2d finalChargeStationPose = createPose2dInches(120, 6 + (autoConfiguration.getGamePiece() == GamePiece.MIDDLE_LEFT_GAME_PIECE ? 16 : -38), 180);
 
         final AutoTrajectoryConfig retractTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 2, 1, 0, 2);
         final AutoTrajectoryConfig chargeStationTrajectoryConfig = new AutoTrajectoryConfig(5, 4, 2, 3, 2, 2, 0.5);

@@ -53,7 +53,7 @@ public class ForwardPixySubsystem extends SubsystemBase{
 
         Block centerBlock = null;
         for (Block block : blocks){
-            if (block.getSignature() != 3) {
+            if (block.getSignature() == 1) {
                 if (centerBlock == null) {
                     centerBlock = block;
                     continue;

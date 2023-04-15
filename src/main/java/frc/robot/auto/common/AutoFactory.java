@@ -63,11 +63,6 @@ public class AutoFactory {
             Dashboard.getInstance().updateAutoChoosers(autoRequirements != null ? autoRequirements.requirements() : null);
 
             compiledAuto.init();
-
-            AutoDescription autoDescription = compiledAuto.getClass().getAnnotation(AutoDescription.class);
-            if (autoDescription != null) {
-                Dashboard.getInstance().putData(Constants.Dashboard.AUTO_DESCRIPTION_KEY, autoDescription.description());
-            }
         }
 
         Dashboard.getInstance().putData(Constants.Dashboard.AUTO_COMPILED_KEY, true);
@@ -98,6 +93,11 @@ public class AutoFactory {
         public AutoBase getInstance(AutoConfiguration autoConfiguration, AutoRequirements autoRequirements) {
             if (autoClass != null) {
                 try {
+                    AutoDescription autoDescription = autoClass.getClass().getAnnotation(AutoDescription.class);
+                    if (autoDescription != null) {
+                        Dashboard.getInstance().putData(Constants.Dashboard.AUTO_DESCRIPTION_KEY, autoDescription.description());
+                    }
+
                     return autoClass.getConstructor(AutoConfiguration.class, AutoRequirements.class).newInstance(autoConfiguration, autoRequirements);
                 } catch (Exception e) {
                     e.printStackTrace();
