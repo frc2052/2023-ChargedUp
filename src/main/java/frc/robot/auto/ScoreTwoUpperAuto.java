@@ -43,7 +43,7 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
 
         final Pose2d farChargeStationPose = createPose2dInches(106, -12, 180);
         final Translation2d nearChargeStationMidPoint = createTranslation2dInches(24, -12);
-        final Pose2d lineUpPose = createPose2dInches(9, -32, 225);
+        final Pose2d lineUpPose = createPose2dInches(9, autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? -34 : -37.975, autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? 255 : 105);
 
         final AutoTrajectoryConfig driveBackTrajectoryConfig = new AutoTrajectoryConfig(3, 4, 2.5, 4, 4.5, 0, 1.5);
         final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(2, 1, 1, 4, 2, 1.5, 0);
@@ -98,14 +98,10 @@ public class ScoreTwoUpperAuto extends FastScorePickUpAutoBase {
                 autoRequirements.getIntakePixy()
             ).withTimeout(0.75)
         );
-        setLastEndingPose(createPose2dInches(0, -35, 0));
+        setLastEndingPose(createPose2dInches(0, -34, 0));
 
         // Second score and retract.
-        addCommands(
-            new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE , autoRequirements.getElevator()).andThen(
-                new InstantCommand(() -> autoRequirements.getIntake().setScoreMode(ScoreMode.CONE)),
-                new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm())
-            )
-        );
+        addCommands(new InstantCommand(() -> autoRequirements.getIntake().setScoreMode(ScoreMode.CONE)));
+        addCommands(new ScoreCommand(() -> 0.25, autoRequirements.getIntake()));
     }
 }

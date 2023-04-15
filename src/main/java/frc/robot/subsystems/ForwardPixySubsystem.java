@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.io.pixy.Pixy2;
 import frc.robot.io.pixy.Pixy2CCC.Block;
@@ -40,8 +42,14 @@ public class ForwardPixySubsystem extends SubsystemBase{
     }
 
     public Block findCentermostBlock(){
-        pixy.getCCC().getBlocks();
-        ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
+        List<Block> blocks = new ArrayList<Block>();
+
+        try {
+            pixy.getCCC().getBlocks();
+            blocks = pixy.getCCC().getBlockCache();
+        } catch(Exception e) {
+            DriverStation.reportError(e.getMessage(), e.getStackTrace());
+        }
 
         Block centerBlock = null;
         for (Block block : blocks){

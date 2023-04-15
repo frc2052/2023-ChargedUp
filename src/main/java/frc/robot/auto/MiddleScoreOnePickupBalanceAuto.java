@@ -58,7 +58,7 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
         double pickUpYInches;
         switch (autoConfiguration.getGamePiece()) {
             case MIDDLE_LEFT_GAME_PIECE:
-                pickUpYInches = 24;
+                pickUpYInches = 42;
                 break;
 
             case MIDDLE_RIGHT_GAME_PIECE:
@@ -76,13 +76,13 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
         final Pose2d chargeStationPose = createPose2dInches(134, pickUpYInches / 2, 0);
         final Pose2d driveOverPose = createPose2dInches(190, pickUpYInches, 0);
         final Pose2d pickUpPose = createPose2dInches(258, pickUpYInches, 0);
-        final Pose2d secondLineUpPose = createPose2dInches(164, 6, 180);
-        final Pose2d finalChargeStationPose = createPose2dInches(120, 6, 180);
+        final Pose2d secondLineUpPose = createPose2dInches(164, 6 + (autoConfiguration.getGamePiece() == GamePiece.MIDDLE_LEFT_GAME_PIECE ? 16 : -32), 180);
+        final Pose2d finalChargeStationPose = createPose2dInches(120, 6 + (autoConfiguration.getGamePiece() == GamePiece.MIDDLE_LEFT_GAME_PIECE ? 16 : -32), 180);
 
         final AutoTrajectoryConfig retractTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 2, 1, 0, 2);
         final AutoTrajectoryConfig chargeStationTrajectoryConfig = new AutoTrajectoryConfig(5, 4, 2, 3, 2, 2, 0.5);
-        final AutoTrajectoryConfig driveOverTrajectoryConfig = new AutoTrajectoryConfig(1, 1.5, 0.5, 3, 2.5, 0.5, 0.5);
-        final AutoTrajectoryConfig pickUpTrajectoryConfig = new AutoTrajectoryConfig(3, 3, 1, 4, 2, 0.5, 0);
+        final AutoTrajectoryConfig driveOverTrajectoryConfig = new AutoTrajectoryConfig(1, 1.5, 0.5, 3, 2.5, 0.5, 0.4);
+        final AutoTrajectoryConfig pickUpTrajectoryConfig = new AutoTrajectoryConfig(3, 3, 1, 4, 2, 0.4, 0);
         final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 3, 2, 0, 2);
         final AutoTrajectoryConfig rechargeStationTrajectoryConfig = new AutoTrajectoryConfig(5, 3, 2, 3, 2, 2, 0);
 
@@ -135,6 +135,7 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
 
         ParallelDeadlineGroup overChargeGroup = new ParallelDeadlineGroup(
             overChargePath,
+            new ElevatorPositionCommand(10000, autoRequirements.getElevator()),
             new ArmOutCommand(autoRequirements.getArm())
         );
         addCommands(overChargeGroup);
@@ -159,12 +160,12 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
         }
         ParallelDeadlineGroup pickUpGroup = new ParallelDeadlineGroup(
             pickupCommand,
-            new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, autoRequirements.getElevator()).beforeStarting(new WaitCommand(0)),
+            new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, autoRequirements.getElevator()),
             new IntakeInCommand(autoRequirements.getIntake())
         );
         addCommands(pickUpGroup);
 
-        addCommands(new ArmInCommand(autoRequirements.getArm()));
+        addCommands(new ArmInCommand(autoRequirements.getArm()).beforeStarting(new WaitCommand(0.125)));
 
         if (autoConfiguration.getChargeStation() == ChargeStation.BALANCE) {
             SwerveControllerCommand secondLineupPath = createSwerveCommand(
@@ -199,9 +200,12 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
                     new ParallelCommandGroup(
                         new ElevatorPositionCommand(ElevatorPosition.TOP_SCORE, autoRequirements.getElevator()),
                         new InstantCommand(() -> { autoRequirements.getIntake().setScoreMode(ScoreMode.CUBE); }).andThen(
-                            new IntakeOutCommand(autoRequirements.getIntake()).beforeStarting(new WaitCommand(0.85))
+                            new IntakeOutCommand(autoRequirements.getIntake()).beforeStarting(new WaitCommand(0.875))
                         )
-                    )//.andThen(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, autoRequirements.getElevator()))
+                    ).andThen(
+                        new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, autoRequirements.getElevator()),
+                        new IntakeStopCommand(autoRequirements.getIntake())
+                    )
                 )
             );
 
