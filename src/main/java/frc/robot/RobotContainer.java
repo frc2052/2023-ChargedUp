@@ -17,6 +17,7 @@ import frc.robot.commands.drive.GamePieceAlignmentCommand;
 import frc.robot.commands.drive.GyroAlignmentCommand;
 import frc.robot.auto.common.AutoFactory;
 import frc.robot.auto.common.AutoRequirements;
+import frc.robot.commands.arm.ArmOutCommand;
 import frc.robot.commands.drive.ChargeStationBalanceCommand;
 import frc.robot.commands.elevator.ElevatorManualDownCommand;
 import frc.robot.commands.elevator.ElevatorManualUpCommand;
@@ -145,6 +146,15 @@ public class RobotContainer {
         JoystickButton gamePieceAlign = new JoystickButton(driveJoystick, 9);
         gamePieceAlign.whileTrue(new GamePieceAlignmentCommand(() -> 0, drivetrain, forwardPixy, intake));
 
+        JoystickButton align180 = new JoystickButton(driveJoystick, 4);
+        align180.whileTrue(new GyroAlignmentCommand(
+            driveJoystick::getY,
+            driveJoystick::getX,
+            () -> Rotation2d.fromDegrees(180),
+            () -> true,
+            drivetrain
+        ));
+
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
@@ -222,7 +232,10 @@ public class RobotContainer {
         
         elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, elevator));
         elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
-        elevatorConeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.STANDING_CONE, elevator));
+        elevatorConeGroundPickUpButton.onTrue(new ParallelCommandGroup(
+            new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.4)),
+            new ElevatorPositionCommand(ElevatorPosition.STANDING_CONE, elevator)
+        ));
         elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
 
         JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 3);

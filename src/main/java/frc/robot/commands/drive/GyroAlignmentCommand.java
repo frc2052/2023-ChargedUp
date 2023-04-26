@@ -44,7 +44,6 @@ public class GyroAlignmentCommand extends DriveCommand {
         this.targetRotation = targetRotation;
 
         this.shouldFinish = shouldFinish;
-
     }
 
     @Override

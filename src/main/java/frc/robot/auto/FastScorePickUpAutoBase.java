@@ -40,7 +40,7 @@ public class FastScorePickUpAutoBase extends AutoBase {
         final Pose2d initialPose = createPose2dInches(12.25, startingYOffset, 0);
         final Pose2d chargeStationPose = createPose2dInches(70, -14, 0);
         final Pose2d startPickUpPose = createPose2dInches(160, -14, 0);
-        final Pose2d pickUpPose = createPose2dInches(202, -16, 0);
+        final Pose2d pickUpPose = createPose2dInches(208, -16, 0);
 
         final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 4, 5, 0, 3);
         final AutoTrajectoryConfig pickupLineUpTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 4, 2, 3, 2);

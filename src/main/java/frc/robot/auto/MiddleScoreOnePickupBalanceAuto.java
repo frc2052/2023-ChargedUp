@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants;
 import frc.robot.auto.common.AutoBase;
 import frc.robot.auto.common.AutoConfiguration;
 import frc.robot.auto.common.AutoDescription;
@@ -32,8 +33,6 @@ import frc.robot.commands.intake.IntakeInCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.commands.intake.IntakeStopCommand;
 import frc.robot.commands.score.CompleteScoreCommand;
-import frc.robot.commands.score.MidScoreCommand;
-import frc.robot.commands.score.ScoreCommand;
 import frc.robot.commands.score.TopScoreCommand;
 import frc.robot.io.Dashboard;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
@@ -70,14 +69,29 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
                 break;
         }
 
+        double startingY = 0;
+        switch (autoConfiguration.getStartingNode()) {
+            case MIDDLE_CUBE:
+                startingY = 0;
+                break;
+
+            case RIGHT_CONE:
+                startingY = -(Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES);
+                break;
+
+            case LEFT_CONE:
+                startingY = Constants.Auto.NODE_WIDTH_INCHES + Constants.Auto.NODE_DIVIDER_WIDTH_INCHES;
+                break;
+        }
+
         // Recenter offset to zero is the middle node
-        final Pose2d initialPose = createPose2dInches(12.25, 0, 0);
+        final Pose2d initialPose = createPose2dInches(autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 12.25 : 0, startingY, 0);
         final Pose2d lineUpPose = createPose2dInches(24, -6, 0);
         final Pose2d chargeStationPose = createPose2dInches(134, pickUpYInches / 2, 0);
         final Pose2d driveOverPose = createPose2dInches(190, pickUpYInches, 0);
-        final Pose2d pickUpPose = createPose2dInches(258, pickUpYInches, 0);
-        final Pose2d secondLineUpPose = createPose2dInches(164, 6 + (autoConfiguration.getGamePiece() == GamePiece.MIDDLE_LEFT_GAME_PIECE ? 16 : -32), 180);
-        final Pose2d finalChargeStationPose = createPose2dInches(120, 6 + (autoConfiguration.getGamePiece() == GamePiece.MIDDLE_LEFT_GAME_PIECE ? 16 : -32), 180);
+        final Pose2d pickUpPose = createPose2dInches(268, pickUpYInches, 0);
+        final Pose2d secondLineUpPose = createPose2dInches(164, autoConfiguration.getGamePiece() == GamePiece.MIDDLE_LEFT_GAME_PIECE ? 12 : -12, 180);
+        final Pose2d finalChargeStationPose = createPose2dInches(120, autoConfiguration.getGamePiece() == GamePiece.MIDDLE_LEFT_GAME_PIECE ? 12 : -12, 180);
 
         final AutoTrajectoryConfig retractTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 2, 1, 0, 2);
         final AutoTrajectoryConfig chargeStationTrajectoryConfig = new AutoTrajectoryConfig(5, 4, 2, 3, 2, 2, 0.5);
@@ -89,18 +103,23 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
         addCommands(new ResetOdometryCommand(autoRequirements.getDrivetrain(), initialPose));
         
         // Initial elevator score command.
-        // if (autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE) {
-        //     addCommands(new MidScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm()));
-        // } else {
-        //     addCommands(new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm()));
-        // }
+        if (autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE) {
+            addCommands(new ParallelCommandGroup(
+                new ElevatorPositionCommand(87500, autoRequirements.getElevator()),
+                new ArmOutCommand(autoRequirements.getArm()).beforeStarting(new WaitCommand(0.2))
+            ));
+        } else {
+            addCommands(new TopScoreCommand(autoRequirements.getElevator(), autoRequirements.getArm()));
+            addCommands(new IntakeOutCommand(autoRequirements.getIntake()));
+            addCommands(new WaitCommand(0.25));
+        }
         // addCommands(new InstantCommand(() -> autoRequirements.getIntake().setScoreMode(autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? ScoreMode.CUBE : ScoreMode.CONE)));
         // addCommands(new ScoreCommand(() -> autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE ? 0 : 0.25, autoRequirements.getIntake()));
         
-        addCommands(new ParallelCommandGroup(
-            new ElevatorPositionCommand(87500, autoRequirements.getElevator()),
-            new ArmOutCommand(autoRequirements.getArm()).beforeStarting(new WaitCommand(0.2))
-        ));
+        // addCommands(new ParallelCommandGroup(
+        //     new ElevatorPositionCommand(87500, autoRequirements.getElevator()),
+        //     new ArmOutCommand(autoRequirements.getArm()).beforeStarting(new WaitCommand(0.2))
+        // ));
 
         SwerveControllerCommand lineUpPath = createSwerveCommand(
             retractTrajectoryConfig, 
@@ -130,7 +149,7 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
             driveOverTrajectoryConfig, 
             getLastEndingPose(),
             driveOverPose,
-            createRotation(0)
+            createRotation(5 * (autoConfiguration.getGamePiece() == GamePiece.MIDDLE_LEFT_GAME_PIECE ? 1 : -1))
         );
 
         ParallelDeadlineGroup overChargeGroup = new ParallelDeadlineGroup(
@@ -165,7 +184,7 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
         );
         addCommands(pickUpGroup);
 
-        addCommands(new ArmInCommand(autoRequirements.getArm()).beforeStarting(new WaitCommand(0.125)));
+        addCommands(new ArmInCommand(autoRequirements.getArm()));
 
         if (autoConfiguration.getChargeStation() == ChargeStation.BALANCE) {
             SwerveControllerCommand secondLineupPath = createSwerveCommand(
@@ -175,8 +194,8 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
                 createRotation(180)
             );
             ParallelDeadlineGroup lineupGroup = new ParallelDeadlineGroup(
-                secondLineupPath,
-                new ElevatorPositionCommand(30000, autoRequirements.getElevator())
+                secondLineupPath
+                // new ElevatorPositionCommand(30000, autoRequirements.getElevator()).beforeStarting(new WaitCommand(0.25))
             );
             addCommands(lineupGroup);
 

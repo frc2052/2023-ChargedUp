@@ -159,7 +159,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         STARTING(0),
         GROUND_CONE_PICKUP(0),
         FLOOR_CUBE(7200),
-        STANDING_CONE(20000),
+        STANDING_CONE(98500),
         BABY_BIRD(3200),
         MID_SCORE(92000),
         TOP_SCORE(125000);

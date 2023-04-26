@@ -40,8 +40,8 @@ public class CableGuardScoreTwoUpperAuto extends CableGuardFastScorePickUpAutoBa
     public void init() {
         super.init();
 
-        final Pose2d farCableProtectorPose = createPose2dInches(106, -12, 180);
-        final Pose2d nearCableProtectorPose = createPose2dInches(70, -12, 180);
+        final Pose2d farCableProtectorPose = createPose2dInches(106, -16, 180);
+        final Pose2d nearCableProtectorPose = createPose2dInches(70, -16, 180);
         final Translation2d chargeStationMidPoint = createTranslation2dInches(32, -12);
         final Pose2d lineUpPose = createPose2dInches(
             autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? 16 : 21.999937, 
@@ -104,7 +104,7 @@ public class CableGuardScoreTwoUpperAuto extends CableGuardFastScorePickUpAutoBa
         );
         addCommands(
             new DumbHorizontalAlignmentCommand(
-                () -> 0.25, 
+                () -> 0.3, 
                 () -> 0.0, 
                 autoRequirements.getDrivetrain(), 
                 autoRequirements.getVision(), 

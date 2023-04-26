@@ -46,7 +46,7 @@ public class ScoreTwoUpperPickupAuto extends ScoreTwoUpperAuto {
         // final Pose2d pickUpPose = createPose2dInches(250, -72, 0);
         final Translation2d farChargeStationMidPoint = createTranslation2dInches(188, -6);
         final Pose2d startPickUpPose = createPose2dInches(206, -20, autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? 45 : 315);
-        final Pose2d pickUpPose = createPose2dInches(236, -36, autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? 45 : 315);
+        final Pose2d pickUpPose = createPose2dInches(242, -36, autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? 45 : 315);
 
         final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 3, 3, 0, 1);
         final AutoTrajectoryConfig pickupLineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 2.5, 3.5, 2, 1, 1);

@@ -42,7 +42,7 @@ public class CableGuardFastScorePickUpAutoBase extends AutoBase {
         final Pose2d nearCableProtectorPose = createPose2dInches(70, -2, 0);
         final Pose2d farCableProtectorPose = createPose2dInches(106, -2, 0);
         final Pose2d startPickUpPose = createPose2dInches(150, -12, 0);
-        final Pose2d pickUpPose = createPose2dInches(202, -16, autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? 165 : 195);
+        final Pose2d pickUpPose = createPose2dInches(208, -16, autoConfiguration.getStartingGrid() == Grid.RIGHT_GRID ? 165 : 195);
 
         final AutoTrajectoryConfig backupTrajectoryConfig = new AutoTrajectoryConfig(3.5, 3, 1, 4, 5, 0, 1);
         final AutoTrajectoryConfig cableProtectorTrajectoryConfig = new AutoTrajectoryConfig(1, 1, 1, 3, 2, 1, 1);
