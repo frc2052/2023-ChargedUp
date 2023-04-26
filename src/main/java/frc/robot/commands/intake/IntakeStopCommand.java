@@ -8,17 +8,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeStopCommand extends CommandBase {
-  /** Creates a new IntakeStopCommand. */
     private final IntakeSubsystem intake;
 
-    /** Creates a new ReverseIntake. */
     public IntakeStopCommand(IntakeSubsystem intake) {
         this.intake = intake;
 
         addRequirements(this.intake);
     }
 
-    // Called when the command is initially scheduled.
     @Override
     public void initialize() {
         intake.stop();

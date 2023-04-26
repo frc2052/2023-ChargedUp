@@ -7,12 +7,17 @@ package frc.robot.io;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-//import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.auto.common.AutoConfiguration;
+import frc.robot.auto.common.DashboardAutoRequirement;
+import frc.robot.auto.common.AutoFactory.Auto;
+import frc.robot.auto.common.AutoFactory.ChargeStation;
+import frc.robot.auto.common.AutoFactory.GamePiece;
+import frc.robot.auto.common.AutoFactory.Grid;
+import frc.robot.auto.common.AutoFactory.Node;
 
-/** Add your docs here. */
 // Trying something different this year, instead of a normal class
 // the dashboard this year is using a singleton class, so only one instance will
 // run at once
@@ -22,14 +27,12 @@ public class Dashboard {
     // Creates sendable choosers
     private final SendableChooser<DriveMode> driveModeChooser;
 
-    private final SendableChooser<Autos> autoChooser;
-    private final SendableChooser<Node> nodeChooser;
-    private final SendableChooser<Grid> gridChooser;
-    private final SendableChooser<Channel> exitChannelChooser;
+    private final SendableChooser<Auto> autoChooser;
+
+    private final SendableChooser<Node> startingNodeChooser;
+    private final SendableChooser<Grid> startingGridChooser;
     private final SendableChooser<GamePiece> gamePieceChooser;
-    private final SendableChooser<Grid> scoreGridChooser;
-    private final SendableChooser<Node> scoreNodeChooser;
-    private final SendableChooser<Channel> enterChannelChooser;
+    private final SendableChooser<ChargeStation> chargeStationChooser;
 
     private Dashboard() {
         //Creates options for different choosers
@@ -39,82 +42,73 @@ public class Dashboard {
         driveModeChooser.setDefaultOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
         SmartDashboard.putData(Constants.Dashboard.DRIVE_MODE_KEY, driveModeChooser);
 
-        autoChooser = new SendableChooser<Autos>();
-        for (Autos auto : Autos.values()) {
-            autoChooser.addOption(auto.name, auto);
+        autoChooser = new SendableChooser<Auto>();
+        for (Auto auto : Auto.values()) {
+            autoChooser.addOption(auto.name(), auto);
         }
-        autoChooser.setDefaultOption(Autos.NO_AUTO.name, Autos.NO_AUTO);
+        autoChooser.setDefaultOption(Auto.NO_AUTO.name(), Auto.NO_AUTO);
         SmartDashboard.putData("Auto", autoChooser);
 
-        nodeChooser = new SendableChooser<Node>();
+        startingNodeChooser = new SendableChooser<Node>();
         for (Node node : Node.values()) {
-            nodeChooser.addOption(node.name(), node);
+            startingNodeChooser.addOption(node.name(), node);
         }
-        nodeChooser.setDefaultOption(Node.values()[0].name(), Node.values()[0]);
-        SmartDashboard.putData("DA: Node", nodeChooser);
+        startingNodeChooser.setDefaultOption(Node.MIDDLE_CUBE.name(), Node.MIDDLE_CUBE);
 
-        gridChooser = new SendableChooser<Grid>();
+        startingGridChooser = new SendableChooser<Grid>();
         for (Grid grid : Grid.values()) {
-            gridChooser.addOption(grid.name(), grid);
+            startingGridChooser.addOption(grid.name(), grid);
         }
-        gridChooser.setDefaultOption(Grid.values()[0].name(), Grid.values()[0]);
-        SmartDashboard.putData("DA: Grid", gridChooser);
-
-        exitChannelChooser = new SendableChooser<Channel>();
-        for (Channel channel : Channel.values()) {
-            exitChannelChooser.addOption(channel.name(), channel);
-        }
-        exitChannelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
-        SmartDashboard.putData("DA: Channel", exitChannelChooser);
+        startingGridChooser.setDefaultOption(Grid.LEFT_GRID.name(), Grid.LEFT_GRID);
 
         gamePieceChooser = new SendableChooser<GamePiece>();
         for (GamePiece gamePiece : GamePiece.values()) {
             gamePieceChooser.addOption(gamePiece.name(), gamePiece);
         }
-        gamePieceChooser.setDefaultOption(GamePiece.values()[0].name(), GamePiece.values()[0]);
-        SmartDashboard.putData("DA: Game Piece", gamePieceChooser);
-   
-        scoreNodeChooser = new SendableChooser<Node>();
-        for (Node node : Node.values()) {
-            scoreNodeChooser.addOption(node.name(), node);
-        }
-        scoreNodeChooser.setDefaultOption(Node.values()[0].name(), Node.values()[0]);
-        SmartDashboard.putData("DA: Score Node", scoreNodeChooser);
+        gamePieceChooser.setDefaultOption(GamePiece.NO_GAME_PIECE.name(), GamePiece.NO_GAME_PIECE);
 
-        scoreGridChooser = new SendableChooser<Grid>();
-        for (Grid grid : Grid.values()) {
-            scoreGridChooser.addOption(grid.name(), grid);
+        chargeStationChooser = new SendableChooser<ChargeStation>();
+        for (GamePiece gamePiece : GamePiece.values()) {
+            gamePieceChooser.addOption(gamePiece.name(), gamePiece);
         }
-        scoreGridChooser.setDefaultOption(Grid.values()[0].name(), Grid.values()[0]);
-        SmartDashboard.putData("DA: Score Grid", scoreGridChooser);
+        chargeStationChooser.setDefaultOption(ChargeStation.BALANCE.name(), ChargeStation.BALANCE);
 
-        enterChannelChooser = new SendableChooser<Channel>();
-        for (Channel channel : Channel.values()) {
-            enterChannelChooser.addOption(channel.name(), channel);
-        }
-        enterChannelChooser.setDefaultOption(Channel.values()[0].name(), Channel.values()[0]);
-        SmartDashboard.putData("DA: Enter Channel", enterChannelChooser);
+        SmartDashboard.putBoolean("Pixy Cam Broken", false);
 
-        SmartDashboard.putBoolean("DA: End Charge Station", true);
+        updateAutoChoosers(null);
     }
 
-    // updates dashboard with needed information
-    public void updateDashboard() {
-        // SmartDashboard.putString("Auto Description", getAuto().description);
-        SmartDashboard.putBoolean("DA: Score Game Piece", false);
-    }
+    public void updateAutoChoosers(Class<? extends DashboardAutoRequirement>[] autoRequirements) {
+        if (autoRequirements != null) {
+            // SmartDashboard.putData("Starting Grid", null);
+            // SmartDashboard.putData("Starting Node", null);
+            // SmartDashboard.putData("Game Piece", null);
+            // SmartDashboard.putData("Charge Station", null);
 
-    public boolean getScoreGamePiece() {
-       return SmartDashboard.getBoolean("DA: Score Game Piece", false);
-    }
-
-    public boolean endChargeStation(){
-        return SmartDashboard.getBoolean("DA: End Charge Station", true);
+            for (Class<? extends DashboardAutoRequirement> autoRequirement : autoRequirements) {
+                if (autoRequirement.equals(Grid.class)) {
+                    SmartDashboard.putData("Starting Grid", startingGridChooser);
+                } else if (autoRequirement.equals(Node.class)) {
+                    SmartDashboard.putData("Starting Node", startingNodeChooser);
+                } else if (autoRequirement.equals(GamePiece.class)) {
+                    SmartDashboard.putData("Game Piece", gamePieceChooser);
+                } else if (autoRequirement.equals(ChargeStation.class)) {
+                    SmartDashboard.putData("Charge Station", chargeStationChooser);
+                }
+            }
+        } else {
+            SmartDashboard.putData("Starting Grid", startingGridChooser);
+            SmartDashboard.putData("Starting Node", startingNodeChooser);
+            SmartDashboard.putData("Game Piece", gamePieceChooser);
+            SmartDashboard.putData("Charge Station", chargeStationChooser);
+        }
     }
 
     public <V> void putData(String key, V value) {
         if (value instanceof Float) {
             SmartDashboard.putNumber(key, (Float) value);
+        } else if (value instanceof Integer) {
+            SmartDashboard.putNumber(key, (Integer) value);
         } else if (value instanceof Number) {
             SmartDashboard.putNumber(key, (Double) value);
         } else if (value instanceof String) {
@@ -126,48 +120,41 @@ public class Dashboard {
         }
     }
 
-    public DriveMode getDriveMode() {
-        return driveModeChooser.getSelected();      
+    public boolean pixyCamBroken() {
+        return SmartDashboard.getBoolean("Pixy Cam Broken", false);
     }
 
-    public Autos getAuto() {
+    public boolean isFieldCentric() {
+        return driveModeChooser.getSelected() == DriveMode.FIELD_CENTRIC;      
+    }
+
+    public Auto getAuto() {
         return autoChooser.getSelected();
     }
 
-    public Node getNode() {
-        return nodeChooser.getSelected();
+    public Node getStartingNode() {
+        return startingNodeChooser.getSelected();
     }
 
-    public Grid getGrid() {
-        return gridChooser.getSelected();
-    }
-
-    public Channel getExitChannel() {
-        return exitChannelChooser.getSelected();
+    public Grid getStartingGrid() {
+        return startingGridChooser.getSelected();
     }
 
     public GamePiece getGamePiece() {
         return gamePieceChooser.getSelected();
     }
 
-    public Node getScoreNode() {
-        return scoreNodeChooser.getSelected();
+    public ChargeStation getChargeStation(){
+        return chargeStationChooser.getSelected();
     }
 
-    public Grid getScoreGrid() {
-        return scoreGridChooser.getSelected();
-    }
-
-    public Channel getEnterChannel() {
-        return enterChannelChooser.getSelected();
-    }
-
-    public static Dashboard getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Dashboard();
-        }
-
-        return INSTANCE;
+    public AutoConfiguration getAutoConfiguration() {
+        return new AutoConfiguration(
+            getStartingGrid(), 
+            getStartingNode(),
+            getGamePiece(),
+            getChargeStation()
+        );
     }
 
     // Create enums for Dashboard elements/parts here
@@ -176,59 +163,11 @@ public class Dashboard {
         ROBOT_CENTRIC;
     }
 
-    public static enum Autos {
-        NO_AUTO("NO AUTO", "Description"),
-        DYNAMIC_AUTO_FACTORY("DynamicAutoFactory", "Description"),
-        RED_LEFT_SCORE_ONE_BALANCE("Red Left Score One Balance", "Description"),
-        RED_LEFT_SCORE_TWO_BALANCE("Red Left Score Two Balance", "Description"),
-        MIDDLE_SCORE_ONE_BALANCE("Middle Score One Bwe=alance", "Description");
-
-
-        private final String name;
-        private final String description;
-
-        private Autos(String name, String description) {
-            this.name = name;
-            this.description = description;
-        }
-  
-        public String getName() {
-            return name;
+    public static Dashboard getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Dashboard();
         }
 
-        public String getDescription() {
-            return description;
-        }
-    }
-
-    public static enum Grid {
-        LEFT_GRID,
-        MIDDLE_GRID,
-        RIGHT_GRID;
-    }
-
-    public static enum Node {
-        LEFT_CONE,
-        MIDDLE_CUBE,
-        RIGHT_CONE;
-    }
-
-    public static enum Row {
-        HYBRID,
-        MIDDLE,
-        HIGH
-    }
-    // Path around the charge station either on the left or right side
-    public static enum Channel {
-        LEFT_CHANNEL,
-        RIGHT_CHANNEL;
-    }
-
-    public static enum GamePiece {
-        FAR_LEFT_GAME_PIECE,
-        MIDDLE_LEFT_GAME_PIECE,
-        MIDDLE_RIGHT_GAME_PIECE,
-        FAR_RIGHT_GAME_PIECE,
-        NO_GAME_PIECE;
+        return INSTANCE;
     }
 }

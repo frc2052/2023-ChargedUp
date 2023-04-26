@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.io.Dashboard;
+import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private final NeoSwerverModule frontLeftModule;
@@ -42,10 +43,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     );
 
     private final AHRS navx;
+    private Rotation2d navxOffset;
 
     private final SwerveDriveOdometry odometry;
     private final Field2d field;
 
+    private boolean balanced = false;
+    
     /** Creates a new SwerveDrivetrainSubsystem. */
     public DrivetrainSubsystem() {
         frontLeftModule = new NeoSwerverModule(
@@ -82,7 +86,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         navx = new AHRS(SPI.Port.kMXP, (byte) 200);
-        navx.reset();
+        navxOffset = new Rotation2d();
+
+        zeroGyro();
 
         odometry = new SwerveDriveOdometry(
             kinematics, 
@@ -98,12 +104,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Dashboard.getInstance().putData(
-            "Pitch of Robot",
-            navx.getPitch()
-        );
+        Dashboard.getInstance().putData("Rotation Degrees", getRotation().getDegrees());
+        Dashboard.getInstance().putData("Odometry Degrees", odometry.getPoseMeters().getTranslation().getY());
 
         debug();
+        
+        odometry.update(getRotation(), getModulePositions());
     }
 
     /**
@@ -158,6 +164,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void xWheels() {
+        LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.RAINBOW);
+
         frontLeftModule.setState(0, Rotation2d.fromDegrees(45));
         frontRightModule.setState(0, Rotation2d.fromDegrees(-45));
         backLeftModule.setState(0, Rotation2d.fromDegrees(-45));
@@ -187,8 +195,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
             swerveModuleStates[3].speedMetersPerSecond, 
             hasVelocity ? swerveModuleStates[3].angle : backRightModule.getState().angle
         );
-        
-        field.setRobotPose(odometry.update(getRotation(), getModulePositions()));
     }
 
     private SwerveModulePosition[] getModulePositions() {
@@ -201,11 +207,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d initialStartingPose) {
+        navxOffset = initialStartingPose.getRotation();
         odometry.resetPosition(getRotation(), getModulePositions(), initialStartingPose);
     }
 
     public void zeroGyro() {
         navx.reset();
+        navxOffset = new Rotation2d();
     }
 
     public static SwerveDriveKinematics getKinematics() {
@@ -217,7 +225,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
-       return navx.getRotation2d();
+       return navx.getRotation2d().rotateBy(navxOffset);
     }
 
     public static double getMaxVelocityMetersPerSecond() {
@@ -229,10 +237,21 @@ public class DrivetrainSubsystem extends SubsystemBase {
          * Find the theoretical maximum angular velocity of the robot in radians per second 
          * (a measure of how fast the robot can rotate in place).
          */
-        return NeoSwerverModule.getMaxVelocityMetersPerSecond(ModuleConfiguration.MK4I_L2) / Math.hypot(
-            Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, 
-            Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0
-        );
+        
+        // return NeoSwerverModule.getMaxVelocityMetersPerSecond(ModuleConfiguration.MK4I_L2) / Math.hypot(
+        //     Constants.Drivetrain.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, 
+        //     Constants.Drivetrain.DRIVETRAIN_WHEELBASE_METERS / 2.0
+        // );
+
+        return 6 * Math.PI;
+    }
+
+    public void setBalanced(boolean balanced) {
+        this.balanced = balanced;
+    }
+
+    public Boolean getBalanced() {
+        return balanced;
     }
 
     /**
@@ -241,9 +260,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * be the offsets for each SwerveModule respectively.
      */
     public void debug() {
-        Dashboard.getInstance().putData("Odometry X", odometry.getPoseMeters().getX());
-        Dashboard.getInstance().putData("Odometry Y", odometry.getPoseMeters().getY());
-
         frontLeftModule.debug();
         frontRightModule.debug();   
         backLeftModule.debug();

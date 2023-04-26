@@ -34,5 +34,6 @@
     "swervemodule",
     "TRACKWIDTH",
     "wpilibj"
-]
+],
+"C_Cpp.errorSquiggles": "disabled"
 }

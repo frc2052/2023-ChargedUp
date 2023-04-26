@@ -56,8 +56,11 @@ public class NeoSwerverModule extends SwerveModule {
             driveMotor.enableVoltageCompensation(SwerveConstants.MAX_VOLTAGE_VOLTS)
         );
         checkError(
-            "Failed to set drive motor current limit",
-            driveMotor.setSmartCurrentLimit((int) SwerveConstants.DRIVE_CURRENT_LIMIT_AMPS)
+            "Failed to set steer motor current limit",
+            driveMotor.setSmartCurrentLimit(
+                SwerveConstants.DRIVE_STALL_CURRENT_LIMIT_AMPS, 
+                SwerveConstants.DRIVE_FREE_CURRENT_LIMIT_AMPS
+            )
         );
 
         // Drive Motor encoder initialization
@@ -105,6 +108,7 @@ public class NeoSwerverModule extends SwerveModule {
             steerMotor.setSmartCurrentLimit((int) SwerveConstants.STEER_CURRENT_LIMIT_AMPS)
         );
 
+        
         // Steer Motor encoder initialization
         RelativeEncoder steerEncoder = steerMotor.getEncoder();
 

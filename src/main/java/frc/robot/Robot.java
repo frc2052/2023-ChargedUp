@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.io.Dashboard;
 import frc.robot.subsystems.LEDSubsystem;
 
 /**
@@ -57,9 +56,6 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-
-        // Update dashboard values every robot frame.
-        Dashboard.getInstance().updateDashboard();
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
@@ -67,11 +63,15 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
         LEDSubsystem.getInstance().enableLEDs();
         LEDSubsystem.getInstance().robotDisabled();
+
+        robotContainer.forceRecompile();
     }
 
     @Override
     public void disabledPeriodic() {
         LEDSubsystem.getInstance().robotDisabled();
+
+        robotContainer.precompileAuto();
     }
 
     /**
@@ -80,8 +80,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        robotContainer.zeroOdometry();
-
         autonomousCommand = robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
@@ -98,8 +96,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        robotContainer.zeroOdometry();
-        
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove

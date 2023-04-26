@@ -4,52 +4,45 @@
 
 package frc.robot.commands.score;
 
+import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 public class ScoreCommand extends CommandBase {
     private final IntakeSubsystem intake;
-    private final ArmSubsystem arm;
-    private final ElevatorSubsystem elevator;
 
-    private final boolean inverted;
+    private final Timer scoreTimer;
+    private final DoubleSupplier maxScoreTime;
 
-    public ScoreCommand(IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator) {
-        this(intake, arm, elevator, false);
+    public ScoreCommand(IntakeSubsystem intake) {
+        this(() -> 0, intake);
     }
 
-    public ScoreCommand(IntakeSubsystem intake, ArmSubsystem arm, ElevatorSubsystem elevator, boolean inverted) {
+    public ScoreCommand(DoubleSupplier maxScoreTime, IntakeSubsystem intake) {
         this.intake = intake;
-        this.arm = arm;
-        this.elevator = elevator;
 
-        this.inverted = inverted;
-
-        addRequirements(this.intake, this.arm, this.elevator);
+        scoreTimer = new Timer();
+        this.maxScoreTime = maxScoreTime;
+        
+        addRequirements(this.intake);
     }
 
     @Override
     public void initialize() {
-        if (!inverted) {
-            intake.intakeOut();
-        } else {
-            intake.intakeIn();
-        }
+        scoreTimer.reset();
+        scoreTimer.start();
     }
 
     @Override
-    public void end(boolean interrupted) {
-        intake.stop();
-        arm.armIn();
-        elevator.setPosition(ElevatorPosition.BABY_BIRD);
+    public void execute() {
+        intake.intakeOut();
     }
 
     // Score command ends when interupted or timed out.
     @Override
     public boolean isFinished() {
-        return false;
+        return scoreTimer.hasElapsed(maxScoreTime.getAsDouble());
     }
 }

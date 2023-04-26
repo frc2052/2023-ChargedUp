@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -12,12 +11,19 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.io.Dashboard;
+import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonSRX intakeMotor;
+
+    private final Timer currentLimitTimer;
+    private boolean currentLimiting = false;
+
+    private ScoreMode scoreMode;
 
     /** Creates a new Intake. */
     public IntakeSubsystem() {
@@ -42,28 +48,77 @@ public class IntakeSubsystem extends SubsystemBase {
 
         intakeMotor.setNeutralMode(NeutralMode.Brake);
         intakeMotor.setInverted(true);
+
+        currentLimitTimer = new Timer();
+
+        scoreMode = ScoreMode.CONE;
     }
 
     @Override
     public void periodic() {
         Dashboard.getInstance().putData(Constants.Dashboard.INTAKE_CURRENT_KEY, intakeMotor.getSupplyCurrent());
+
+        if (intakeMotor.getSupplyCurrent() - Constants.Intake.INTAKE_CRUISE_CURRENT_AMPS <= 2 && intakeMotor.getSupplyCurrent() > 1) {
+            if (currentLimitTimer.get() == 0) {
+                currentLimitTimer.start();
+            } else if (currentLimitTimer.get() >= Constants.Intake.INTAKE_PEAK_CURRENT_THRESHOLD_DURATION_SECONDS) {
+                LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CURRENT_LIMITING);
+                currentLimiting = true;
+            }
+        } else if (LEDSubsystem.getInstance().getLEDStatusMode() == LEDStatusMode.CURRENT_LIMITING && !LEDSubsystem.getInstance().getRobotDisabled()){
+            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF);
+            currentLimiting = false;
+            currentLimitTimer.stop();
+            currentLimitTimer.reset();
+        }
+    }
+
+    public boolean isCurrentLimiting() {
+        return currentLimiting;
     }
 
     public void intakeIn() {
+        intakeMotor.enableCurrentLimit(true);
+
         intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SPEED);
-        
-        System.out.println("Intaking in!!!");
     }
     
     public void slowIntakeIn() {
-        intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SLOW_SPEED);
+        intakeMotor.enableCurrentLimit(true);
+
+        switch (scoreMode) {
+            case CONE:
+                intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SLOW_SPEED);
+                break;
+            case CUBE:
+                intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_IN_SPEED);
+                break;
+        }
     }
 
     public void intakeOut() {
-        intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_OUT_SPEED);
+        intakeMotor.enableCurrentLimit(false);
+
+        switch (scoreMode) {
+            case CONE:
+                intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_OUT_CONE_SPEED);
+                break;
+            case CUBE:
+                intakeMotor.set(ControlMode.PercentOutput, Constants.Intake.INTAKE_OUT_CUBE_SPEED);
+                break;
+        }
     }
 
     public void stop() {
         intakeMotor.set(ControlMode.PercentOutput, 0.0);
+    }
+
+    public void setScoreMode(ScoreMode scoreMode) {
+        this.scoreMode = scoreMode;
+    }
+
+    public static enum ScoreMode {
+        CONE,
+        CUBE
     }
 }

@@ -14,13 +14,11 @@ public class ZeroElevator extends CommandBase {
         this.elevator = elevator;
     }
 
-    // Called when the command is initially scheduled.
     @Override
-    public void initialize() {
+    public void execute() {
         elevator.manualDown();
     }
 
-    // Returns true when the command should end.
     @Override
     public boolean isFinished() {
         return elevator.elevatorZeroed();

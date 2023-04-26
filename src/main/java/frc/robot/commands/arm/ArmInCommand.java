@@ -10,14 +10,12 @@ import frc.robot.subsystems.ArmSubsystem;
 public class ArmInCommand extends CommandBase {
     private final ArmSubsystem arm;
 
-    /** Creates a new ReverseIntake. */
     public ArmInCommand(ArmSubsystem arm) {
         this.arm = arm;
 
         addRequirements(this.arm);
     }
 
-    // Called when the command is initially scheduled.
     @Override
     public void initialize() {
         arm.armIn();

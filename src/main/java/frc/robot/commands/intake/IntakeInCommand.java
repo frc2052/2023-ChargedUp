@@ -10,29 +10,36 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeInCommand extends CommandBase {
-    private final BooleanSupplier armState;
-
     private final IntakeSubsystem intake;
+
+    private final BooleanSupplier isArmOut;
 
     public IntakeInCommand(IntakeSubsystem intake) {
         this(() -> true, intake);
     }
 
-    public IntakeInCommand(BooleanSupplier armState, IntakeSubsystem intake) {
-        this.armState = armState;
-       
+    public IntakeInCommand(BooleanSupplier isArmOut, IntakeSubsystem intake) {
         this.intake = intake;
+        
+        this.isArmOut = isArmOut;
 
         addRequirements(this.intake);
     }
 
-    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        // Run at least one time
+        execute();
+    }
+
     @Override
     public void execute() {
-        if (armState.getAsBoolean()) {
+        if (isArmOut.getAsBoolean()) {
             intake.intakeIn();
+            System.out.println("FAST FAST FAST FAST FAST FAST FAST ");
         } else {
             intake.slowIntakeIn();
+            System.out.println("SLOW SLOW SLOW SLOW SLOW");
         }
     }
 

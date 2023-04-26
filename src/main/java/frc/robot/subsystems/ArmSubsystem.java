@@ -23,14 +23,6 @@ public class ArmSubsystem extends SubsystemBase {
         );
     }
 
-    public void toggleArm() {
-        if (intakeSolenoid.get() == Value.kOff) {
-            armOut();
-        } else {
-            intakeSolenoid.toggle();
-        }
-    }
-
     public void armIn() {
         intakeSolenoid.set(Value.kForward);
     }
@@ -40,6 +32,14 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public boolean isArmOut() {
-        return intakeSolenoid.get() == Value.kReverse;
+        return intakeSolenoid.get() == Value.kReverse || intakeSolenoid.get() == Value.kOff;
+    }
+
+    public void toggleArm() {
+        if (isArmOut()) {
+            armIn();
+        } else {
+            intakeSolenoid.toggle();
+        }
     }
 }

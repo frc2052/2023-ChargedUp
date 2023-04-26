@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.auto.common.AutoFactory.Auto;
 import frc.robot.io.Dashboard;
-import frc.robot.io.Dashboard.Autos;
 
 /**
  * Subsystem to control the robot's LEDs, by determining what number should be encoded to DIO pins and
@@ -15,9 +15,9 @@ import frc.robot.io.Dashboard.Autos;
 public class LEDSubsystem extends SubsystemBase {
     private static LEDSubsystem INSTANCE;
     
-    private DigitalOutput codeChannel1, codeChannel2, codeChannel3, codeChannel4, codeChannel5, codeChannel6, codeChannel7, codeChannel8;
+    private final DigitalOutput codeChannel1, codeChannel2, codeChannel3, codeChannel4, codeChannel5, codeChannel6, codeChannel7, codeChannel8;
 
-    private LEDStatusMode currentStatusMode = LEDStatusMode.OFF;
+    private LEDStatusMode currentStatusMode;
 
     private boolean disableLEDs;
     private boolean robotDisabled;
@@ -34,7 +34,10 @@ public class LEDSubsystem extends SubsystemBase {
         codeChannel8 = new DigitalOutput(Constants.LEDs.CHANNEL_8_PIN);
         robotDisabled = true;
 
-        // SmartDashboard.putNumber("LED CODE", 0); // For manually inputing code to encode to DIO pins
+        currentStatusMode = LEDStatusMode.OFF;
+
+        // For manually inputing code to encode to DIO pins
+        // SmartDashboard.putNumber("LED CODE", 0);
     }
 
     public static LEDSubsystem getInstance() {  // Method to allow calling this class and getting the single instance from anywhere, creating the instance if the first time.
@@ -44,34 +47,56 @@ public class LEDSubsystem extends SubsystemBase {
         return INSTANCE;
     }
 
+    public static enum LEDStatusMode {
+        OFF(0),
+        CONE(1),
+        CUBE(2),
+        DISABLED_RED_PULSE(3),
+        DISABLED_BLUE_PULSE(4),
+        NO_AUTO(5),
+        CURRENT_LIMITING(6),
+        RAINBOW(7),
+        LAVA(8),
+        WATER(9);
+
+        private final int code;
+
+        private LEDStatusMode(int code) {
+            this.code = code;
+        }
+
+        public int getPositionTicks() {
+            return code;
+        }
+    }
+
     @Override
     public void periodic() {
         int code = 0;
         if(!disableLEDs) {
-                if (robotDisabled) {   // If disabled, finds gets the alliance color from the driver station and pulses that. Only pulses color if connected to station or FMS, else pulses default disabled color (Firefl status mode)
-
-                    Autos selected = Dashboard.getInstance().getAuto();
-                    if (selected == Autos.NO_AUTO){
-                        currentStatusMode = LEDStatusMode.NO_AUTO;
-                    }
-                    else if (DriverStation.getAlliance() == Alliance.Red) {
-                        currentStatusMode = LEDStatusMode.DISABLED_RED_PULSE;
-                    } else if (DriverStation.getAlliance() == Alliance.Blue) {
-                        currentStatusMode = LEDStatusMode.DISABLED_BLUE_PULSE;
-                    } else {
-                        currentStatusMode = LEDStatusMode.OFF; // Reaches here if DriverStation.getAlliance returns Invalid, which just means it can't determine our alliance and we do cool default effect
-                    }
+            if (robotDisabled) {
+                // If disabled, finds gets the alliance color from the driver station and pulses that. Only pulses color if connected to station or FMS, else pulses default disabled color (Firefl status mode)
+                Auto selected = Dashboard.getInstance().getAuto();
+                if (selected == Auto.NO_AUTO){
+                    currentStatusMode = LEDStatusMode.NO_AUTO;
                 }
+                else if (DriverStation.getAlliance() == Alliance.Red) {
+                    currentStatusMode = LEDStatusMode.LAVA;
+                } else if (DriverStation.getAlliance() == Alliance.Blue) {
+                    currentStatusMode = LEDStatusMode.WATER;
+                } else {
+                    currentStatusMode = LEDStatusMode.OFF; // Reaches here if DriverStation.getAlliance returns Invalid, which just means it can't determine our alliance and we do cool default effect
+                }
+            }
 
-                code = currentStatusMode.code;
-
+            code = currentStatusMode.code;
         } else {
             //LEDs are disabled
             code = 0;
         }
 
         // Code for encoding the code to binary on the digitalOutput pins
-        //System.out.println("Sending LED Code" + code + "************************");
+        Dashboard.getInstance().putData("Sending LED Code", code);
         codeChannel1.set((code & 1) > 0);   // 2^0
         codeChannel2.set((code & 2) > 0);   // 2^1
         codeChannel3.set((code & 4) > 0);   // 2^2
@@ -86,6 +111,10 @@ public class LEDSubsystem extends SubsystemBase {
         if (!disableLEDs) {
             currentStatusMode = statusMode;
         }
+    }
+
+    public LEDStatusMode getLEDStatusMode(){
+        return currentStatusMode;
     }
 
     public void clearStatusMode() {
@@ -110,22 +139,7 @@ public class LEDSubsystem extends SubsystemBase {
         robotDisabled = false;
     }
 
-    public static enum LEDStatusMode {
-        OFF(0),
-        CONE(1),
-        CUBE(2),
-        DISABLED_RED_PULSE(3),
-        DISABLED_BLUE_PULSE(4),
-        NO_AUTO(5);
-
-        private final int code;
-
-        private LEDStatusMode(int code) {
-            this.code = code;
-        }
-
-        public int getPositionTicks() {
-            return code;
-        }
+    public boolean getRobotDisabled(){
+        return robotDisabled;
     }
 }
