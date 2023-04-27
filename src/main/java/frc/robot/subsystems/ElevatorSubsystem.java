@@ -40,6 +40,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         // Set motion magic cruise velocity and max acceleration.
         beltMotorConfiguration.motionCruiseVelocity = Constants.Elevator.BELT_MOTOR_CRUISE_VELOCITY;
         beltMotorConfiguration.motionAcceleration = Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION;
+
         beltMotorConfiguration.motionCurveStrength = 0;
         
         beltMotor = new TalonFX(Constants.Elevator.BELT_MOTOR);
@@ -111,6 +112,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         
         previousPositionTicks = currentPositionTicks;
         currentPositionTicks = elevatorPositionTicks;
+
+        if (previousPositionTicks > currentPositionTicks) {
+            // Elevator going down.
+            beltMotor.configMotionCruiseVelocity(Constants.Elevator.SLOW_BELT_MOTOR_CRUISE_VELOCITY);
+            beltMotor.configMotionAcceleration(Constants.Elevator.SLOW_BELT_MOTOR_MAX_ACCELERATION);
+        } else {
+            // Elevator going up.
+            beltMotor.configMotionCruiseVelocity(Constants.Elevator.BELT_MOTOR_CRUISE_VELOCITY);
+            beltMotor.configMotionAcceleration(Constants.Elevator.BELT_MOTOR_MAX_ACCELERATION);
+        }
 
         beltMotor.set(
             ControlMode.MotionMagic,

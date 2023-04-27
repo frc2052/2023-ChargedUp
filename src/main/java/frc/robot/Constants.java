@@ -61,8 +61,11 @@ public final class Constants {
         public static final double MANUAL_DOWN_SPEED = -0.15;
         public static final double FEED_FORWARD = 0.065;
 
-        public static final double BELT_MOTOR_CRUISE_VELOCITY = 14000;
-        public static final double BELT_MOTOR_MAX_ACCELERATION = 24000;
+        public static final double SLOW_BELT_MOTOR_CRUISE_VELOCITY = 14000;
+        public static final double SLOW_BELT_MOTOR_MAX_ACCELERATION = 24000;
+        
+        public static final double BELT_MOTOR_CRUISE_VELOCITY = 18000;
+        public static final double BELT_MOTOR_MAX_ACCELERATION = 40000;
         public static final int BELT_MOTOR_DEAD_ZONE_TICKS = 250;
     }
 

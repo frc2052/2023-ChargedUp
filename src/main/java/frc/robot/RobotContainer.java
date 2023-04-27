@@ -233,7 +233,7 @@ public class RobotContainer {
         elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, elevator));
         elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
         elevatorConeGroundPickUpButton.onTrue(new ParallelCommandGroup(
-            new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.4)),
+            //new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.4)),
             new ElevatorPositionCommand(ElevatorPosition.STANDING_CONE, elevator)
         ));
         elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
