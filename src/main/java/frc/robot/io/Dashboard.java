@@ -5,6 +5,9 @@
 
 package frc.robot.io;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.Topic;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -23,8 +26,13 @@ import frc.robot.auto.common.AutoFactory.Node;
 // run at once
 public class Dashboard {
     private static Dashboard INSTANCE;
+    private final NetworkTableInstance ntinst;
+    private final NetworkTable rPiTable;
 
     // Creates sendable choosers
+
+    private final SendableChooser<Integer> tagGoalChooser;
+
     private final SendableChooser<DriveMode> driveModeChooser;
 
     private final SendableChooser<Auto> autoChooser;
@@ -35,7 +43,19 @@ public class Dashboard {
     private final SendableChooser<ChargeStation> chargeStationChooser;
 
     private Dashboard() {
+
+        ntinst = NetworkTableInstance.getDefault();
+        rPiTable = ntinst.getTable("RaspberryPi");
+
         //Creates options for different choosers
+
+        tagGoalChooser = new SendableChooser<Integer>();
+        for (int i = 0; i < 4; i++){
+            tagGoalChooser.addOption("Tag " + i, i);
+
+        }
+        tagGoalChooser.setDefaultOption("Tag 0", 0);
+
         driveModeChooser = new SendableChooser<DriveMode>();
         driveModeChooser.addOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
         driveModeChooser.addOption(DriveMode.ROBOT_CENTRIC.name(), DriveMode.ROBOT_CENTRIC);
@@ -118,6 +138,14 @@ public class Dashboard {
         } else if (value instanceof Sendable) {
             Shuffleboard.getTab("main").add(key, (Sendable) value);
         }
+    }
+
+    public int getGoalTag(){
+        return tagGoalChooser.getSelected();
+    }
+
+    public Topic getRPiItem(String x){
+        return rPiTable.getTopic(x);
     }
 
     public boolean pixyCamBroken() {
