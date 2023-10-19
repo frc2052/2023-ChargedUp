@@ -8,6 +8,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.team2052.swervemodule.ModuleConfiguration;
 import com.team2052.swervemodule.NeoSwerverModule;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -45,10 +47,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final AHRS navx;
     private Rotation2d navxOffset;
 
+    private final SwerveDrivePoseEstimator poseEstimator;
     private final SwerveDriveOdometry odometry;
     private final Field2d field;
 
     private boolean balanced = false;
+
+    private DoubleSubscriber x0;
     
     /** Creates a new SwerveDrivetrainSubsystem. */
     public DrivetrainSubsystem() {
@@ -90,6 +95,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         zeroGyro();
 
+        poseEstimator = new SwerveDrivePoseEstimator(
+            kinematics, 
+            getRotation(), 
+            getModulePositions(), 
+            new Pose2d()
+        );
+
         odometry = new SwerveDriveOdometry(
             kinematics, 
             getRotation(),
@@ -100,16 +112,21 @@ public class DrivetrainSubsystem extends SubsystemBase {
         
         Shuffleboard.getTab("Odometry").add(navx);
         Shuffleboard.getTab("Odometry").add(field);
+
+        x0 = Dashboard.getInstance().getRPiTableTopic("Tag 0 x:").subscribe(0.0);
     }
 
     @Override
     public void periodic() {
+
+        System.out.println(x0.get());
         Dashboard.getInstance().putData("Rotation Degrees", getRotation().getDegrees());
         Dashboard.getInstance().putData("Odometry Degrees", odometry.getPoseMeters().getTranslation().getY());
 
         debug();
         
-        odometry.update(getRotation(), getModulePositions());
+        //odometry.update(getRotation(), getModulePositions());
+        poseEstimator.update(navxOffset, getModulePositions());
     }
 
     /**

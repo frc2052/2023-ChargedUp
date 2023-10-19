@@ -5,6 +5,7 @@
 
 package frc.robot.io;
 
+import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.Topic;
@@ -144,8 +145,8 @@ public class Dashboard {
         return tagGoalChooser.getSelected();
     }
 
-    public Topic getRPiItem(String x){
-        return rPiTable.getTopic(x);
+    public DoubleTopic getRPiTableTopic(String x){
+        return rPiTable.getDoubleTopic(x);
     }
 
     public boolean pixyCamBroken() {
