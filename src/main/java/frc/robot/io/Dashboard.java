@@ -5,6 +5,7 @@
 
 package frc.robot.io;
 
+import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -32,8 +33,6 @@ public class Dashboard {
 
     // Creates sendable choosers
 
-    private final SendableChooser<Integer> tagGoalChooser;
-
     private final SendableChooser<DriveMode> driveModeChooser;
 
     private final SendableChooser<Auto> autoChooser;
@@ -49,13 +48,6 @@ public class Dashboard {
         rPiTable = ntinst.getTable("RaspberryPi");
 
         //Creates options for different choosers
-
-        tagGoalChooser = new SendableChooser<Integer>();
-        for (int i = 0; i < 4; i++){
-            tagGoalChooser.addOption("Tag " + i, i);
-
-        }
-        tagGoalChooser.setDefaultOption("Tag 0", 0);
 
         driveModeChooser = new SendableChooser<DriveMode>();
         driveModeChooser.addOption(DriveMode.FIELD_CENTRIC.name(), DriveMode.FIELD_CENTRIC);
@@ -141,12 +133,8 @@ public class Dashboard {
         }
     }
 
-    public int getGoalTag(){
-        return tagGoalChooser.getSelected();
-    }
-
-    public DoubleTopic getRPiTableTopic(String x){
-        return rPiTable.getDoubleTopic(x);
+    public DoubleArrayTopic getRPiTableTopic(String topicName){
+        return rPiTable.getDoubleArrayTopic(topicName);
     }
 
     public boolean pixyCamBroken() {
