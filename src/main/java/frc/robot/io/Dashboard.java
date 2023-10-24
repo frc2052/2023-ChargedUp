@@ -136,6 +136,10 @@ public class Dashboard {
     public DoubleArrayTopic getRPiTableTopic(String topicName){
         return rPiTable.getDoubleArrayTopic(topicName);
     }
+    
+    public NetworkTable getrPiTable(){
+        return rPiTable;
+    }
 
     public boolean pixyCamBroken() {
         return SmartDashboard.getBoolean("Pixy Cam Broken", false);
