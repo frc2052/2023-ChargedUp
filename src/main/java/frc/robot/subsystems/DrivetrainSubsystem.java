@@ -50,12 +50,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private Rotation2d navxOffset;
 
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final SwerveDriveOdometry odometry;
+    //private final SwerveDriveOdometry odometry;
     private final Field2d field;
 
     private boolean balanced = false;
 
-    private DoubleArraySubscriber piPose;
+    private DoubleArraySubscriber piRobotPose;
     
     /** Creates a new SwerveDrivetrainSubsystem. */
     public DrivetrainSubsystem() {
@@ -104,11 +104,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
             new Pose2d()
         );
 
-        odometry = new SwerveDriveOdometry(
-            kinematics, 
-            getRotation(),
-            getModulePositions()
-        );
+        // odometry = new SwerveDriveOdometry(
+        //     kinematics, 
+        //     getRotation(),
+        //     getModulePositions()
+        // );
 
         field = new Field2d();
         
@@ -116,14 +116,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
         Shuffleboard.getTab("Odometry").add(field);
 
         double[] x = new double[0];
-        piPose = Dashboard.getInstance().getRPiTableTopic("piPose").subscribe(x);
+        piRobotPose = Dashboard.getInstance().getRPiTableTopic("robotPose").subscribe(x);
     }
 
     @Override
     public void periodic() {
-        if(piPose.get().length == 3){
+        if(piRobotPose.get().length == 3){
             //System.out.println("GOT VISION READING************************");
-            Pose2d visionPose = new Pose2d(piPose.get()[0], piPose.get()[2], navxOffset);
+            Pose2d visionPose = new Pose2d(piRobotPose.get()[0], piRobotPose.get()[2], navxOffset);
             poseEstimator.update(getRotation(), getModulePositions());
             poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
             System.out.println(poseEstimator.getEstimatedPosition());
@@ -131,11 +131,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         }
         //System.out.println(Dashboard.getInstance().getrPiTable().getTopics());
         Dashboard.getInstance().putData("Rotation Degrees", getRotation().getDegrees());
-        Dashboard.getInstance().putData("Odometry Degrees", odometry.getPoseMeters().getTranslation().getY());
+        //Dashboard.getInstance().putData("Odometry Degrees", odometry.getPoseMeters().getTranslation().getY());
 
         debug();
         
-        odometry.update(getRotation(), getModulePositions());
+        //odometry.update(getRotation(), getModulePositions());
     }
 
     /**
@@ -234,7 +234,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public void resetOdometry(Pose2d initialStartingPose) {
         navxOffset = initialStartingPose.getRotation();
-        odometry.resetPosition(getRotation(), getModulePositions(), initialStartingPose);
+        poseEstimator.resetPosition(getRotation(), getModulePositions(), initialStartingPose);
     }
 
     public void zeroGyro() {
@@ -247,7 +247,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public Pose2d getPosition() {
-        return odometry.getPoseMeters();
+        return poseEstimator.getEstimatedPosition();
+        //return odometry.getPoseMeters();
     }
 
     public Rotation2d getRotation() {
