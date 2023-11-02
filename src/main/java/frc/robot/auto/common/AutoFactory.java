@@ -14,6 +14,7 @@ import frc.robot.auto.ScoreOneBalanceAuto;
 import frc.robot.auto.ScoreTwoBalanceAuto;
 import frc.robot.auto.ScoreTwoUpperAuto;
 import frc.robot.auto.ScoreTwoUpperPickupAuto;
+import frc.robot.auto.apriltagautos.CenterOnTagAuto;
 import frc.robot.auto.cableguardautos.CableGuardScoreTwoUpperAuto;
 import frc.robot.auto.cableguardautos.CableGuardScoreTwoUpperPickupAuto;
 import frc.robot.io.Dashboard;
@@ -82,7 +83,8 @@ public class AutoFactory {
         SCORE_TWO_UPPER_PICKUP(ScoreTwoUpperPickupAuto.class),
         MIDDLE_SCORE_ONE_PICKUP_BALANCE(MiddleScoreOnePickupBalanceAuto.class),
         MIDDLE_SCORE_ONE_BALANCE(MiddleScoreOneBalanceAuto.class),
-        HUNGRY_HUNGRY_HIPPO(HungryHungryHippoAuto.class);
+        HUNGRY_HUNGRY_HIPPO(HungryHungryHippoAuto.class),
+        CENTER_ON_TAG(CenterOnTagAuto.class);
 
         private final Class<? extends AutoBase> autoClass;
 

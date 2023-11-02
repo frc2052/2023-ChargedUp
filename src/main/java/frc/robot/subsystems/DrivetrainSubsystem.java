@@ -124,16 +124,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
         if(piRobotPose.get().length == 3){
             //System.out.println("GOT VISION READING************************");
             Pose2d visionPose = new Pose2d(piRobotPose.get()[0], piRobotPose.get()[2], navxOffset);
-            poseEstimator.update(getRotation(), getModulePositions());
             poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
-            System.out.println(poseEstimator.getEstimatedPosition());
-            //Dashboard.getInstance().putData("Position of Pose Estimator", poseEstimator.getEstimatedPosition());
+            //System.out.println(poseEstimator.getEstimatedPosition());
+            Dashboard.getInstance().putData("Position of Pose Estimator X", poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getRotation(), getModulePositions()).getTranslation().getX());
+            Dashboard.getInstance().putData("Position of Pose Estimator Y", poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getRotation(), getModulePositions()).getTranslation().getY());
         }
+
         //System.out.println(Dashboard.getInstance().getrPiTable().getTopics());
         Dashboard.getInstance().putData("Rotation Degrees", getRotation().getDegrees());
         //Dashboard.getInstance().putData("Odometry Degrees", odometry.getPoseMeters().getTranslation().getY());
 
-        debug();
+        //debug();
         
         //odometry.update(getRotation(), getModulePositions());
     }
