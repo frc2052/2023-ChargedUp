@@ -49,7 +49,7 @@ public class ScorePickUpAutoBase extends AutoBase {
         final AutoTrajectoryConfig pickupLineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 4, 2, 2, 1);
         final AutoTrajectoryConfig pickupTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 4, 2, 1, 0);
 
-        addCommands(new ResetOdometryCommand(autoRequirements.getDrivetrain(), initialPose));
+        addCommands(new ResetOdometryCommand(initialPose));
         
         // Initial elevator score command.
         if (autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE) {
@@ -101,8 +101,7 @@ public class ScorePickUpAutoBase extends AutoBase {
             pickupCommand = new GamePieceAlignmentCommand(
                 () -> pickUpPose.getX(),
                 autoRequirements.getDrivetrain(),
-                autoRequirements.getForwardPixy(),
-                autoRequirements.getIntake()
+                autoRequirements.getForwardPixy()
             );
             setLastEndingPose(pickUpPose);
         } else {

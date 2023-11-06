@@ -56,7 +56,7 @@ public class MiddleScoreOneBalanceAuto extends AutoBase {
         final AutoTrajectoryConfig driveOverTrajectoryConfig = new AutoTrajectoryConfig(0.5, 1.5, 0.5, 3, 2, 0.5, 0);
         final AutoTrajectoryConfig rechargeStationTrajectoryConfig = new AutoTrajectoryConfig(5, 3, 2, 3, 2, 0, 0);
 
-        addCommands(new ResetOdometryCommand(autoRequirements.getDrivetrain(), initialPose));
+        addCommands(new ResetOdometryCommand(initialPose));
         
         // Initial elevator score command.
         if (autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE) {

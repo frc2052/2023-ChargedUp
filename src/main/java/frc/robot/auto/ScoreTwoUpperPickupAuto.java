@@ -88,8 +88,7 @@ public class ScoreTwoUpperPickupAuto extends ScoreTwoUpperAuto {
             pickupCommand = new GamePieceAlignmentCommand(
                 () -> pickUpPose.getX(),
                 autoRequirements.getDrivetrain(),
-                autoRequirements.getForwardPixy(),
-                autoRequirements.getIntake()
+                autoRequirements.getForwardPixy()
             );
             setLastEndingPose(pickUpPose);
         } else {

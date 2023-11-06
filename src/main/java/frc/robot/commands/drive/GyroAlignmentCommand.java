@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.RobotState;
 import frc.robot.io.Dashboard;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -55,7 +56,7 @@ public class GyroAlignmentCommand extends DriveCommand {
     @Override
     protected double getRotation() {
         // Forcing angle to be between [0, 360], PIDController thinks -180 isn't at setpoint of 180
-        double gyroDegrees = (drivetrain.getRotation().getDegrees() + 360) % 360;
+        double gyroDegrees = (RobotState.getInstance().getRotation2d().getDegrees() + 360) % 360;
 
         // Calculate PID value along with feedforward constant to assist with minor adjustments.
         double rotationValue = rotationController.calculate(gyroDegrees) / 360;

@@ -144,7 +144,7 @@ public class RobotContainer {
          * Drivetrain button bindings
          */
         JoystickButton gamePieceAlign = new JoystickButton(driveJoystick, 9);
-        gamePieceAlign.whileTrue(new GamePieceAlignmentCommand(() -> 0, drivetrain, forwardPixy, intake));
+        gamePieceAlign.whileTrue(new GamePieceAlignmentCommand(() -> 0, drivetrain, forwardPixy));
 
         JoystickButton align180 = new JoystickButton(driveJoystick, 4);
         align180.whileTrue(new GyroAlignmentCommand(

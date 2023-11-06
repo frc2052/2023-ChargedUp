@@ -4,13 +4,12 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.Constants;
+import frc.robot.RobotState;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ForwardPixySubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 
 public class GamePieceAlignmentCommand extends DriveCommand {
     private final ForwardPixySubsystem pixy;
-    private final IntakeSubsystem intake;
 
     private final PIDController xController;
     private final PIDController yController;
@@ -20,13 +19,11 @@ public class GamePieceAlignmentCommand extends DriveCommand {
     public GamePieceAlignmentCommand(
         DoubleSupplier goalXMeters,
         DrivetrainSubsystem drivetrain,
-        ForwardPixySubsystem pixy,
-        IntakeSubsystem intake
+        ForwardPixySubsystem pixy
     ) {
         super(() -> 0, () -> 0, () -> 0, () -> false, drivetrain);
 
         this.pixy = pixy;
-        this.intake = intake;
 
         xController = new PIDController(0.5, 0, 0);
         xController.setTolerance(0.1);
@@ -56,7 +53,7 @@ public class GamePieceAlignmentCommand extends DriveCommand {
     protected double getX() {
         //System.out.println("ALIGNING X: " + drivetrain.getPosition().getX());
         if (goalXMeters.getAsDouble() != 0) {
-            return xController.calculate(drivetrain.getPosition().getX());
+            return xController.calculate(RobotState.getInstance().getRobotPose().getX());
         } else {
             return 0;
         }

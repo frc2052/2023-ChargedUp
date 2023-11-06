@@ -5,7 +5,6 @@
 package frc.robot.auto;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -46,7 +45,7 @@ public class FastScorePickUpAutoBase extends AutoBase {
         final AutoTrajectoryConfig pickupLineUpTrajectoryConfig = new AutoTrajectoryConfig(4, 4, 2.5, 4, 2, 3, 2);
         final AutoTrajectoryConfig pickupTrajectoryConfig = new AutoTrajectoryConfig(3, 3, 1, 4, 2, 2, 0);
 
-        addCommands(new ResetOdometryCommand(autoRequirements.getDrivetrain(), initialPose));
+        addCommands(new ResetOdometryCommand(initialPose));
         
         // Initial elevator score command.
         addCommands(new ParallelCommandGroup(
@@ -88,8 +87,7 @@ public class FastScorePickUpAutoBase extends AutoBase {
             pickupCommand = new GamePieceAlignmentCommand(
                 () -> pickUpPose.getX(),
                 autoRequirements.getDrivetrain(),
-                autoRequirements.getForwardPixy(),
-                autoRequirements.getIntake()
+                autoRequirements.getForwardPixy()
             );
             //).andThen(new ResetOdometryCommand(autoRequirements.getDrivetrain(), new Pose2d(pickUpPose.getX(), pickUpPose.getY(), 0)));
             setLastEndingPose(pickUpPose);

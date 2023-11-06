@@ -18,10 +18,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
+import frc.robot.RobotState;
 import frc.robot.auto.common.AutoFactory.Grid;
 import frc.robot.auto.common.AutoFactory.Node;
 import frc.robot.commands.elevator.ZeroElevator;
-import frc.robot.subsystems.DrivetrainSubsystem;
 
 public abstract class AutoBase extends SequentialCommandGroup {
     protected final AutoConfiguration autoConfiguration;
@@ -100,6 +100,20 @@ public abstract class AutoBase extends SequentialCommandGroup {
     }
 
     protected SwerveControllerCommand createSwerveCommand(
+        AutoTrajectoryConfig trajectoryConfig,
+        Pose2d endPose, 
+        Supplier<Rotation2d> rotationSupplier
+    ) {
+        return createSwerveCommand(
+            trajectoryConfig, 
+            RobotState.getInstance().getRobotPose(),
+            new ArrayList<Translation2d>(), 
+            endPose, 
+            rotationSupplier
+        );
+    }
+
+    protected SwerveControllerCommand createSwerveCommand(
         AutoTrajectoryConfig trajectoryConfig, 
         Pose2d startPose, 
         List<Translation2d> midpointList,
@@ -124,8 +138,8 @@ public abstract class AutoBase extends SequentialCommandGroup {
                 new Pose2d(endPose.getX(), endPose.getY() * flipYCoord, endPose.getRotation()),
                 trajectoryConfig.getTrajectoryConfig()
             ),
-            autoRequirements.getDrivetrain()::getPosition,
-            DrivetrainSubsystem.getKinematics(),
+            RobotState.getInstance()::getRobotPose,
+            Constants.Drivetrain.kinematics,
             trajectoryConfig.getXYController(),
             trajectoryConfig.getXYController(),
             trajectoryConfig.getThetaController(), 

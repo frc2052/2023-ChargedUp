@@ -6,10 +6,8 @@
 package frc.robot.io;
 
 import edu.wpi.first.networktables.DoubleArrayTopic;
-import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.Topic;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -133,7 +131,7 @@ public class Dashboard {
         }
     }
 
-    public DoubleArrayTopic getRPiTableTopic(String topicName){
+    public DoubleArrayTopic getRaspberryPiTableTopic(String topicName){
         return rPiTable.getDoubleArrayTopic(topicName);
     }
     

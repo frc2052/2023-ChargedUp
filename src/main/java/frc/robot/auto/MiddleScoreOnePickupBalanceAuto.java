@@ -6,7 +6,6 @@ package frc.robot.auto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -100,7 +99,7 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
         final AutoTrajectoryConfig lineUpTrajectoryConfig = new AutoTrajectoryConfig(3, 2, 1, 3, 2, 0, 2);
         final AutoTrajectoryConfig rechargeStationTrajectoryConfig = new AutoTrajectoryConfig(5, 3, 2, 3, 2, 2, 0);
 
-        addCommands(new ResetOdometryCommand(autoRequirements.getDrivetrain(), initialPose));
+        addCommands(new ResetOdometryCommand(initialPose));
         
         // Initial elevator score command.
         if (autoConfiguration.getStartingNode() == Node.MIDDLE_CUBE) {
@@ -165,8 +164,7 @@ public class MiddleScoreOnePickupBalanceAuto extends AutoBase {
             pickupCommand = new GamePieceAlignmentCommand(
                 () -> pickUpPose.getX(),
                 autoRequirements.getDrivetrain(),
-                autoRequirements.getForwardPixy(),
-                autoRequirements.getIntake()
+                autoRequirements.getForwardPixy()
             );
             setLastEndingPose(pickUpPose);
         } else {

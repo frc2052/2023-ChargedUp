@@ -7,33 +7,29 @@ package frc.robot.commands.drive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.RobotStateEstimator;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ResetOdometryCommand extends InstantCommand {
-    private final DrivetrainSubsystem drivetrain;
 
     private final Pose2d initialPose;
     private final Rotation2d initialRotation;
 
-    public ResetOdometryCommand(DrivetrainSubsystem drivetrain, Pose2d initialPose) {
-        this(drivetrain, initialPose, Rotation2d.fromDegrees(180));
+    public ResetOdometryCommand(Pose2d initialPose) {
+        this(initialPose, Rotation2d.fromDegrees(180));
     }
 
-    public ResetOdometryCommand(DrivetrainSubsystem drivetrain, Pose2d initialPose, Rotation2d initialRotation) {
-        this.drivetrain = drivetrain;
+    public ResetOdometryCommand(Pose2d initialPose, Rotation2d initialRotation) {
 
         this.initialPose = initialPose;
         this.initialRotation = initialRotation;
-
-        addRequirements(drivetrain);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        drivetrain.resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), initialRotation));
+        RobotStateEstimator.getInstance().resetOdometry(new Pose2d(initialPose.getX(), initialPose.getY(), initialRotation));
     }
 }

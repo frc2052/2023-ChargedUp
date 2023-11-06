@@ -20,7 +20,6 @@ import frc.robot.auto.common.DashboardAutoRequirements;
 import frc.robot.auto.common.AutoFactory.ChargeStation;
 import frc.robot.auto.common.AutoFactory.Grid;
 import frc.robot.auto.common.AutoFactory.Node;
-import frc.robot.commands.arm.ArmInCommand;
 import frc.robot.commands.drive.GamePieceAlignmentCommand;
 import frc.robot.commands.elevator.ElevatorPositionCommand;
 import frc.robot.commands.intake.IntakeInCommand;
@@ -99,8 +98,7 @@ public class CableGuardScoreTwoUpperPickupAuto extends CableGuardScoreTwoUpperAu
             pickupCommand = new GamePieceAlignmentCommand(
                 () -> pickUpPose.getX(),
                 autoRequirements.getDrivetrain(),
-                autoRequirements.getForwardPixy(),
-                autoRequirements.getIntake()
+                autoRequirements.getForwardPixy()
             );
             setLastEndingPose(pickUpPose);
         } else {
