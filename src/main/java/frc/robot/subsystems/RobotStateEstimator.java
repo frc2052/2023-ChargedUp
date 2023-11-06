@@ -33,7 +33,7 @@ public class RobotStateEstimator{
                 RobotState.getInstance().getVisionTranslation2d(), 
                 RobotState.getInstance().getRotation2d()
             ),
-            0
+            RobotState.getInstance().getVisionDetectionTime()
         );
         
         poseEstimator.update(

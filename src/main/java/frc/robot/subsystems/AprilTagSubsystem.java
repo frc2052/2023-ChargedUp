@@ -27,10 +27,11 @@ public class AprilTagSubsystem{
   public void update() {
     // This method will be called once per scheduler run
     if(raspberryPiCameraPoseSubscriber.get().length == 3){
-      Translation3d cameraTranslation3dMeters = new Translation3d(raspberryPiCameraPoseSubscriber.get()[0], raspberryPiCameraPoseSubscriber.get()[1], 0);
+      Translation3d cameraTranslation3dMeters = new Translation3d(raspberryPiCameraPoseSubscriber.get()[0], raspberryPiCameraPoseSubscriber.get()[1], Constants.PiCamera.Z_OFFSET_INCHES);
       Translation3d robotVisionTranslation3d = cameraTranslation3dMeters.minus(Constants.PiCamera.PI_CAMERA_POSITION_METERS.getTranslation());
+      double detectionTime = raspberryPiCameraPoseSubscriber.get()[2];
 
-      RobotState.getInstance().addVisionPoseUpdate(robotVisionTranslation3d);
+      RobotState.getInstance().addVisionTranslation3dUpdate(robotVisionTranslation3d, detectionTime);
     }
   }
 }

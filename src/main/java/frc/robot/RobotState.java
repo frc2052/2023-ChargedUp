@@ -16,6 +16,7 @@ public class RobotState {
     private Pose2d initialPose;
     private Pose2d robotPose;
     private Translation2d visionTranslation2d;
+    private double detectionTime;
     private Rotation2d navxOffset;
     private Rotation2d robotRotation2d;
     private SwerveModulePosition[] swerveModulePositions;
@@ -37,8 +38,9 @@ public class RobotState {
         this.robotRotation2d = drivetrainState.getRotation2d();
     }
 
-    public void addVisionPoseUpdate(Translation3d robotVisionTranslation3d){
+    public void addVisionTranslation3dUpdate(Translation3d robotVisionTranslation3d, double detectionTime){
         visionTranslation2d = robotVisionTranslation3d.toTranslation2d();
+        this.detectionTime = detectionTime;
     }
 
     public void updateRobotPose(Pose2d robotPose){
@@ -55,6 +57,10 @@ public class RobotState {
 
     public Translation2d getVisionTranslation2d(){
         return visionTranslation2d;
+    }
+
+    public double getVisionDetectionTime(){
+        return detectionTime;
     }
 
     public Rotation2d getRotation2d(){
