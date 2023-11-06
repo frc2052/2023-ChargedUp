@@ -10,6 +10,9 @@ public class RobotStateEstimator{
 
     private final SwerveDrivePoseEstimator poseEstimator;
 
+    /**
+     * RobotStateEstimator uses SwerveDrivePoseEstimator to estimate the pose of the robot, field relative.
+     */
     public static RobotStateEstimator getInstance(){
         if (INSTANCE == null) {
             INSTANCE = new RobotStateEstimator();
@@ -18,7 +21,7 @@ public class RobotStateEstimator{
         return INSTANCE;
     }
 
-    public RobotStateEstimator() {
+    private RobotStateEstimator() {
         poseEstimator = new SwerveDrivePoseEstimator(
             Constants.Drivetrain.kinematics, 
             RobotState.getInstance().getRotation2d(), 
@@ -27,6 +30,9 @@ public class RobotStateEstimator{
         );
     }
 
+    /**
+     * Update the SwerveDrivePoseEstimator with values from RobotState
+     */
     public void updateRobotPoseEstimator() {
         poseEstimator.addVisionMeasurement(
             new Pose2d(
@@ -45,6 +51,9 @@ public class RobotStateEstimator{
         
     }
 
+    /**
+     * Reset the position of SwerveDrivePoseEstimator and set the NavX Offset
+     */
     public void resetOdometry(Pose2d initialStartingPose){
         RobotState.getInstance().reset(initialStartingPose);
 

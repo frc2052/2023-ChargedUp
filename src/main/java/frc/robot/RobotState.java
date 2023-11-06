@@ -15,7 +15,7 @@ public class RobotState {
 
     private Pose2d initialPose;
     private Pose2d robotPose;
-    private Translation2d visionTranslation2d;
+    private Translation3d visionTranslation3d;
     private double detectionTime;
     private Rotation2d navxOffset;
     private Rotation2d robotRotation2d;
@@ -29,17 +29,23 @@ public class RobotState {
         return INSTANCE;
     }
 
-     /*
-     * RobotState keeps track of the position of the robot during a match
-     */
-
     public void addDrivetrainState(DrivetrainState drivetrainState){
         this.swerveModulePositions = drivetrainState.getModulePositions();
         this.robotRotation2d = drivetrainState.getRotation2d();
     }
 
+    /**
+     * Adds an AprilTag vision tracked translation3d WITHOUT timestamp.
+     */ 
+    public void addVisionTranslation3dUpdate(Translation3d robotVisionTranslation3d){
+        visionTranslation3d = robotVisionTranslation3d;
+    }
+
+    /**
+     * Adds an AprilTag vision tracked translation3d WITH timestamp.
+     */ 
     public void addVisionTranslation3dUpdate(Translation3d robotVisionTranslation3d, double detectionTime){
-        visionTranslation2d = robotVisionTranslation3d.toTranslation2d();
+        visionTranslation3d = robotVisionTranslation3d;
         this.detectionTime = detectionTime;
     }
 
@@ -47,30 +53,57 @@ public class RobotState {
         this.robotPose = robotPose;
     }
 
+    /**
+     * Reset the RobotState's Initial Pose2d and set the NavX Offset. 
+     * NavX offset is set when the robot has an inital rotation not facing where you want 0 (forwards) to be.
+     */
     public void reset(Pose2d initialStartingPose){
         navxOffset = new Rotation2d();
         navxOffset = initialStartingPose.getRotation();
         initialPose = initialStartingPose;
     }
 
-    // Getters 
-
+    /**
+     * Returns the latest AprilTag vision detection robot translation in Translation2d
+     * 
+     * @return Translation2d
+     */
     public Translation2d getVisionTranslation2d(){
-        return visionTranslation2d;
+        return visionTranslation3d.toTranslation2d();
     }
 
+    /**
+     * Returns the latest AprilTag Vision detection time. This is when (on the raspberry pi) the Translation3d was last updated.
+     * 
+     * @return double
+     */
     public double getVisionDetectionTime(){
         return detectionTime;
     }
 
+    /**
+     * Returns the Rotation2d of the robot, accounting for an offset that was set when intialized. 
+     * 
+     * @return Rotation2d
+     */
     public Rotation2d getRotation2d(){
         return robotRotation2d.rotateBy(navxOffset);
     }
 
+    /**
+     * Returns the SwerveModulePositions of the drivetrain swerve modules. 
+     * 
+     * @return SwerveModulePosition[]
+     */
     public SwerveModulePosition[] getModulePositions(){
         return swerveModulePositions;
     }
 
+    /**
+     * Returns the Pose2d of the robot that was given by the estimator. 
+     * 
+     * @return Pose2d
+     */
     public Pose2d getRobotPose(){
         return robotPose;
     }
