@@ -52,6 +52,7 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         AprilTagSubsystem.getInstance().update();
         RobotStateEstimator.getInstance().updateRobotPoseEstimator();
+        RobotState.getInstance().outputRobotStateToDashboard();
 
         // Runs the Scheduler. This is responsible for polling buttons, adding
         // newly-scheduled

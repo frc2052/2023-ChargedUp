@@ -126,8 +126,8 @@ public final class Constants {
     }
 
     public static final class PiCamera {
-        public static final double X_OFFSET_INCHES = 7.25;
-        public static final double Y_OFFSET_INCHES = 3.675;
+        public static final double X_OFFSET_INCHES = 3.675;
+        public static final double Y_OFFSET_INCHES = -10.75;
         public static final double Z_OFFSET_INCHES = 43.5;
 
         public static final double THETA_X_OFFSET_DEGREES = 0.0; // roll

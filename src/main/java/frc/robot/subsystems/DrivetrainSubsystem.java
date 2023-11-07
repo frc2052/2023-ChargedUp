@@ -22,6 +22,8 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.LEDSubsystem.LEDStatusMode;
 
 public class DrivetrainSubsystem extends SubsystemBase {
+    private RobotState robotState = RobotState.getInstance();
+
     private final NeoSwerverModule frontLeftModule;
     private final NeoSwerverModule frontRightModule;
     private final NeoSwerverModule backLeftModule;
@@ -143,7 +145,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public void xWheels() {
         LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.RAINBOW);
-
         frontLeftModule.setState(0, Rotation2d.fromDegrees(45));
         frontRightModule.setState(0, Rotation2d.fromDegrees(-45));
         backLeftModule.setState(0, Rotation2d.fromDegrees(-45));

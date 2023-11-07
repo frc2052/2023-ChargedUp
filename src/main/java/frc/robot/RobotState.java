@@ -1,6 +1,8 @@
 package frc.robot;
 
 import com.team2052.lib.DrivetrainState;
+import com.team2052.swervemodule.ModuleConfiguration;
+import com.team2052.swervemodule.NeoSwerverModule;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -8,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.io.Dashboard;
 
 public class RobotState {
@@ -27,6 +30,10 @@ public class RobotState {
         }
 
         return INSTANCE;
+    }
+
+    public boolean hasValidState() {
+        return swerveModulePositions != null;
     }
 
     public void addDrivetrainState(DrivetrainState drivetrainState){
@@ -78,6 +85,9 @@ public class RobotState {
      * @return double
      */
     public double getVisionDetectionTime(){
+        if(detectionTime == 0.0){
+            return Timer.getFPGATimestamp();
+        }
         return detectionTime;
     }
 
@@ -168,11 +178,19 @@ public class RobotState {
 
     public void outputRobotStateToDashboard(){
         Dashboard.getInstance().putData("Rotation Degrees", robotRotation2d.getDegrees());
+        Dashboard.getInstance().putData("Robot Position X: ", robotPose.getX());
+        Dashboard.getInstance().putData("Robot Position Y: ", robotPose.getY());
         //Dashboard.getInstance().putData("Position of Pose Estimator X", poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getRotation(), getModulePositions()).getTranslation().getX());
         //Dashboard.getInstance().putData("Position of Pose Estimator Y", poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getRotation(), getModulePositions()).getTranslation().getY());
         // Dashboard.getInstance().putData("Robot Pose X", robotPose2d.getX());
     }
 
-    private RobotState() {}
-     
+    private RobotState() {
+        initialPose = new Pose2d();
+        robotPose = new Pose2d();
+        detectionTime = 0.0;
+        visionTranslation3d = new Translation3d();
+        navxOffset = new Rotation2d(0);
+        robotRotation2d = new Rotation2d(0);
+    }     
 }
