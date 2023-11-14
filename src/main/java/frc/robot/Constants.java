@@ -126,16 +126,19 @@ public final class Constants {
     }
 
     public static final class PiCamera {
-        public static final double X_OFFSET_INCHES = 3.675;
-        public static final double Y_OFFSET_INCHES = -10.75;
-        public static final double Z_OFFSET_INCHES = 43.5;
+        public static final double X_OFFSET_INCHES = 6;
+        public static final double Y_OFFSET_INCHES = 6.925;
+        public static final double Z_OFFSET_INCHES = 41.75;
+
+        // error in vision readings
+        private static final double Y_ERROR_INCHES = 3;
 
         public static final double THETA_X_OFFSET_DEGREES = 0.0; // roll
         public static final double THETA_Y_OFFSET_DEGREES = 0.0; // pitch
         public static final double THETA_Z_OFFSET_DEGREES = 0.0; // yaw
 
         public static final Transform3d PI_CAMERA_POSITION_METERS = new Transform3d(
-            new Translation3d(Units.inchesToMeters(X_OFFSET_INCHES), Units.inchesToMeters(Y_OFFSET_INCHES), Units.inchesToMeters(Z_OFFSET_INCHES)), 
+            new Translation3d(Units.inchesToMeters(X_OFFSET_INCHES), Units.inchesToMeters(Y_OFFSET_INCHES + Y_ERROR_INCHES), Units.inchesToMeters(Z_OFFSET_INCHES)), 
             new Rotation3d(Units.degreesToRadians(THETA_X_OFFSET_DEGREES), Units.degreesToRadians(THETA_Y_OFFSET_DEGREES), Units.degreesToRadians(THETA_Z_OFFSET_DEGREES))
         );
     }
