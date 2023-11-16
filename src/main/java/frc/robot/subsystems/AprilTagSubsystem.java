@@ -11,7 +11,8 @@ public class AprilTagSubsystem{
 
   private DoubleArraySubscriber raspberryPiCameraPoseSubscriber;
 
-  private Translation3d lastVisionUpdateTranslation3d;
+  private Translation3d lastCameraVisionUpdateTranslation3d;
+  private Translation3d deadzoneTranslation3d = new Translation3d(0.05, 0.05, 0.05);
   
   public static AprilTagSubsystem getInstance(){
     if (INSTANCE == null){
@@ -28,19 +29,29 @@ public class AprilTagSubsystem{
 
   public void update() {
     if(raspberryPiCameraPoseSubscriber.get().length == 3){
-      Translation3d cameraTranslation3dMeters = new Translation3d(raspberryPiCameraPoseSubscriber.get()[0], raspberryPiCameraPoseSubscriber.get()[1], Constants.PiCamera.Z_OFFSET_INCHES);
-      Translation3d robotVisionTranslation3d = cameraTranslation3dMeters.minus(Constants.PiCamera.PI_CAMERA_POSITION_METERS.getTranslation());
-      
-      if (lastVisionUpdateTranslation3d == null){
-        lastVisionUpdateTranslation3d = robotVisionTranslation3d;
+    
+      Translation3d cameraTranslation3dMeters = new Translation3d(raspberryPiCameraPoseSubscriber.get()[0], raspberryPiCameraPoseSubscriber.get()[1], raspberryPiCameraPoseSubscriber.get()[2]);
+
+      if (lastCameraVisionUpdateTranslation3d == null){
+        lastCameraVisionUpdateTranslation3d = cameraTranslation3dMeters;
       }
 
-      if (lastVisionUpdateTranslation3d != robotVisionTranslation3d){
-        lastVisionUpdateTranslation3d = robotVisionTranslation3d;
+      if (cameraTranslation3dMeters != lastCameraVisionUpdateTranslation3d){
+        Translation3d robotVisionTranslation3d = cameraTranslation3dMeters.minus(Constants.PiCamera.PI_CAMERA_POSITION_METERS);
         RobotState.getInstance().addVisionTranslation3dUpdate(robotVisionTranslation3d);
+        lastCameraVisionUpdateTranslation3d = cameraTranslation3dMeters;
       } else {
         System.out.println("Stale Vision Reading");
       }
+      
+
+
+    //   if ((robotVisionTranslation3d.plus(deadzoneTranslation3d)).getZ() > lastrobotVisionUpdateTranslation3d.getZ() || (robotVisionTranslation3d.minus(deadzoneTranslation3d)).getZ() < lastrobotVisionUpdateTranslation3d.getZ()){
+    //     RobotState.getInstance().addVisionTranslation3dUpdate(robotVisionTranslation3d);
+    //     lastrobotVisionUpdateTranslation3d = robotVisionTranslation3d;
+    //   } else {
+    //     System.out.println("Stale Vision Reading");
+    //   }
     }
   }
 }

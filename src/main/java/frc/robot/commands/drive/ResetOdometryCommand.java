@@ -7,6 +7,7 @@ package frc.robot.commands.drive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.RobotState;
 import frc.robot.subsystems.RobotStateEstimator;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -16,13 +17,18 @@ public class ResetOdometryCommand extends InstantCommand {
 
     private final Pose2d initialPose;
     private final Rotation2d initialRotation;
+    
+    private static RobotState robotState = RobotState.getInstance();
+
+    public ResetOdometryCommand() {
+        this(robotState.getRobotPose(), Rotation2d.fromDegrees(180));
+    }
 
     public ResetOdometryCommand(Pose2d initialPose) {
         this(initialPose, Rotation2d.fromDegrees(180));
     }
 
     public ResetOdometryCommand(Pose2d initialPose, Rotation2d initialRotation) {
-
         this.initialPose = initialPose;
         this.initialRotation = initialRotation;
     }
