@@ -5,6 +5,7 @@
 
 package frc.robot.io;
 
+import edu.wpi.first.networktables.BooleanTopic;
 import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -131,8 +132,12 @@ public class Dashboard {
         }
     }
 
-    public DoubleArrayTopic getRaspberryPiTableTopic(String topicName){
-        return rPiTable.getDoubleArrayTopic(topicName);
+    public DoubleArrayTopic getRaspberryPiCameraPoseMeters(){
+        return rPiTable.getDoubleArrayTopic("cameraPoseMeters");
+    }
+
+    public BooleanTopic getRaspberryPiValidReadingState(){
+        return rPiTable.getBooleanTopic("tagFound");
     }
     
     public NetworkTable getrPiTable(){

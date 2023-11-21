@@ -22,13 +22,13 @@ public class CenterOnTagAuto extends AutoBase{
     @Override
     public void init() {
         
-        final Pose2d finalPose = createPose2dInches(40, 0, 0);
+        final Pose2d finalPose = createPose2dInches(40, 0, 180);
 
-        final AutoTrajectoryConfig trajectory = new AutoTrajectoryConfig(0.1, 0.1, 0.1, 0.1, 1, 0, 0);
+        final AutoTrajectoryConfig trajectory = new AutoTrajectoryConfig(1, 1, 1, 1, 1, 0, 0);
 
         addCommands(new ResetOdometryCommand());
 
-        SwerveControllerCommand path = createSwerveCommand(trajectory, finalPose, createRotation(0));
+        SwerveControllerCommand path = createSwerveCommand(trajectory, finalPose, createRotation(finalPose.getRotation().getDegrees()));
 
         addCommands(path);
     }

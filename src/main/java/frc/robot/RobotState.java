@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.io.Dashboard;
@@ -23,6 +24,9 @@ public class RobotState {
     private Rotation2d navxOffset;
     private Rotation2d robotRotation2d;
     private SwerveModulePosition[] swerveModulePositions;
+    
+    private boolean hasValidTagReading = false;
+    private BooleanSubscriber raspberryPiHasValidTagReadingSubscriber;
 
     public static RobotState getInstance() {
         if (INSTANCE == null) {
@@ -31,6 +35,17 @@ public class RobotState {
 
         return INSTANCE;
     }
+
+    private RobotState() {
+        initialPose = new Pose2d();
+        robotPose = new Pose2d();
+        detectionTime = 0.0;
+        visionTranslation3d = new Translation3d();
+        navxOffset = new Rotation2d(0);
+        robotRotation2d = new Rotation2d(0);
+
+        raspberryPiHasValidTagReadingSubscriber = Dashboard.getInstance().getRaspberryPiValidReadingState().subscribe(hasValidTagReading);
+    }  
 
     public boolean hasValidState() {
         return swerveModulePositions != null;
@@ -46,6 +61,10 @@ public class RobotState {
      */ 
     public void addVisionTranslation3dUpdate(Translation3d robotVisionTranslation3d){
         visionTranslation3d = robotVisionTranslation3d;
+    }
+
+    public boolean hasVisionValidTagReading(){
+        return raspberryPiHasValidTagReadingSubscriber.get();
     }
 
     /**
@@ -183,14 +202,5 @@ public class RobotState {
         //Dashboard.getInstance().putData("Position of Pose Estimator X", poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getRotation(), getModulePositions()).getTranslation().getX());
         //Dashboard.getInstance().putData("Position of Pose Estimator Y", poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getRotation(), getModulePositions()).getTranslation().getY());
         // Dashboard.getInstance().putData("Robot Pose X", robotPose2d.getX());
-    }
-
-    private RobotState() {
-        initialPose = new Pose2d();
-        robotPose = new Pose2d();
-        detectionTime = 0.0;
-        visionTranslation3d = new Translation3d();
-        navxOffset = new Rotation2d(0);
-        robotRotation2d = new Rotation2d(0);
-    }     
+    }   
 }

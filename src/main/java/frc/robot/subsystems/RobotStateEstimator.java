@@ -40,14 +40,15 @@ public class RobotStateEstimator{
                 new Pose2d()
             );
         }
-        
-        poseEstimator.addVisionMeasurement(
-            new Pose2d(
-                robotState.getVisionTranslation2d(), 
-                robotState.getRotation2d()
-            ),
-            robotState.getVisionDetectionTime()
-        );
+        if (robotState.hasVisionValidTagReading()){
+            poseEstimator.addVisionMeasurement(
+                new Pose2d(
+                    robotState.getVisionTranslation2d(), 
+                    robotState.getRotation2d()
+                ),
+                robotState.getVisionDetectionTime()
+            );
+        }
         
         poseEstimator.update(
             robotState.getRotation2d(), 
