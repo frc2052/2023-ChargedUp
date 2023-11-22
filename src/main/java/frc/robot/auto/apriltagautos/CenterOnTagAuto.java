@@ -22,7 +22,7 @@ public class CenterOnTagAuto extends AutoBase{
     @Override
     public void init() {
         
-        final Pose2d finalPose = createPose2dInches(40, 0, 180);
+        final Pose2d finalPose = createPose2dInches(40, 79, 180);
 
         final AutoTrajectoryConfig trajectory = new AutoTrajectoryConfig(1, 1, 1, 1, 1, 0, 0);
 

@@ -19,7 +19,7 @@ public class RobotState {
 
     private Pose2d initialPose;
     private Pose2d robotPose;
-    private Translation3d visionTranslation3d;
+    private Pose2d robotVisionPose2d;
     private double detectionTime;
     private Rotation2d navxOffset;
     private Rotation2d robotRotation2d;
@@ -40,7 +40,7 @@ public class RobotState {
         initialPose = new Pose2d();
         robotPose = new Pose2d();
         detectionTime = 0.0;
-        visionTranslation3d = new Translation3d();
+        robotVisionPose2d = new Pose2d();
         navxOffset = new Rotation2d(0);
         robotRotation2d = new Rotation2d(0);
 
@@ -59,8 +59,8 @@ public class RobotState {
     /**
      * Adds an AprilTag vision tracked translation3d WITHOUT timestamp.
      */ 
-    public void addVisionTranslation3dUpdate(Translation3d robotVisionTranslation3d){
-        visionTranslation3d = robotVisionTranslation3d;
+    public void addVisionPose2dUpdate(Pose2d robotVisionPose2d){
+        this.robotVisionPose2d = robotVisionPose2d;
     }
 
     public boolean hasVisionValidTagReading(){
@@ -70,8 +70,8 @@ public class RobotState {
     /**
      * Adds an AprilTag vision tracked translation3d WITH timestamp.
      */ 
-    public void addVisionTranslation3dUpdate(Translation3d robotVisionTranslation3d, double detectionTime){
-        visionTranslation3d = robotVisionTranslation3d;
+    public void addVisionTranslation3dUpdate(Pose2d robotVisionPose2d, double detectionTime){
+        this.robotVisionPose2d = robotVisionPose2d;
         this.detectionTime = detectionTime;
     }
 
@@ -94,8 +94,8 @@ public class RobotState {
      * 
      * @return Translation2d
      */
-    public Translation2d getVisionTranslation2d(){
-        return visionTranslation3d.toTranslation2d();
+    public Pose2d getVisionPose2d(){
+        return robotVisionPose2d;
     }
 
     /**
