@@ -1,14 +1,11 @@
 package frc.robot;
 
 import com.team2052.lib.DrivetrainState;
-import com.team2052.swervemodule.ModuleConfiguration;
-import com.team2052.swervemodule.NeoSwerverModule;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -65,14 +62,6 @@ public class RobotState {
 
     public boolean hasVisionValidTagReading(){
         return raspberryPiHasValidTagReadingSubscriber.get();
-    }
-
-    /**
-     * Adds an AprilTag vision tracked translation3d WITH timestamp.
-     */ 
-    public void addVisionTranslation3dUpdate(Pose2d robotVisionPose2d, double detectionTime){
-        this.robotVisionPose2d = robotVisionPose2d;
-        this.detectionTime = detectionTime;
     }
 
     public void updateRobotPose(Pose2d robotPose){
@@ -197,10 +186,10 @@ public class RobotState {
 
     public void outputRobotStateToDashboard(){
         Dashboard.getInstance().putData("Rotation Degrees", robotRotation2d.getDegrees());
-        Dashboard.getInstance().putData("Robot Position X: ", robotPose.getX());
-        Dashboard.getInstance().putData("Robot Position Y: ", robotPose.getY());
-        //Dashboard.getInstance().putData("Position of Pose Estimator X", poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getRotation(), getModulePositions()).getTranslation().getX());
-        //Dashboard.getInstance().putData("Position of Pose Estimator Y", poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getRotation(), getModulePositions()).getTranslation().getY());
-        // Dashboard.getInstance().putData("Robot Pose X", robotPose2d.getX());
+        Dashboard.getInstance().putData("Robot Position X Inches: ", Units.inchesToMeters(robotPose.getX()));
+        Dashboard.getInstance().putData("Robot Position Y Inches: ", Units.inchesToMeters(robotPose.getY()));
+        Dashboard.getInstance().putData("VISION Robot Position X Inches: ", Units.inchesToMeters(robotVisionPose2d.getX()));
+        Dashboard.getInstance().putData("VISION Robot Position Y Inches: ", Units.inchesToMeters(robotVisionPose2d.getY()));
+        Dashboard.getInstance().putData("Vision Rotational Value Degrees: ", robotVisionPose2d.getRotation().getDegrees());
     }   
 }
