@@ -132,12 +132,12 @@ public class Dashboard {
         }
     }
 
-    public DoubleArrayTopic getRaspberryPiCameraPoseMeters(){
-        return rPiTable.getDoubleArrayTopic("cameraPoseMeters");
+    public DoubleArrayTopic getRaspberryPiCameraPoseMeters(String cameraName){
+        return rPiTable.getDoubleArrayTopic(cameraName);
     }
 
-    public BooleanTopic getRaspberryPiValidReadingState(){
-        return rPiTable.getBooleanTopic("tagFound");
+    public BooleanTopic getRaspberryPiValidReadingState(String cameraName){
+        return rPiTable.getBooleanTopic(cameraName + "tagFound");
     }
     
     public NetworkTable getrPiTable(){

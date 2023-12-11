@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.team2052.lib.DrivetrainState;
+import com.team2052.lib.PiCamera;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,9 +22,6 @@ public class RobotState {
     private Rotation2d navxOffset;
     private Rotation2d robotRotation2d;
     private SwerveModulePosition[] swerveModulePositions;
-    
-    private boolean hasValidTagReading = false;
-    private BooleanSubscriber raspberryPiHasValidTagReadingSubscriber;
 
     public static RobotState getInstance() {
         if (INSTANCE == null) {
@@ -40,8 +38,6 @@ public class RobotState {
         robotVisionPose2d = new Pose2d();
         navxOffset = new Rotation2d(0);
         robotRotation2d = new Rotation2d(0);
-
-        raspberryPiHasValidTagReadingSubscriber = Dashboard.getInstance().getRaspberryPiValidReadingState().subscribe(hasValidTagReading);
     }  
 
     public boolean hasValidState() {
@@ -62,6 +58,10 @@ public class RobotState {
 
     public boolean hasVisionValidTagReading(){
         return raspberryPiHasValidTagReadingSubscriber.get();
+    }
+
+    public void invalidateCamera(PiCamera camera){
+        
     }
 
     public void updateRobotPose(Pose2d robotPose){
