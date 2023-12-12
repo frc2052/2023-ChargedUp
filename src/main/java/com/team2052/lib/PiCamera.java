@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
-import frc.robot.Constants;
 import frc.robot.io.Dashboard;
 
 public class PiCamera {
@@ -33,7 +32,7 @@ public class PiCamera {
         raspberryPiHasValidTagReadingSubscriber = Dashboard.getInstance().getRaspberryPiValidReadingState(cameraName).subscribe(hasValidTagReading);
     }
 
-    public Pose2d getUpdatedPose(){
+    public Pose2d getEstimatedPosition(){
       cameraTranslation2dMeters = new Translation3d(raspberryPiCameraPoseSubscriber.get()[0], raspberryPiCameraPoseSubscriber.get()[1], raspberryPiCameraPoseSubscriber.get()[2]);
       visionYaw = raspberryPiCameraPoseSubscriber.get()[3];
       robotVisionPose2d = new Pose2d(

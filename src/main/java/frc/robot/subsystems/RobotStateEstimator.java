@@ -41,12 +41,10 @@ public class RobotStateEstimator{
             );
         }
 
-        if (robotState.hasVisionValidTagReading()) {
-            poseEstimator.addVisionMeasurement(
-                robotState.getVisionPose2d(),
-                robotState.getVisionDetectionTime()
-            );
-        }
+        poseEstimator.addVisionMeasurement(
+            robotState.getVisionPose2d(),
+            robotState.getVisionDetectionTime()
+        );
         
         poseEstimator.update(
             robotState.getRotation2d(), 

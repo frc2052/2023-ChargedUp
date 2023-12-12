@@ -1,13 +1,11 @@
 package frc.robot;
 
 import com.team2052.lib.DrivetrainState;
-import com.team2052.lib.PiCamera;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.io.Dashboard;
@@ -54,14 +52,6 @@ public class RobotState {
      */ 
     public void addVisionPose2dUpdate(Pose2d robotVisionPose2d){
         this.robotVisionPose2d = robotVisionPose2d;
-    }
-
-    public boolean hasVisionValidTagReading(){
-        return raspberryPiHasValidTagReadingSubscriber.get();
-    }
-
-    public void invalidateCamera(PiCamera camera){
-        
     }
 
     public void updateRobotPose(Pose2d robotPose){
