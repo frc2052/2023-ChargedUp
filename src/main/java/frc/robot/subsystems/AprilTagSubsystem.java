@@ -6,7 +6,10 @@ import java.util.List;
 import com.team2052.lib.PiCamera;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 
@@ -16,7 +19,6 @@ public class AprilTagSubsystem{
     private RobotState robotState = RobotState.getInstance();
     private List<PiCamera> cameras = new ArrayList<PiCamera> ();
     //private PiCamera[] cameras = new PiCamera[2];
-    private Pose2d averagePose2dMeters;
   
     public static AprilTagSubsystem getInstance(){
         if (INSTANCE == null){
@@ -32,18 +34,23 @@ public class AprilTagSubsystem{
     }
 
     public void update() {
-        Pose2d total = new Pose2d();
+        Translation2d totalTranslation = new Translation2d();
+        double totalRotation = 0;
+        int totalNumCameras = 0;
 
         for(int i = 0; i < cameras.size(); i++){
             PiCamera camera = cameras.get(i);
             if(camera.isValid()){
-                total.plus(new Transform2d(total, camera.getEstimatedPosition()));
+                totalTranslation = totalTranslation.plus(camera.getEstimatedPosition().getTranslation());
+                totalRotation += camera.getEstimatedPosition().getRotation().getRadians();
+                totalNumCameras++;
             } else {
                 System.out.println(camera.getName() + " IS INVALID");
             }
         }
 
-        averagePose2dMeters = total.div(cameras.size());
-        robotState.addVisionPose2dUpdate(averagePose2dMeters);
+        Translation2d averageTranslation2d = totalTranslation.div(totalNumCameras);
+        Rotation2d averageRotation2d = new Rotation2d(totalRotation / totalNumCameras);
+        robotState.addVisionPose2dUpdate(new Pose2d(averageTranslation2d, averageRotation2d));
     }
 }
