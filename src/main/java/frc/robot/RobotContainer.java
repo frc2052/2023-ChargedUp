@@ -143,164 +143,164 @@ public class RobotContainer {
         /*
          * Drivetrain button bindings
          */
-        JoystickButton gamePieceAlign = new JoystickButton(driveJoystick, 9);
-        gamePieceAlign.whileTrue(new GamePieceAlignmentCommand(() -> 0, drivetrain, forwardPixy, intake));
+        // JoystickButton gamePieceAlign = new JoystickButton(driveJoystick, 9);
+        // gamePieceAlign.whileTrue(new GamePieceAlignmentCommand(() -> 0, drivetrain, forwardPixy, intake));
 
-        JoystickButton align180 = new JoystickButton(driveJoystick, 4);
-        align180.whileTrue(new GyroAlignmentCommand(
-            driveJoystick::getY,
-            driveJoystick::getX,
-            () -> Rotation2d.fromDegrees(180),
-            () -> true,
-            drivetrain
-        ));
+        // JoystickButton align180 = new JoystickButton(driveJoystick, 4);
+        // align180.whileTrue(new GyroAlignmentCommand(
+        //     driveJoystick::getY,
+        //     driveJoystick::getX,
+        //     () -> Rotation2d.fromDegrees(180),
+        //     () -> true,
+        //     drivetrain
+        // ));
 
         JoystickButton zeroGyroButton = new JoystickButton(turnJoystick, 2);
         zeroGyroButton.onTrue(new InstantCommand(() -> drivetrain.zeroGyro(), drivetrain));
 
-        JoystickButton chargeStationAutoBalanceButton = new JoystickButton(driveJoystick, 7);
-        chargeStationAutoBalanceButton.whileTrue(new ChargeStationBalanceCommand(drivetrain));
+        // JoystickButton chargeStationAutoBalanceButton = new JoystickButton(driveJoystick, 7);
+        // chargeStationAutoBalanceButton.whileTrue(new ChargeStationBalanceCommand(drivetrain));
 
-        JoystickButton visionAlignButton = new JoystickButton(turnJoystick, 4);
-        visionAlignButton.whileTrue(
-            new SequentialCommandGroup(
-                new GyroAlignmentCommand(
-                    driveJoystick::getY,
-                    () -> 0,
-                    () -> Rotation2d.fromDegrees(180),
-                    () -> true,
-                    drivetrain
-                ),
-                new DumbHorizontalAlignmentCommand(
-                    driveJoystick::getY,
-                    turnJoystick::getX,
-                    drivetrain, vision, intakePixy
-                )
-            )
-        );
+        // JoystickButton visionAlignButton = new JoystickButton(turnJoystick, 4);
+        // visionAlignButton.whileTrue(
+        //     new SequentialCommandGroup(
+        //         new GyroAlignmentCommand(
+        //             driveJoystick::getY,
+        //             () -> 0,
+        //             () -> Rotation2d.fromDegrees(180),
+        //             () -> true,
+        //             drivetrain
+        //         ),
+        //         new DumbHorizontalAlignmentCommand(
+        //             driveJoystick::getY,
+        //             turnJoystick::getX,
+        //             drivetrain, vision, intakePixy
+        //         )
+        //     )
+        // );
 
-        JoystickButton signleSubstationAlignButton = new JoystickButton(turnJoystick, 5);
-        signleSubstationAlignButton.whileTrue(new GyroAlignmentCommand(
-            driveJoystick::getY,
-            driveJoystick::getX,
-            () -> Rotation2d.fromDegrees(DriverStation.getAlliance() == Alliance.Blue ? 90 : 270),
-            () -> false,
-            drivetrain
-        ));
+        // JoystickButton signleSubstationAlignButton = new JoystickButton(turnJoystick, 5);
+        // signleSubstationAlignButton.whileTrue(new GyroAlignmentCommand(
+        //     driveJoystick::getY,
+        //     driveJoystick::getX,
+        //     () -> Rotation2d.fromDegrees(DriverStation.getAlliance() == Alliance.Blue ? 90 : 270),
+        //     () -> false,
+        //     drivetrain
+        // ));
 
-        JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
-        xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));
+        // JoystickButton xWheelsButton = new JoystickButton(controlPanel, 2);
+        // xWheelsButton.whileTrue(new RunCommand(drivetrain::xWheels, drivetrain));
         
-        /*
-         * Camera button bindings
-         */
-        JoystickButton cameraResetButton = new JoystickButton(turnJoystick, 11);
-        JoystickButton cameraResetButtonSafety = new JoystickButton(turnJoystick, 10);
-        cameraResetButton.and(cameraResetButtonSafety).onTrue(
-            new InstantCommand(() -> pdh.setSwitchableChannel(false))
-        ).onFalse(
-            new InstantCommand(() -> pdh.setSwitchableChannel(true))
-        );
+        // /*
+        //  * Camera button bindings
+        //  */
+        // JoystickButton cameraResetButton = new JoystickButton(turnJoystick, 11);
+        // JoystickButton cameraResetButtonSafety = new JoystickButton(turnJoystick, 10);
+        // cameraResetButton.and(cameraResetButtonSafety).onTrue(
+        //     new InstantCommand(() -> pdh.setSwitchableChannel(false))
+        // ).onFalse(
+        //     new InstantCommand(() -> pdh.setSwitchableChannel(true))
+        // );
 
         JoystickButton ledToggleButton = new JoystickButton(turnJoystick, 6);
         ledToggleButton.onTrue(new InstantCommand(vision::toggleLEDs));
 
-        /*
-         * LED button bindings
-         */
-        JoystickButton LEDOffButton = new JoystickButton(controlPanel, 9);
-        JoystickButton LEDConeButton = new JoystickButton(controlPanel, 1);
-        JoystickButton LEDCubeButton = new JoystickButton (controlPanel, 6);
+        // /*
+        //  * LED button bindings
+        //  */
+        // JoystickButton LEDOffButton = new JoystickButton(controlPanel, 9);
+        // JoystickButton LEDConeButton = new JoystickButton(controlPanel, 1);
+        // JoystickButton LEDCubeButton = new JoystickButton (controlPanel, 6);
 
-        LEDOffButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
-        LEDConeButton.onTrue(new InstantCommand(() -> {
-            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CONE);
-            intake.setScoreMode(ScoreMode.CONE);
-        }));
-        LEDCubeButton.onTrue(new InstantCommand(() -> {
-            LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CUBE);
-            intake.setScoreMode(ScoreMode.CUBE);
-        }));
+        // LEDOffButton.onTrue(new InstantCommand(() -> LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.OFF)));
+        // LEDConeButton.onTrue(new InstantCommand(() -> {
+        //     LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CONE);
+        //     intake.setScoreMode(ScoreMode.CONE);
+        // }));
+        // LEDCubeButton.onTrue(new InstantCommand(() -> {
+        //     LEDSubsystem.getInstance().setLEDStatusMode(LEDStatusMode.CUBE);
+        //     intake.setScoreMode(ScoreMode.CUBE);
+        // }));
 
-        /*
-         * Elevator button bindings
-         */
-        Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getX() < -0.5);
-        JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 12);
-        JoystickButton elevatorConeGroundPickUpButton = new JoystickButton(controlPanel, 10);
-        JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 5);
+        // /*
+        //  * Elevator button bindings
+        //  */
+        // Trigger elevatorStartingButton = new Trigger(() -> controlPanel.getX() < -0.5);
+        // JoystickButton elevatorCubeGroundPickUpButton = new JoystickButton(controlPanel, 12);
+        // JoystickButton elevatorConeGroundPickUpButton = new JoystickButton(controlPanel, 10);
+        // JoystickButton elevatorBabyBirdButton = new JoystickButton(controlPanel, 5);
         
-        elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, elevator));
-        elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
-        elevatorConeGroundPickUpButton.onTrue(new ParallelCommandGroup(
-            new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.4)),
-            new ElevatorPositionCommand(ElevatorPosition.STANDING_CONE, elevator)
-        ));
-        elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
+        // elevatorStartingButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.GROUND_CONE_PICKUP, elevator));
+        // elevatorCubeGroundPickUpButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.FLOOR_CUBE, elevator));
+        // elevatorConeGroundPickUpButton.onTrue(new ParallelCommandGroup(
+        //     new ArmOutCommand(arm).beforeStarting(new WaitCommand(0.4)),
+        //     new ElevatorPositionCommand(ElevatorPosition.STANDING_CONE, elevator)
+        // ));
+        // elevatorBabyBirdButton.onTrue(new ElevatorPositionCommand(ElevatorPosition.BABY_BIRD, elevator));
 
-        JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 3);
-        JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 4);
+        // JoystickButton manualElevatorUpButton = new JoystickButton(controlPanel, 3);
+        // JoystickButton manualElevatorDownButton = new JoystickButton(controlPanel, 4);
 
-        manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
-        manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
+        // manualElevatorUpButton.whileTrue(new ElevatorManualUpCommand(elevator));
+        // manualElevatorDownButton.whileTrue(new ElevatorManualDownCommand(elevator));
 
-        /*
-         * Score button bindings
-         */
-        Trigger coneScanButton = new Trigger(() -> controlPanel.getY() > 0.5);
-        coneScanButton.whileTrue(
-            new SequentialCommandGroup(
-                new InstantCommand(LEDSubsystem.getInstance()::disableLEDs),
-                new RunCommand(intakePixy::updateConePosition, intakePixy)
-            )
-        );
-        coneScanButton.onFalse(new InstantCommand(LEDSubsystem.getInstance()::enableLEDs));
+        // /*
+        //  * Score button bindings
+        //  */
+        // Trigger coneScanButton = new Trigger(() -> controlPanel.getY() > 0.5);
+        // coneScanButton.whileTrue(
+        //     new SequentialCommandGroup(
+        //         new InstantCommand(LEDSubsystem.getInstance()::disableLEDs),
+        //         new RunCommand(intakePixy::updateConePosition, intakePixy)
+        //     )
+        // );
+        // coneScanButton.onFalse(new InstantCommand(LEDSubsystem.getInstance()::enableLEDs));
 
-        JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 7);
-        JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 8);
-        JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
+        // JoystickButton elevatorMidScoreButton = new JoystickButton(controlPanel, 7);
+        // JoystickButton elevatorTopScoreButton = new JoystickButton(controlPanel, 8);
+        // JoystickButton scoreButton = new JoystickButton(driveJoystick, 1);
         
-        // Score command starts timer and has a minimum run time of 0.25 seconds.
-        scoreButton.onTrue(
-            new InstantCommand(() -> { scoreTimer.reset(); scoreTimer.start(); })
-        ).whileTrue(
-            new ScoreCommand(intake)
-        ).onFalse(
-            // Blocks score command completion until the minimum run time has elapsed.
-            new SequentialCommandGroup(
-                // Wait until the difference in current time to minimum time has elapsed.
-                new WaitCommand(scoreTimer.get() < Constants.Score.MIN_SCORE_TIME_SECONDS ? Constants.Score.MIN_SCORE_TIME_SECONDS - scoreTimer.get() : 0),
-                new CompleteScoreCommand(elevator, intake, arm),
-                new InstantCommand(scoreTimer::stop)
-            )
-        );
-        elevatorMidScoreButton.onTrue(new MidScoreCommand(elevator, arm));
-        elevatorTopScoreButton.onTrue(new TopScoreCommand(elevator, arm));
+        // // Score command starts timer and has a minimum run time of 0.25 seconds.
+        // scoreButton.onTrue(
+        //     new InstantCommand(() -> { scoreTimer.reset(); scoreTimer.start(); })
+        // ).whileTrue(
+        //     new ScoreCommand(intake)
+        // ).onFalse(
+        //     // Blocks score command completion until the minimum run time has elapsed.
+        //     new SequentialCommandGroup(
+        //         // Wait until the difference in current time to minimum time has elapsed.
+        //         new WaitCommand(scoreTimer.get() < Constants.Score.MIN_SCORE_TIME_SECONDS ? Constants.Score.MIN_SCORE_TIME_SECONDS - scoreTimer.get() : 0),
+        //         new CompleteScoreCommand(elevator, intake, arm),
+        //         new InstantCommand(scoreTimer::stop)
+        //     )
+        // );
+        // elevatorMidScoreButton.onTrue(new MidScoreCommand(elevator, arm));
+        // elevatorTopScoreButton.onTrue(new TopScoreCommand(elevator, arm));
 
-        /*
-         * Arm button bindings
-         */
-        JoystickButton controlPanelIntakeArmToggle = new JoystickButton(controlPanel, 11);
-        JoystickButton driverIntakeArmToggle = new JoystickButton(driveJoystick, 6);
+        // /*
+        //  * Arm button bindings
+        //  */
+        // JoystickButton controlPanelIntakeArmToggle = new JoystickButton(controlPanel, 11);
+        // JoystickButton driverIntakeArmToggle = new JoystickButton(driveJoystick, 6);
 
-        driverIntakeArmToggle.or(controlPanelIntakeArmToggle).onTrue(new InstantCommand(() -> arm.toggleArm(), arm));
+        // driverIntakeArmToggle.or(controlPanelIntakeArmToggle).onTrue(new InstantCommand(() -> arm.toggleArm(), arm));
 
-        /*
-         * Intake button bindings
-         */
-        Trigger controlPanelIntakeInButton = new Trigger(() -> controlPanel.getX() > 0.5);
-        JoystickButton driverIntakeInButton = new JoystickButton(driveJoystick, 3);
+        // /*
+        //  * Intake button bindings
+        //  */
+        // Trigger controlPanelIntakeInButton = new Trigger(() -> controlPanel.getX() > 0.5);
+        // JoystickButton driverIntakeInButton = new JoystickButton(driveJoystick, 3);
 
-        driverIntakeInButton.or(controlPanelIntakeInButton).whileTrue(new ParallelCommandGroup(
-            new IntakeInCommand(arm::isArmOut, intake)
-        ));
-        driverIntakeInButton.or(controlPanelIntakeInButton).onFalse(new IntakeStopCommand(intake));
+        // driverIntakeInButton.or(controlPanelIntakeInButton).whileTrue(new ParallelCommandGroup(
+        //     new IntakeInCommand(arm::isArmOut, intake)
+        // ));
+        // driverIntakeInButton.or(controlPanelIntakeInButton).onFalse(new IntakeStopCommand(intake));
         
-        Trigger controlPanelIntakeOutButton = new Trigger(() -> controlPanel.getY() < -0.5);
-        JoystickButton driverIntakeOutButton = new JoystickButton(driveJoystick, 2);
+        // Trigger controlPanelIntakeOutButton = new Trigger(() -> controlPanel.getY() < -0.5);
+        // JoystickButton driverIntakeOutButton = new JoystickButton(driveJoystick, 2);
 
-        driverIntakeOutButton.or(controlPanelIntakeOutButton).whileTrue(new IntakeOutCommand(intake));
-        driverIntakeOutButton.or(controlPanelIntakeOutButton).onFalse(new IntakeStopCommand(intake));
+        // driverIntakeOutButton.or(controlPanelIntakeOutButton).whileTrue(new IntakeOutCommand(intake));
+        // driverIntakeOutButton.or(controlPanelIntakeOutButton).onFalse(new IntakeStopCommand(intake));
     }
     
     public void forceRecompile() {
